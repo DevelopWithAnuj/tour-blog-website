@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Drimora - Travel Blog</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="navbar">
+      <h1 class="logo">Drimora</h1>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#tours">Tours</a>
+        <a href="#booking">Book</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button onclick="logout()">Logout</button>
+      </nav>
+    </header>
+
+    <!-- Hero large banner -->
+    <section class="hero-landing" id="home">
+      <div class="hero-banner">
+        <div class="hero-inner">
+          <h2 class="hero-kicker">High Paths</h2>
+          <h1 class="hero-title">Hawaii Island</h1>
+          <p class="hero-sub">
+            Discover curated travel routes and hidden beaches.
+          </p>
+          <div class="hero-cta">
+            <button class="primary" onclick="scrollToBlogs()">
+              Explore Tours
+            </button>
+            <button class="secondary" onclick="goDashboard()">Dashboard</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">Distance<br /><strong>1.25 MI</strong></div>
+        <div class="stat">Time Left<br /><strong>2:20 HR</strong></div>
+        <div class="stat">Elevation<br /><strong>322 FT</strong></div>
+        <div class="stat">Direction<br /><strong>N/W</strong></div>
+      </div>
+    </section>
+
+    <!-- Tours (Our Tour) -->
+    <section class="tours" id="tours">
+      <h2 class="section-title">Our Tour</h2>
+      <div class="tour-grid">
+        <article class="tour-card">
+<<<<<<< HEAD
+          <img src="./assests/ny-bg.avif" alt="New York" />
+=======
+          <img src="assests/ny-bg.avif" alt="New York" />
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+          <h3>New York</h3>
+          <p>City that never sleeps — parks, museums and skyline.</p>
+          <button class="btn-primary">Learn More</button>
+        </article>
+        <article class="tour-card">
+<<<<<<< HEAD
+          <img src="./assests/norc-bg.avif" alt="Norway" />
+=======
+          <img src="assests/norc-bg.avif" alt="Norway" />
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+          <h3>Norway City</h3>
+          <p>Scenic fjords, northern lights and coastal drives.</p>
+          <button class="btn-primary">Learn More</button>
+        </article>
+        <article class="tour-card">
+<<<<<<< HEAD
+          <img src="./assests/ua-bg.avif" alt="United Arab" />
+=======
+          <img src="assests/ua-bg.avif" alt="United Arab" />
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+          <h3>United Arab</h3>
+          <p>Luxury, desert safaris and modern architecture.</p>
+          <button class="btn-primary">Learn More</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="booking">
+      <div class="booking-card glass">
+        <h2>Book Your Trip</h2>
+        <p>
+          Plan your perfect journey with us. Easy booking, instant confirmation.
+        </p>
+
+        <form class="booking-form" id="bookingForm">
+          <input id= "fullname" type="text" placeholder="Full Name" required />
+          <input id= "e-mail" type="email" placeholder="Email Address" required />
+          <input id= "tripdate" type="date" required />
+          <select id="place" required>
+            <option value="">Select destination</option>
+            <option>New York</option>
+            <option>Norway</option>
+            <option>United Arab</option>
+            <option>Thailand</option>
+            <option>Italy</option>
+          </select>
+          <button id="booking-btn" type="submit">Book Now</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Feature block -->
+    <section class="feature-block">
+      <div class="feature-media">
+<<<<<<< HEAD
+        <img src="./assests/beach-boat.jpg" alt="Small boat" />
+=======
+        <img src="assests/beach-boat.jpg" alt="Small boat" />
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+      </div>
+      <div class="feature-content">
+        <h3>Small Boat, Big Ocean</h3>
+        <p>
+          Short narrative highlighting intimate travel experiences — rustic
+          villages, local cuisine and hidden coves.
+        </p>
+        <button class="btn-primary">Read Story</button>
+      </div>
+    </section>
+
+    <!-- Latest Blogs Section -->
+    <section class="blogs-section" id="blogs">
+      <h2 class="section-title">Latest Travel Stories</h2>
+      <div class="blogContainer" id="blogContainer"></div>
+    </section>
+
+    <!-- Showcase large background -->
+    <section class="showcase">
+      <div class="showcase-bg"></div>
+      <div class="showcase-panel">
+        <h2>Top Rating — Italy</h2>
+        <div class="showcase-cards">
+          <div class="show-card">
+            <img
+<<<<<<< HEAD
+              src="./assests/rome.jpg?auto=format&fit=crop&w=300&q=80"
+=======
+              src="assests/rome.jpg?auto=format&fit=crop&w=300&q=80"
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+              alt="Rome"
+            />
+            <p>Rome</p>
+          </div>
+          <div class="show-card">
+            <img
+<<<<<<< HEAD
+              src="./assests/turkey.jpg?auto=format&fit=crop&w=300&q=80"
+=======
+              src="assests/turkey.jpg?auto=format&fit=crop&w=300&q=80"
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+              alt="Turkey"
+            />
+            <p>Turkey</p>
+          </div>
+          <div class="show-card">
+            <img
+<<<<<<< HEAD
+              src="./assests/landon.jpg?auto=format&fit=crop&w=300&q=80"
+=======
+              src="assests/landon.jpg?auto=format&fit=crop&w=300&q=80"
+>>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
+              alt="London"
+            />
+            <p>London</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+      <div class="about-container">
+        <h2>About Drimora</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <h3>Your Travel Companion</h3>
+            <p>
+              Drimora is dedicated to inspiring travelers to explore the
+              world's most beautiful destinations. We believe in authentic
+              travel experiences that connect people with different cultures,
+              cuisines, and landscapes.
+            </p>
+            <p>
+              Our mission is to share stories from fellow travelers and help you
+              discover your next adventure.
+            </p>
+            <div class="about-stats">
+              <div class="stat">
+                <h4>50+</h4>
+                <p>Countries</p>
+              </div>
+              <div class="stat">
+                <h4>1000+</h4>
+                <p>Stories</p>
+              </div>
+              <div class="stat">
+                <h4>100K+</h4>
+                <p>Followers</p>
+              </div>
+            </div>
+          </div>
+          <div class="about-features">
+            <div class="feature-card">
+              <span class="feature-icon">✈️</span>
+              <h4>Expert Tips</h4>
+              <p>Get insider travel tips from experienced explorers.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">📸</span>
+              <h4>Visual Stories</h4>
+              <p>Beautiful photography and immersive narratives.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">🗺️</span>
+              <h4>Destinations</h4>
+              <p>Discover hidden gems and popular hotspots worldwide.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">👥</span>
+              <h4>Community</h4>
+              <p>Connect with travelers and share your experiences.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+      <div class="contact-container">
+        <h2>Get In Touch</h2>
+        <p class="contact-subtitle">
+          Have questions or want to share your travel story? We'd love to hear
+          from you!
+        </p>
+        <div class="contact-content">
+          <form class="contact-form" onsubmit="handleContactSubmit(event)">
+            <div class="form-group">
+              <input type="text" id="contactName" placeholder="Enter Your Full Name" required />
+              <label>Full Name</label>
+            </div>
+            <div class="form-group">
+              <input type="email" id="contactEmail" placeholder="Enter Your Email" required />
+              <label>Email Address</label>
+            </div>
+            <div class="form-group">
+              <textarea id="contactMessage" rows="5" placeholder="Enter Your Message" required></textarea>
+              <label>Your Message</label>
+            </div>
+            <button type="submit" class="contact-btn">Send Message</button>
+          </form>
+          <div class="contact-info">
+            <div class="info-item">
+              <h4>📧 Email</h4>
+              <p>contact@Drimora.com</p>
+            </div>
+            <div class="info-item">
+              <h4>📱 Follow Us</h4>
+              <p>
+                <a href="#" class="social-link">Instagram</a> •
+                <a href="#" class="social-link">Twitter</a> •
+                <a href="#" class="social-link">Facebook</a>
+              </p>
+            </div>
+            <div class="info-item">
+              <h4>🌍 Location</h4>
+              <p>Available worldwide<br />Remote team</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">Drimora</div>
+        <div class="footer-links">
+          <a href="#">Company</a>
+          <a href="#contact">Contact</a>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-social">Follow us</div>
+      </div>
+    </footer>
+
+    <div id="pageLoader">
+      <div class="page-spinner"></div>
+    </div>
+
+    
+  </body>
+</html>

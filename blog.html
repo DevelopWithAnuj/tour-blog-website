@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog | Drimora</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <header class="navbar">
+      <h1 class="logo">Drimora</h1>
+      <nav>
+        <a href="index.html#home">Home</a>
+        <a href="index.html#blogs">Blogs</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      </nav>
+    </header>
+    <!-- Page loader -->
+    <div id="pageLoader">
+      <div class="page-spinner"></div>
+    </div>
+
+    <!-- Blog Details -->
+    <section class="blog-detail-container">
+      <div id="blogDetails" class="blog-detail-card"></div>
+    </section>
+
+    <!-- Comments -->
+    <section class="comment-section">
+      <h3>💬 Comments</h3>
+
+      <div id="comments" class="comment-list"></div>
+
+      <div class="comment-box">
+        <input id="commentInput" placeholder="Share your thoughts..." />
+        <button onclick="addComment()" class="comment-btn">Post Comment</button>
+      </div>
+    </section>
+
+    <script src="blog.js"></script>
+  </body>
+</html>
