@@ -1,0 +1,25 @@
+{
+  "name": "travel-blog",
+  "version": "1.0.0",
+  "description": "🔗 Live Demo: https://developwithanuj.github.io/Minor-project--tour-travel-web/",
+  "main": "login.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevelopWithAnuj/tour-travel-website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DevelopWithAnuj/tour-travel-website/issues"
+  },
+  "homepage": "https://github.com/DevelopWithAnuj/tour-travel-website#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.2",
+    "tailwindcss": "^4.3.2"
+  }
+}

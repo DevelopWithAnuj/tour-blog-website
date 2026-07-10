@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel | Drimora</title>
+    <link rel="stylesheet" href="../src/output.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="navbar">
+      <h1 class="logo">Drimora</h1>
+      <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav id="navMenu" class="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="admin-dashboard.html">Dashboard</a>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      </nav>
+    </header>
+
+    <div class="admin-container">
+      <h2>✍️ Add New Blog</h2>
+
+      <form class="admin-form" onsubmit="handleAddBlog(event)">
+        <div class="form-group">
+          <input id="title" type="text" placeholder="Blog Title" required />
+          <label>Title</label>
+        </div>
+
+        <div class="form-group">
+          <input type="file" id="imageFile" accept="image/*" required />
+          <label>Image</label>
+        </div>
+
+        <img id="preview" class="preview hidden" alt="Preview" />
+
+        <div id="content" class="form-group">
+          <textarea
+            placeholder="Blog Content (min 50 characters)"
+            required
+          ></textarea>
+          <label>Content</label>
+        </div>
+
+        <button type="submit" class="btn-primary">Add Blog</button>
+      </form>
+    </div>
+
+    <div id="pageLoader">
+      <div class="page-spinner"></div>
+    </div>
+
+    <!-- Footer -->
+        <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">Drimora</div>
+        <div class="footer-links">
+          <a href="#">Company</a>
+          <a href="#contact">Contact</a>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-social">Follow us</div>
+      </div>
+    </footer>
+
+    <script src="admin.js"></script>
+    <script>
+      // ========================================
+      // HAMBURGER MENU TOGGLE
+      // ========================================
+      function setupHamburgerMenu() {
+        const hamburger = document.getElementById("hamburger");
+        const navMenu = document.getElementById("navMenu");
+
+        if (!hamburger || !navMenu) return;
+
+        hamburger.addEventListener("click", function () {
+          hamburger.classList.toggle("active");
+          navMenu.classList.toggle("active");
+        });
+
+        // Close menu when a link is clicked
+        const navLinks = navMenu.querySelectorAll("a");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            hamburger.classList.remove("active");
+            navMenu.classList.remove("active");
+          });
+        });
+
+        // Close menu when logout button is clicked
+        const logoutBtn = navMenu.querySelector("button");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function () {
+            hamburger.classList.remove("active");
+            navMenu.classList.remove("active");
+          });
+        }
+      }
+
+      window.addEventListener("load", setupHamburgerMenu);
+    </script>
+  </body>
+</html>

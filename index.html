@@ -1,16 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>Drimora - Travel Blog</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="src/output.css" />
     <script src="script.js"></script>
+    <script src="Our-Tour/our-tour.js"></script>
   </head>
   <body>
     <!-- Navbar -->
     <header class="navbar">
-      <h1 class="logo">Drimora</h1>
-      <nav>
+      <a
+        href="../index.html"
+        class="text-2xl md:text-3xl font-black text-amber-400 transition-transform duration-300 hover:scale-105"
+        id="nY-logo"
+        >Drimora</a
+      >
+      <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav id="navMenu" class="nav-menu">
         <a href="#home">Home</a>
         <a href="#tours">Tours</a>
         <a href="#booking">Book</a>
@@ -47,40 +59,47 @@
 
     <!-- Tours (Our Tour) -->
     <section class="tours" id="tours">
-      <h2 class="section-title">Our Tour</h2>
-      <div class="tour-grid">
-        <article class="tour-card">
-<<<<<<< HEAD
-          <img src="./assests/ny-bg.avif" alt="New York" />
-=======
-          <img src="assests/ny-bg.avif" alt="New York" />
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
-          <h3>New York</h3>
-          <p>City that never sleeps — parks, museums and skyline.</p>
-          <button class="btn-primary">Learn More</button>
-        </article>
-        <article class="tour-card">
-<<<<<<< HEAD
-          <img src="./assests/norc-bg.avif" alt="Norway" />
-=======
-          <img src="assests/norc-bg.avif" alt="Norway" />
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
-          <h3>Norway City</h3>
-          <p>Scenic fjords, northern lights and coastal drives.</p>
-          <button class="btn-primary">Learn More</button>
-        </article>
-        <article class="tour-card">
-<<<<<<< HEAD
-          <img src="./assests/ua-bg.avif" alt="United Arab" />
-=======
-          <img src="assests/ua-bg.avif" alt="United Arab" />
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
-          <h3>United Arab</h3>
-          <p>Luxury, desert safaris and modern architecture.</p>
-          <button class="btn-primary">Learn More</button>
-        </article>
-      </div>
-    </section>
+  <!-- Content Wrapper: Keeps everything perfectly aligned and centered -->
+  <div class="tours-container">
+    
+    <h2 class="section-title">Our Tour</h2>
+
+    <div class="tour-grid">
+      <article class="tour-card" data-tour="new-york">
+        <img src="./assests/ny-bg.avif" alt="New York" />
+        <h3>New York</h3>
+        <p>City that never sleeps — parks, museums and skyline.</p>
+        <button class="btn-primary">Learn More</button>
+      </article>
+
+      <article class="tour-card" data-tour="norway">
+        <img src="./assests/norc-bg.avif" alt="Norway" />
+        <h3>Norway City</h3>
+        <p>Scenic fjords, northern lights and coastal drives.</p>
+        <button class="btn-primary">Learn More</button>
+      </article>
+
+      <article class="tour-card" data-tour="uae">
+        <img src="./assests/ua-bg.avif" alt="United Arab" />
+        <h3>United Arab</h3>
+        <p>Luxury, desert safaris and modern architecture.</p>
+        <button class="btn-primary">Learn More</button>
+      </article>
+    </div>
+
+    <!-- Button Wrapper: Cleared out chaotic margins and added clear top separation -->
+    <div class="btn-wrapper">
+      <button
+        id="tour-lists"
+        class="text-white bg-amber-600 border-none rounded-md cursor-pointer font-bold flex justify-center items-center text-lg py-2 px-4 w-48 h-12 hover:bg-amber-700 transition duration-300 ease-in-out"
+      >
+        Explore More
+      </button>
+    </div>
+
+  </div>
+</section>
+
 
     <!-- Booking Section -->
     <section class="booking-section" id="booking">
@@ -91,9 +110,14 @@
         </p>
 
         <form class="booking-form" id="bookingForm">
-          <input id= "fullname" type="text" placeholder="Full Name" required />
-          <input id= "e-mail" type="email" placeholder="Email Address" required />
-          <input id= "tripdate" type="date" required />
+          <input id="fullname" type="text" placeholder="Full Name" required />
+          <input
+            id="e-mail"
+            type="email"
+            placeholder="Email Address"
+            required
+          />
+          <input id="tripdate" type="date" required />
           <select id="place" required>
             <option value="">Select destination</option>
             <option>New York</option>
@@ -110,11 +134,7 @@
     <!-- Feature block -->
     <section class="feature-block">
       <div class="feature-media">
-<<<<<<< HEAD
         <img src="./assests/beach-boat.jpg" alt="Small boat" />
-=======
-        <img src="assests/beach-boat.jpg" alt="Small boat" />
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
       </div>
       <div class="feature-content">
         <h3>Small Boat, Big Ocean</h3>
@@ -140,33 +160,21 @@
         <div class="showcase-cards">
           <div class="show-card">
             <img
-<<<<<<< HEAD
               src="./assests/rome.jpg?auto=format&fit=crop&w=300&q=80"
-=======
-              src="assests/rome.jpg?auto=format&fit=crop&w=300&q=80"
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
               alt="Rome"
             />
             <p>Rome</p>
           </div>
           <div class="show-card">
             <img
-<<<<<<< HEAD
               src="./assests/turkey.jpg?auto=format&fit=crop&w=300&q=80"
-=======
-              src="assests/turkey.jpg?auto=format&fit=crop&w=300&q=80"
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
               alt="Turkey"
             />
             <p>Turkey</p>
           </div>
           <div class="show-card">
             <img
-<<<<<<< HEAD
               src="./assests/landon.jpg?auto=format&fit=crop&w=300&q=80"
-=======
-              src="assests/landon.jpg?auto=format&fit=crop&w=300&q=80"
->>>>>>> e6a91f4a4e4386ab1e53fd984ab7a751a930f9fb
               alt="London"
             />
             <p>London</p>
@@ -183,10 +191,10 @@
           <div class="about-text">
             <h3>Your Travel Companion</h3>
             <p>
-              Drimora is dedicated to inspiring travelers to explore the
-              world's most beautiful destinations. We believe in authentic
-              travel experiences that connect people with different cultures,
-              cuisines, and landscapes.
+              Drimora is dedicated to inspiring travelers to explore the world's
+              most beautiful destinations. We believe in authentic travel
+              experiences that connect people with different cultures, cuisines,
+              and landscapes.
             </p>
             <p>
               Our mission is to share stories from fellow travelers and help you
@@ -244,15 +252,30 @@
         <div class="contact-content">
           <form class="contact-form" onsubmit="handleContactSubmit(event)">
             <div class="form-group">
-              <input type="text" id="contactName" placeholder="Enter Your Full Name" required />
+              <input
+                type="text"
+                id="contactName"
+                placeholder="Enter Your Full Name"
+                required
+              />
               <label>Full Name</label>
             </div>
             <div class="form-group">
-              <input type="email" id="contactEmail" placeholder="Enter Your Email" required />
+              <input
+                type="email"
+                id="contactEmail"
+                placeholder="Enter Your Email"
+                required
+              />
               <label>Email Address</label>
             </div>
             <div class="form-group">
-              <textarea id="contactMessage" rows="5" placeholder="Enter Your Message" required></textarea>
+              <textarea
+                id="contactMessage"
+                rows="5"
+                placeholder="Enter Your Message"
+                required
+              ></textarea>
               <label>Your Message</label>
             </div>
             <button type="submit" class="contact-btn">Send Message</button>
@@ -281,7 +304,11 @@
 
     <footer>
       <div class="footer-inner">
-        <div class="footer-brand">Drimora</div>
+        <div
+          class="text-2xl md:text-3xl font-black bg-linear-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent"
+        >
+          Drimora
+        </div>
         <div class="footer-links">
           <a href="#">Company</a>
           <a href="#contact">Contact</a>
@@ -294,7 +321,5 @@
     <div id="pageLoader">
       <div class="page-spinner"></div>
     </div>
-
-    
   </body>
 </html>

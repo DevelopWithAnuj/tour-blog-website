@@ -1,4 +1,37 @@
 // ========================================
+// HAMBURGER MENU TOGGLE
+// ========================================
+function setupHamburgerMenu() {
+  const hamburger = document.getElementById("hamburger");
+  const navMenu = document.getElementById("navMenu");
+
+  if (!hamburger || !navMenu) return;
+
+  hamburger.addEventListener("click", function () {
+    hamburger.classList.toggle("active");
+    navMenu.classList.toggle("active");
+  });
+
+  // Close menu when a link is clicked
+  const navLinks = navMenu.querySelectorAll("a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function () {
+      hamburger.classList.remove("active");
+      navMenu.classList.remove("active");
+    });
+  });
+
+  // Close menu when logout button is clicked
+  const logoutBtn = navMenu.querySelector("button");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+      hamburger.classList.remove("active");
+      navMenu.classList.remove("active");
+    });
+  }
+}
+
+// ========================================
 // AUTH CHECK & ROLE REDIRECT
 // ========================================
 if (localStorage.getItem("isLoggedIn") !== "true") {
@@ -36,7 +69,48 @@ function goDashboard() {
 // ========================================
 window.addEventListener("load", () => {
   const loader = document.getElementById("pageLoader");
-  if (loader) loader.style.display = "none";
+  if (loader) {
+    loader.style.display = "none";
+  }
+  // ========================================
+  // Setup Hamburger Menu
+  // ========================================
+  // SAFE CHECK: Only call if the function exists
+  if (typeof setupHamburgerMenu === "function") {
+    setupHamburgerMenu();
+  } else {
+    console.warn("setupHamburgerMenu is not defined on this page.");
+  }
+
+
+  // ========================================
+  // Tour Lists Button Navigation
+  // ========================================
+  const tourListsBtn = document.getElementById("tour-lists");
+  if (tourListsBtn) {
+    tourListsBtn.addEventListener("click", function () {
+      window.location.href = "./Our-Tour/our-tour.html";
+    });
+  }
+
+  // Tour Card Navigation (with data-tour attributes)
+  const tourCards = document.querySelectorAll(".tour-card");
+  const tourRoutes = {
+    "new-york": "./Our-Tour/new-York.html",
+    "norway": "./Our-Tour/norway.html",
+    "uae": "./Our-Tour/united-Arab.html"
+  };
+
+  tourCards.forEach(card => {
+    const tourId = card.getAttribute("data-tour");
+    const learnMoreBtn = card.querySelector(".btn-primary");
+    
+    if (learnMoreBtn && tourId && tourRoutes[tourId]) {
+      learnMoreBtn.addEventListener("click", function() {
+        window.location.href = tourRoutes[tourId];
+      });
+  }
+});
 });
 
 // ========================================
@@ -114,7 +188,7 @@ function renderBlogs() {
           </button>
         </div>
       </article>
-    `
+    `,
     )
     .join("");
 }
@@ -125,7 +199,7 @@ renderBlogs();
 // OPEN BLOG DETAILS
 // ========================================
 function openBlog(id) {
-  const blog = blogs.find(b => b.id === id);
+  const blog = blogs.find((b) => b.id === id);
   if (!blog) {
     alert("Blog not found");
     return;
@@ -140,7 +214,7 @@ function openBlog(id) {
 // ========================================
 const bookingForm = document.getElementById("bookingForm");
 
-bookingForm?.addEventListener("submit", e => {
+bookingForm?.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const name = bookingForm.querySelector('input[type="text"]').value.trim();
@@ -154,7 +228,7 @@ bookingForm?.addEventListener("submit", e => {
   }
 
   const booking = {
-    id: "BOOK-" + Date.now(),      // ✅ UNIQUE ID
+    id: "BOOK-" + Date.now(), // ✅ UNIQUE ID
     name,
     email,
     destination,
@@ -170,7 +244,6 @@ bookingForm?.addEventListener("submit", e => {
   alert("Booking successful!");
   bookingForm.reset();
 });
-
 
 // ========================================
 // CONTACT FORM
