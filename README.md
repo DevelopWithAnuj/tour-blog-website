@@ -1,1 +1,1 @@
-🔗 Live Demo: https://developwithanuj.github.io/Minor-project--tour-travel-web/
+🔗 Live Demo: https://developwithanuj.github.io/tour-blog-website/index.html/
