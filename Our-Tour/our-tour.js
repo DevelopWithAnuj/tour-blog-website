@@ -172,6 +172,80 @@ function initMapZoom() {
 }
 
 document.addEventListener("DOMContentLoaded", initMapZoom);
+
+function initTourHubFilters() {
+  const cards = Array.from(document.querySelectorAll(".tour-list-card"));
+  const filterButtons = Array.from(document.querySelectorAll(".tour-filter-btn"));
+  const searchInput = document.getElementById("tour-search");
+  const countText = document.getElementById("tour-result-count");
+  const emptyState = document.getElementById("tour-empty-state");
+
+  if (!cards.length || !filterButtons.length) return;
+
+  let activeFilter = "all";
+
+  function setActiveButton(selectedButton) {
+    filterButtons.forEach((button) => {
+      button.classList.remove("bg-slate-950", "text-white");
+      button.classList.add("bg-slate-100", "text-slate-700");
+    });
+
+    selectedButton.classList.remove("bg-slate-100", "text-slate-700");
+    selectedButton.classList.add("bg-slate-950", "text-white");
+  }
+
+  function cardMatchesSearch(card, searchTerm) {
+    const searchableText = [
+      card.dataset.title,
+      card.dataset.region,
+      card.dataset.style,
+      card.textContent,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(searchTerm);
+  }
+
+  function updateTourList() {
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const matchesFilter =
+        activeFilter === "all" || card.dataset.region === activeFilter;
+      const matchesSearch = !searchTerm || cardMatchesSearch(card, searchTerm);
+      const shouldShow = matchesFilter && matchesSearch;
+
+      card.classList.toggle("hidden", !shouldShow);
+      if (shouldShow) visibleCount += 1;
+    });
+
+    if (countText) {
+      countText.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? "tour" : "tours"}`;
+    }
+
+    if (emptyState) {
+      emptyState.classList.toggle("hidden", visibleCount !== 0);
+    }
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.tourFilter || "all";
+      setActiveButton(button);
+      updateTourList();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener("input", updateTourList);
+  }
+
+  updateTourList();
+}
+
+document.addEventListener("DOMContentLoaded", initTourHubFilters);
 // ========================================
 // NORWAY INTERACTIVE ROUTE MAP
 // ========================================

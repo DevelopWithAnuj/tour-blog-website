@@ -1,19 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tour & Travel Lists</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tour & Travel Lists | Drimora</title>
     <link rel="stylesheet" href="../src/output.css" />
+    <style>
+      #navMenu-ny.active {
+        display: flex !important;
+      }
+    </style>
     <script src="our-tour.js"></script>
-</head>
-<body>
-<header
+  </head>
+  <body class="bg-slate-50 text-slate-700 scroll-smooth">
+    <header
       class="fixed top-0 z-50 w-full backdrop-blur-md bg-slate-950/80 border-b border-white/10 transition-all duration-300"
       id="navbar"
     >
       <div class="flex items-center justify-between px-4 md:px-8 py-4">
-        <!-- Logo - Link to Home -->
         <a
           href="../index.html"
           class="text-2xl md:text-3xl font-black text-amber-400 transition-transform duration-300 hover:scale-105"
@@ -21,38 +25,13 @@
           >Drimora</a
         >
 
-        <!-- Desktop Navigation -->
         <nav class="hidden md:flex items-center gap-1 lg:gap-2">
-          <a
-            href="../index.html#home"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Home</a
-          >
-          <a
-            href="../index.html#tours"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Tours</a
-          >
-          <a
-            href="#places"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Places</a
-          >
-          <a
-            href="#attractions"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Attractions</a
-          >
-          <a
-            href="../index.html#booking"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Book</a
-          >
-          <a
-            href="../index.html#contact"
-            class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300"
-            >Contact</a
-          >
+          <a href="../index.html#home" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Home</a>
+          <a href="../index.html#tours" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Tours</a>
+          <a href="#tour-list" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Places</a>
+          <a href="#travel-style" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Attractions</a>
+          <a href="../index.html#booking" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Book</a>
+          <a href="../index.html#contact" class="px-3 py-2 text-white font-semibold text-sm lg:text-base hover:text-amber-400 transition-colors duration-300">Contact</a>
           <button
             onclick="logout()"
             class="ml-4 px-4 py-2 bg-linear-to-r from-amber-400/20 to-orange-500/20 hover:from-amber-400/30 hover:to-orange-500/30 border border-amber-400/40 text-white font-semibold rounded-lg transition-all duration-300"
@@ -61,68 +40,27 @@
           </button>
         </nav>
 
-        <!-- Mobile Hamburger -->
         <button
           id="hamburger-ny"
           class="md:hidden flex flex-col gap-1.5 w-8 h-8 justify-center cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+          aria-label="Open navigation menu"
         >
-          <span
-            class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"
-          ></span>
-          <span
-            class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"
-          ></span>
-          <span
-            class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"
-          ></span>
+          <span class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></span>
+          <span class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></span>
+          <span class="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></span>
         </button>
       </div>
 
-      <!-- Mobile Menu -->
       <nav
         id="navMenu-ny"
-        class="hidden md:hidden absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-b border-white/10 flex flex-col gap-1 py-4 px-4 animate-slide-down"
+        class="hidden md:hidden absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-b border-white/10 flex-col gap-1 py-4 px-4 animate-slide-down"
       >
-        <a
-          href="../index.html#home"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Home</a
-        >
-        <a
-          href="../index.html#tours"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Tours</a
-        >
-        <a
-          href="#places"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Places</a
-        >
-        <a
-          href="#attractions"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Attractions</a
-        >
-        <a
-          href="../index.html#booking"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Book</a
-        >
-        <a
-          href="../index.html#contact"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Contact</a
-        >
-        <a
-          href="#gallery"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Gallery</a
-        >
-        <a
-          href="#reviews"
-          class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300"
-          >Reviews</a
-        >
+        <a href="../index.html#home" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Home</a>
+        <a href="../index.html#tours" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Tours</a>
+        <a href="#tour-list" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Places</a>
+        <a href="#travel-style" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Attractions</a>
+        <a href="../index.html#booking" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Book</a>
+        <a href="../index.html#contact" class="px-4 py-3 text-white font-semibold hover:text-amber-400 hover:bg-white/5 rounded-lg transition-all duration-300">Contact</a>
         <button
           onclick="logout()"
           class="mt-2 px-4 py-3 bg-linear-to-r from-amber-400/20 to-orange-500/20 border border-amber-400/40 text-white font-semibold rounded-lg hover:from-amber-400/30 hover:to-orange-500/30 transition-all duration-300 w-full"
@@ -132,5 +70,190 @@
       </nav>
     </header>
 
-</body>
+    <main class="pt-20">
+      <section class="relative overflow-hidden bg-slate-950 text-white">
+        <img
+          src="../assests/dino-reichmuth-A5rCN8626Ck-unsplash.jpg"
+          alt="Traveler overlooking a scenic mountain road"
+          class="absolute inset-0 h-full w-full object-cover opacity-45"
+        />
+        <div class="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/80 to-slate-950/30"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+          <div class="max-w-3xl">
+            <span class="inline-flex rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-sm font-bold text-amber-200">
+              Curated tour collection
+            </span>
+            <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
+              Choose your next Drimora journey
+            </h1>
+            <p class="mt-5 max-w-2xl text-base sm:text-lg leading-8 text-white/80">
+              Browse city breaks, scenic escapes, and premium travel packages from one organized tour hub.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="#tour-list" class="inline-flex items-center justify-center rounded-lg bg-amber-400 px-6 py-3 font-bold text-slate-950 shadow-lg shadow-amber-500/25 transition hover:bg-amber-300">
+                Explore tours
+              </a>
+              <a href="../index.html#booking" class="inline-flex items-center justify-center rounded-lg border border-white/25 bg-white/10 px-6 py-3 font-bold text-white transition hover:bg-white/15">
+                Book a trip
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tour-list" class="bg-slate-50 py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-8 lg:grid-cols-[300px_1fr] lg:items-start">
+            <aside class="lg:sticky lg:top-28 space-y-5">
+              <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-bold uppercase tracking-wider text-amber-600">Find a tour</p>
+                <label for="tour-search" class="sr-only">Search tours</label>
+                <input
+                  id="tour-search"
+                  type="search"
+                  placeholder="Search by city or style"
+                  class="mt-4 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
+                />
+              </div>
+
+              <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-lg font-black text-slate-950">Tour Features</h2>
+                <div class="mt-4 grid gap-2" aria-label="Tour filters">
+                  <button type="button" data-tour-filter="all" class="tour-filter-btn rounded-lg bg-slate-950 px-4 py-3 text-left text-sm font-bold text-white transition hover:bg-slate-800">
+                    All tours
+                  </button>
+                  <button type="button" data-tour-filter="city" class="tour-filter-btn rounded-lg bg-slate-100 px-4 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-amber-100 hover:text-slate-950">
+                    City breaks
+                  </button>
+                  <button type="button" data-tour-filter="nature" class="tour-filter-btn rounded-lg bg-slate-100 px-4 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-amber-100 hover:text-slate-950">
+                    Nature escapes
+                  </button>
+                  <button type="button" data-tour-filter="luxury" class="tour-filter-btn rounded-lg bg-slate-100 px-4 py-3 text-left text-sm font-bold text-slate-700 transition hover:bg-amber-100 hover:text-slate-950">
+                    Luxury stays
+                  </button>
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-lg font-black text-slate-950">Quick Links</h2>
+                <nav class="mt-4 grid gap-2 text-sm font-semibold">
+                  <a href="../index.html#booking" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-amber-600">Booking form</a>
+                  <a href="../index.html#contact" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-amber-600">Contact support</a>
+                  <a href="../Blog-Panel/blog.html" class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-amber-600">Travel blog</a>
+                </nav>
+              </div>
+
+              <div class="rounded-lg bg-slate-950 p-5 text-white shadow-sm">
+                <p class="text-sm font-bold text-amber-300">Trip help</p>
+                <p class="mt-3 text-sm leading-6 text-white/75">
+                  Need help choosing? Start with your travel style, then compare duration, mood, and budget.
+                </p>
+              </div>
+            </aside>
+
+            <div class="space-y-8">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="text-sm font-bold uppercase tracking-wider text-amber-600">Available destinations</p>
+                  <h2 class="mt-2 text-3xl md:text-4xl font-black text-slate-950">Our Tours</h2>
+                </div>
+                <p id="tour-result-count" class="text-sm font-semibold text-slate-500">Showing 3 tours</p>
+              </div>
+
+              <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <article class="tour-list-card overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl" data-region="city" data-style="city culture skyline" data-title="new york">
+                  <img src="../assests/new-york3.png" alt="New York skyline" class="h-56 w-full object-cover" />
+                  <div class="p-5">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">City Break</span>
+                      <span class="text-sm font-bold text-slate-500">6-7 days</span>
+                    </div>
+                    <h3 class="mt-4 text-2xl font-black text-slate-950">New York</h3>
+                    <p class="mt-3 text-sm leading-6 text-slate-600">
+                      Museums, skyline views, Broadway nights, Central Park, and classic city energy.
+                    </p>
+                    <a href="./new-York.html" class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-amber-500 hover:text-slate-950">
+                      View details
+                    </a>
+                  </div>
+                </article>
+
+                <article class="tour-list-card overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl" data-region="nature" data-style="nature fjords northern lights scenic" data-title="norway">
+                  <img src="../assests/norc-bg.avif" alt="Norway mountain village" class="h-56 w-full object-cover" />
+                  <div class="p-5">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">Nature Escape</span>
+                      <span class="text-sm font-bold text-slate-500">7-9 days</span>
+                    </div>
+                    <h3 class="mt-4 text-2xl font-black text-slate-950">Norway</h3>
+                    <p class="mt-3 text-sm leading-6 text-slate-600">
+                      Fjords, coastal drives, Arctic scenery, mountain viewpoints, and calm Nordic towns.
+                    </p>
+                    <a href="./norway.html" class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-amber-500 hover:text-slate-950">
+                      View details
+                    </a>
+                  </div>
+                </article>
+
+                <article class="tour-list-card overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl" data-region="luxury" data-style="luxury desert architecture shopping" data-title="united arab emirates uae dubai">
+                  <img src="../assests/ua-bg.avif" alt="United Arab Emirates skyline" class="h-56 w-full object-cover" />
+                  <div class="p-5">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">Luxury Stay</span>
+                      <span class="text-sm font-bold text-slate-500">5-6 days</span>
+                    </div>
+                    <h3 class="mt-4 text-2xl font-black text-slate-950">United Arab Emirates</h3>
+                    <p class="mt-3 text-sm leading-6 text-slate-600">
+                      Desert safaris, modern architecture, premium resorts, shopping, and nightlife.
+                    </p>
+                    <a href="./united-Arab.html" class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-amber-500 hover:text-slate-950">
+                      View details
+                    </a>
+                  </div>
+                </article>
+              </div>
+
+              <p id="tour-empty-state" class="hidden rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center font-semibold text-slate-500">
+                No tours match your search yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="travel-style" class="bg-white py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-6 md:grid-cols-3">
+            <div class="rounded-lg border border-slate-200 p-6">
+              <p class="text-sm font-bold text-amber-600">Step 01</p>
+              <h3 class="mt-3 text-xl font-black text-slate-950">Pick a style</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Choose city, nature, or luxury based on the mood of your trip.</p>
+            </div>
+            <div class="rounded-lg border border-slate-200 p-6">
+              <p class="text-sm font-bold text-amber-600">Step 02</p>
+              <h3 class="mt-3 text-xl font-black text-slate-950">Compare details</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Review trip length, highlights, and destination pages before booking.</p>
+            </div>
+            <div class="rounded-lg border border-slate-200 p-6">
+              <p class="text-sm font-bold text-amber-600">Step 03</p>
+              <h3 class="mt-3 text-xl font-black text-slate-950">Reserve your seat</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Use the booking form and Drimora will help organize the next steps.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-slate-950 border-t border-white/10 py-8 md:py-12 px-4 md:px-6">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-2xl md:text-3xl font-black text-amber-400">Drimora</div>
+        <div class="flex flex-wrap justify-center gap-6 md:gap-8">
+          <a href="../index.html#home" class="text-white/70 hover:text-amber-400 transition-colors font-medium">Home</a>
+          <a href="../index.html#booking" class="text-white/70 hover:text-amber-400 transition-colors font-medium">Booking</a>
+          <a href="../index.html#contact" class="text-white/70 hover:text-amber-400 transition-colors font-medium">Contact</a>
+        </div>
+        <span class="text-white/60 text-sm md:text-base">Follow us</span>
+      </div>
+    </footer>
+  </body>
 </html>
