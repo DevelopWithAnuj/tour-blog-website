@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <p align="center">
   <img src="./assests/readme_banner_img.png" alt="Drimora Banner" width="100%">
 </p>
@@ -14,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://developwithanuj.github.io/Minor-project--tour-travel-web/">🌐 Live Demo</a> •
+  <a href="https://developwithanuj.github.io/tour-blog-website/">🌐 Live Demo</a> •
   <a href="https://github.com/DevelopWithAnuj/tour-blog-website">⭐ Repository</a>
 </p>
 
@@ -229,5 +228,3 @@ If you like this project,
 
 ⭐ Star this repository.
 =======
-🔗 Live Demo: https://developwithanuj.github.io/tour-blog-website/index.html/
->>>>>>> 87992c08663f6938fa58a2f882e57e80f16bb3ea
