@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <img src="./assests/readme_banner_img.png" alt="Drimora Banner" width="100%">
 </p>
@@ -227,3 +228,6 @@ Portfolio
 If you like this project,
 
 ⭐ Star this repository.
+=======
+🔗 Live Demo: https://developwithanuj.github.io/tour-blog-website/index.html/
+>>>>>>> 87992c08663f6938fa58a2f882e57e80f16bb3ea
