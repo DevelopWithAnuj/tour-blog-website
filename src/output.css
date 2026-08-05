@@ -594,6 +594,9 @@
   .h-\[34rem\] {
     height: 34rem;
   }
+  .h-\[450px\] {
+    height: 450px;
+  }
   .h-\[550px\] {
     height: 550px;
   }
@@ -611,6 +614,9 @@
   }
   .max-h-\[88vh\] {
     max-height: 88vh;
+  }
+  .max-h-\[600px\] {
+    max-height: 600px;
   }
   .min-h-9 {
     min-height: calc(var(--spacing) * 9);
@@ -3343,6 +3349,11 @@
   .lg\:h-\[37\.5rem\] {
     @media (width >= 64rem) {
       height: 37.5rem;
+    }
+  }
+  .lg\:h-\[600px\] {
+    @media (width >= 64rem) {
+      height: 600px;
     }
   }
   .lg\:min-h-\[500px\] {
