@@ -87,6 +87,16 @@
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.3);
       }
+      .destination-card {
+        transition: all 0.2s ease;
+      }
+      .destination-card.active {
+        transform: translateX(4px);
+        box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.5);
+      }
+      #navMenu-ny.active {
+        display: flex !important;
+      }
     </style>
   </head>
   <body>
@@ -163,7 +173,7 @@
       <!-- Mobile Menu -->
       <nav
         id="navMenu-ny"
-        class="hidden md:hidden absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-b border-white/10 flex flex-col gap-1 py-4 px-4 animate-slide-down"
+        class="hidden absolute top-full left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-b border-white/10 flex-col gap-1 py-4 px-4 animate-slide-down"
       >
         <a
           href="../index.html#home"
@@ -455,7 +465,7 @@
             <img
               src="../assests/norway-gallery/images 12.jfif"
               alt="Beautiful Norway Landscape"
-              class="rounded-3xl shadow-xl w-full object-cover h-[550px]"
+              class="rounded-3xl shadow-xl w-full object-cover h-[34rem]"
             />
           </div>
 
@@ -1003,13 +1013,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           <!-- Left Panel: Scrollable Destination List -->
-          <div id="destination-list" class="lg:col-span-5 flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-3 custom-scrollbar">
+          <div id="destination-list" class="lg:col-span-5 flex flex-col gap-4 max-h-[37.5rem] overflow-y-auto pr-3 custom-scrollbar">
             <!-- Dynamically populated via JS -->
           </div>
 
           <!-- Right Panel: Interactive Leaflet Map -->
           <div class="lg:col-span-7 flex flex-col">
-            <div id="route-map" class="w-full h-[450px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 z-10">
+            <div id="route-map" class="w-full h-[28rem] lg:h-[37.5rem] rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 z-10">
               <!-- Leaflet Map mounts here -->
             </div>
           </div>
@@ -1269,6 +1279,380 @@
             <h4 class="text-white font-bold">Nordic / Scandinavian Political Map</h4>
           </div>
         </div>
+    </section>
+
+    <!-- =========================
+     PLAN YOUR TRIP
+    ========================== -->
+    <section id="itinerary" class="py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-amber-100 text-amber-700 font-semibold text-sm">
+            Plan Your Trip
+          </span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">
+            Suggested Itineraries for Every Style of Traveler
+          </h2>
+          <p class="mt-4 text-lg text-slate-600 leading-8">
+            Whether you have a weekend or a full vacation, Norway rewards every kind of traveler with unforgettable highlights.
+          </p>
+        </div>
+
+        <div class="mt-12 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-black text-slate-950">1 Day Escape</h3>
+              <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-700">Quick trip</span>
+            </div>
+            <ul class="mt-6 space-y-3 text-slate-600">
+              <li>• Morning: Oslofjord waterfront or a scenic city walk</li>
+              <li>• Afternoon: Visit a museum, harbor, or urban viewpoint</li>
+              <li>• Evening: Enjoy a waterfront dinner and local seafood</li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-black text-slate-950">3 Days</h3>
+              <span class="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">Classic route</span>
+            </div>
+            <ul class="mt-6 space-y-3 text-slate-600">
+              <li>• Day 1: Bergen and Bryggen Wharf</li>
+              <li>• Day 2: Flåm Railway and fjord cruise</li>
+              <li>• Day 3: Scenic drive to nearby viewpoints</li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-black text-slate-950">5 Days</h3>
+              <span class="rounded-full bg-violet-100 px-3 py-1 text-sm font-semibold text-violet-700">Adventure</span>
+            </div>
+            <ul class="mt-6 space-y-3 text-slate-600">
+              <li>• Discover Bergen, Geirangerfjord, and Trollstigen</li>
+              <li>• Add lakes, hikes, and cozy mountain cabins</li>
+              <li>• Finish with a scenic train or ferry experience</li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h3 class="text-2xl font-black text-slate-950">7-10 Days</h3>
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">Deep dive</span>
+            </div>
+            <ul class="mt-6 space-y-3 text-slate-600">
+              <li>• Oslo to Bergen to the fjords and northern regions</li>
+              <li>• Explore Tromsø, Lofoten, and Arctic landscapes</li>
+              <li>• Perfect for Northern Lights, midnight sun, and road trips</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid gap-8 lg:grid-cols-3">
+          <div class="rounded-3xl bg-slate-950 p-8 text-white">
+            <h3 class="text-2xl font-black">Best Time to Visit</h3>
+            <p class="mt-4 text-slate-300 leading-7">May to September is ideal for fjords, hiking, and long daylight hours. Winter brings snow, aurora, and seasonal adventure.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Transportation Guide</h3>
+            <p class="mt-4 text-slate-600 leading-7">Flights connect major cities, trains link the south, ferries open the coast, and rental cars are best for flexible scenic drives.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Budget Guide</h3>
+            <p class="mt-4 text-slate-600 leading-7">Budget travelers can enjoy hostels and public transport, while mid-range and luxury travelers can enjoy premium cabins, fine dining, and guided experiences.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+     EXPERIENCE NORWAY
+    ========================== -->
+    <section class="py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm">
+            Experience Norway
+          </span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">
+            Food, Stays, Adventure, and Local Moments
+          </h2>
+        </div>
+
+        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-xl font-black text-slate-950">Food & Cuisine</h3>
+            <p class="mt-3 text-slate-600 leading-7">Try fresh seafood, reindeer, cloudberries, cinnamon buns, and rich Nordic comfort food in coastal towns and city restaurants.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-xl font-black text-slate-950">Accommodation</h3>
+            <p class="mt-3 text-slate-600 leading-7">Choose boutique hotels, mountain cabins, eco lodges, or modern hostels depending on your pace and budget.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-xl font-black text-slate-950">Adventure Activities</h3>
+            <p class="mt-3 text-slate-600 leading-7">Hike the ridges, kayak the fjords, chase the Northern Lights, ski the slopes, and enjoy Arctic safaris.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h3 class="text-xl font-black text-slate-950">Photography Guide</h3>
+            <p class="mt-3 text-slate-600 leading-7">The best light is early morning and golden hour, especially around fjords, viewpoints, and village harbors.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+     TRAVEL SMART & FAQ
+    ========================== -->
+    <section class="py-20 bg-slate-900 text-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <span class="inline-block px-4 py-2 rounded-full bg-white/10 text-slate-200 font-semibold text-sm">
+              Travel Smart
+            </span>
+            <h2 class="mt-4 text-3xl sm:text-4xl font-black">
+              Helpful Advice for Every Traveler
+            </h2>
+            <div class="mt-8 grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h3 class="text-xl font-bold">Family Travel</h3>
+                <p class="mt-3 text-slate-300 leading-7">Easy waterfront walks, museums, and scenic trains make Norway a family-friendly destination.</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h3 class="text-xl font-bold">Solo Travel</h3>
+                <p class="mt-3 text-slate-300 leading-7">Safe cities, strong public transport, and welcoming locals make solo adventures comfortable and rewarding.</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h3 class="text-xl font-bold">Couple Travel</h3>
+                <p class="mt-3 text-slate-300 leading-7">Luxury lodges, fjord cruises, and sunset viewpoints create intimate romantic moments.</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h3 class="text-xl font-bold">Hidden Gems</h3>
+                <p class="mt-3 text-slate-300 leading-7">Explore small villages, quiet islands, local cafés, and lesser-known viewpoints away from the crowds.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 class="text-2xl font-black">Frequently Asked Questions</h3>
+            <div class="mt-6 space-y-4">
+              <details class="rounded-2xl border border-white/10 bg-slate-950/40 p-4" open>
+                <summary class="cursor-pointer font-semibold">Is Norway expensive?</summary>
+                <p class="mt-3 text-slate-300 leading-7">It can be pricey, but smart planning, public transport, and self-catering can make it more affordable.</p>
+              </details>
+              <details class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <summary class="cursor-pointer font-semibold">How many days are enough?</summary>
+                <p class="mt-3 text-slate-300 leading-7">Five to seven days is a strong first trip, while ten days gives you room for both cities and fjords.</p>
+              </details>
+              <details class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <summary class="cursor-pointer font-semibold">Do I need cash?</summary>
+                <p class="mt-3 text-slate-300 leading-7">Cards are widely accepted, though carrying a small amount of cash is useful for smaller shops and rural areas.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-2xl">
+            <span class="inline-block px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 font-semibold text-sm">
+              Travelers Love It
+            </span>
+            <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">
+              Why travelers keep returning to Norway
+            </h2>
+          </div>
+          <a href="#home" class="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 font-semibold text-white transition hover:bg-amber-500 hover:text-slate-950">
+            Start planning your trip
+          </a>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <p class="text-slate-500">“The fjords felt unreal and the train ride was breathtaking. Every day was a postcard.”</p>
+            <p class="mt-4 font-bold text-slate-950">— Amelia, London</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <p class="text-slate-500">“We loved the mix of city culture and untouched nature. The route was perfect for a relaxed adventure.”</p>
+            <p class="mt-4 font-bold text-slate-950">— Daniel & Sara, Oslo</p>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <p class="text-slate-500">“The Northern Lights were magical. Every stop felt carefully chosen and beautiful.”</p>
+            <p class="mt-4 font-bold text-slate-950">— Priya, Mumbai</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-950 py-20 text-white">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl sm:text-4xl font-black">Ready to Experience Norway?</h2>
+        <p class="mt-5 max-w-3xl mx-auto text-lg text-slate-300 leading-8">Start planning your unforgettable journey with Drimora. Explore breathtaking destinations, create your perfect itinerary, and discover the best of Norway one adventure at a time.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+          <a href="#home" class="rounded-full bg-amber-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-amber-300">Explore more destinations</a>
+          <a href="#booking" class="rounded-full border border-white/20 px-6 py-3 font-semibold text-white transition hover:bg-white/10">Plan a custom trip</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-sm">Detailed Attractions</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Mini Travel Guides for the Most Iconic Stops</h2>
+          <p class="mt-4 text-lg text-slate-600 leading-8">Each destination brings a different kind of magic, from serene fjord villages to Arctic adventure towns.</p>
+        </div>
+
+        <div class="mt-12 grid gap-6 lg:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Geirangerfjord</h3>
+            <p class="mt-4 text-slate-600 leading-7"><strong>Why visit:</strong> The most dramatic and photogenic fjord landscape in Norway, famous for waterfalls and steep cliffs.</p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-600">
+              <li>• Top highlights: Seven Sisters waterfall, Eagle Road</li>
+              <li>• Entry fee: Free</li>
+              <li>• Best time: June to September</li>
+              <li>• Suggested duration: 3-4 hours</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Tromsø</h3>
+            <p class="mt-4 text-slate-600 leading-7"><strong>Why visit:</strong> A gateway to the Arctic where you can chase the Northern Lights and experience polar adventures.</p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-600">
+              <li>• Top highlights: Aurora tours, fjord cruises, dog sledding</li>
+              <li>• Entry fee: Varies by activity</li>
+              <li>• Best time: October to March</li>
+              <li>• Suggested duration: 2-3 days</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Flåm</h3>
+            <p class="mt-4 text-slate-600 leading-7"><strong>Why visit:</strong> A storybook village perfect for scenic rail travel, peaceful fjord views, and cozy stays.</p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-600">
+              <li>• Top highlights: Flåm Railway, fjord cruise, Stegastein viewpoint</li>
+              <li>• Entry fee: Free to explore, train extra</li>
+              <li>• Best time: May to September</li>
+              <li>• Suggested duration: 1-2 days</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-amber-100 text-amber-700 font-semibold text-sm">Best Experiences</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Things to Do in Norway</h2>
+        </div>
+
+        <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Fjord Cruise</h3><p class="mt-3 text-slate-600 leading-7">Drift through deep blue waters and dramatic cliffs with a boat journey into the heart of the fjords.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Kayaking</h3><p class="mt-3 text-slate-600 leading-7">Paddle through calm fjords and island channels for a deeply immersive nature experience.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Hiking</h3><p class="mt-3 text-slate-600 leading-7">Discover cliffside trails, mountain viewpoints, and some of Europe’s most spectacular hikes.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Scenic Railway</h3><p class="mt-3 text-slate-600 leading-7">Ride through valleys, waterfalls, and mountain landscapes on iconic Norwegian rail journeys.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 font-semibold text-sm">Destination by Region</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Plan by Region</h2>
+        </div>
+        <div class="mt-12 grid gap-8 md:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Northern Norway</h3>
+            <ul class="mt-4 space-y-2 text-slate-600"><li>• Tromsø</li><li>• Alta</li><li>• North Cape</li></ul>
+          </div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Western Norway</h3>
+            <ul class="mt-4 space-y-2 text-slate-600"><li>• Bergen</li><li>• Geirangerfjord</li><li>• Flåm</li></ul>
+          </div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 class="text-2xl font-black text-slate-950">Eastern Norway</h3>
+            <ul class="mt-4 space-y-2 text-slate-600"><li>• Oslo</li><li>• Lillehammer</li><li>• The Oslofjord</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-sky-100 text-sky-700 font-semibold text-sm">Seasonal Guide</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Choose the Right Season</h2>
+        </div>
+        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Spring</h3><p class="mt-3 text-slate-600 leading-7">Mild weather, blooming landscapes, and fewer crowds make this a peaceful time to travel.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Summer</h3><p class="mt-3 text-slate-600 leading-7">The classic season for fjords, hiking, fishing, and midnight sun adventures.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Autumn</h3><p class="mt-3 text-slate-600 leading-7">Cooler air, colorful scenery, and ideal conditions for photography and quieter roads.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Winter</h3><p class="mt-3 text-slate-600 leading-7">Perfect for snow activities, cozy cabins, and chasing the Northern Lights.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-semibold text-sm">Travel Essentials</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Transportation, Food, and Stay Options</h2>
+        </div>
+        <div class="mt-12 grid gap-6 lg:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm"><h3 class="text-2xl font-black text-slate-950">Transportation Guide</h3><p class="mt-4 text-slate-600 leading-7">Fly into Oslo or Bergen, take scenic trains, use ferries for coastal routes, and rent a car for flexibility.</p></div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm"><h3 class="text-2xl font-black text-slate-950">Food & Cuisine</h3><p class="mt-4 text-slate-600 leading-7">Enjoy seafood, reindeer dishes, cloudberry desserts, cinnamon buns, and high-quality Nordic cuisine.</p></div>
+          <div class="rounded-3xl border border-slate-200 p-8 shadow-sm"><h3 class="text-2xl font-black text-slate-950">Accommodation</h3><p class="mt-4 text-slate-600 leading-7">Choose from luxury hotels, mid-range stays, cabins, hostels, and eco-friendly lodges.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-pink-100 text-pink-700 font-semibold text-sm">Travel Smart</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Helpful Advice for Every Traveler</h2>
+        </div>
+        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Family Travel</h3><p class="mt-3 text-slate-600 leading-7">Museums, scenic trains, and easy waterfront walks make Norway a family-friendly destination.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Solo Travel</h3><p class="mt-3 text-slate-600 leading-7">Safe public transport, friendly locals, and excellent infrastructure provide a comfortable solo trip.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Couple Travel</h3><p class="mt-3 text-slate-600 leading-7">Romantic fjord cruises, luxury lodges, and sunset viewpoints make it unforgettable for couples.</p></div>
+          <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="text-xl font-black text-slate-950">Hidden Gems</h3><p class="mt-3 text-slate-600 leading-7">Seek out small villages, quiet cafés, lesser-known viewpoints, and peaceful nature trails.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-2 rounded-full bg-orange-100 text-orange-700 font-semibold text-sm">Travel Resources</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl font-black text-slate-950">Useful Links and Planning Resources</h2>
+        </div>
+        <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <a href="https://www.visitnorway.com" class="rounded-3xl border border-slate-200 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><h3 class="text-xl font-black text-slate-950">Official Tourism Site</h3><p class="mt-3 text-slate-600 leading-7">Official travel info, regional guides, and trip inspiration.</p></a>
+          <a href="https://www.weather.com" class="rounded-3xl border border-slate-200 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><h3 class="text-xl font-black text-slate-950">Weather Forecasts</h3><p class="mt-3 text-slate-600 leading-7">Check conditions before hiking, sailing, or planning outdoor adventures.</p></a>
+          <a href="https://www.xe.com/currencyconverter" class="rounded-3xl border border-slate-200 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><h3 class="text-xl font-black text-slate-950">Currency Converter</h3><p class="mt-3 text-slate-600 leading-7">Plan daily budgets and understand local prices with ease.</p></a>
+          <a href="https://www.google.com/maps" class="rounded-3xl border border-slate-200 p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><h3 class="text-xl font-black text-slate-950">Maps & Navigation</h3><p class="mt-3 text-slate-600 leading-7">Explore road routes, ferry links, and regional destinations.</p></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-slate-950 text-white">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl sm:text-4xl font-black">Related Destinations</h2>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+          <span class="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold">Sweden</span>
+          <span class="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold">Finland</span>
+          <span class="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold">Iceland</span>
+          <span class="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold">Denmark</span>
+        </div>
+      </div>
     </section>
 
     <!-- =========================
