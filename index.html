@@ -2,22 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Drimora - Travel Blog</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="src/output.css" />
-    <script src="script.js"></script>
-    <script src="Our-Tour/our-tour.js"></script>
+    <script src="script.js" defer></script>
+    <script src="Our-Tour/our-tour.js" defer></script>
   </head>
   <body>
     <!-- Navbar -->
     <header class="navbar">
       <a
         href="../index.html"
-        class="text-2xl md:text-3xl font-black text-amber-400 transition-transform duration-300 hover:scale-105"
+        class="text-2xl font-black text-amber-400 transition-transform duration-300 hover:scale-105 md:text-3xl"
         id="nY-logo"
-        >Drimora</a
       >
-      <button class="hamburger" id="hamburger">
+        Drimora
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
         <span></span>
         <span></span>
         <span></span>
@@ -32,66 +34,194 @@
       </nav>
     </header>
 
-    <!-- Hero large banner -->
-    <section class="hero-landing" id="home">
-      <div class="hero-banner">
-        <div class="hero-inner">
-          <h2 class="hero-kicker">High Paths</h2>
-          <h1 class="hero-title">Hawaii Island</h1>
-          <p class="hero-sub">
+    <!-- Hero Large Banner -->
+    <section class="w-full" id="home">
+      <div
+        class="flex mt-22 h-125 w-full items-center justify-center bg-cover bg-center md:h-162.5"
+        style="
+          background-image:
+            linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+            url(&quot;./assests/hawaiian-hut-on-the-beach.jpg&quot;);
+        "
+      >
+        <div
+          class="mx-auto flex w-full max-w-4xl flex-col items-start justify-center text-left px-8 text-white"
+        >
+          <span
+            class="text-xs font-semibold tracking-wide text-yellow-400 md:text-sm"
+          >
+            High Paths
+          </span>
+          <h1 class="mt-2 text-3xl font-extrabold tracking-tight md:text-6xl">
+            Hawaii Island
+          </h1>
+          <p
+            class="mt-3 max-w-lg text-sm text-gray-200 opacity-90 md:text-base"
+          >
             Discover curated travel routes and hidden beaches.
           </p>
-          <div class="hero-cta">
-            <button class="primary" onclick="scrollToBlogs()">
+          <!-- CTA Buttons -->
+          <div class="mt-6 flex flex-row items-center justify-start gap-4">
+            <!-- Primary Button -->
+            <button
+              onclick="scrollToBlogs()"
+              class="rounded-lg bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition-all duration-300 hover:bg-amber-300 hover:shadow-lg hover:shadow-amber-400/20 cursor-pointer"
+            >
               Explore Tours
             </button>
-            <button class="secondary" onclick="goDashboard()">Dashboard</button>
+
+            <!-- Secondary Button -->
+            <button
+              onclick="goDashboard()"
+              class="rounded-lg border border-yellow-400/80 bg-transparent px-6 py-3 text-sm font-semibold text-yellow-400 transition-all duration-300 hover:bg-yellow-400/10 cursor-pointer"
+            >
+              Dashboard
+            </button>
           </div>
         </div>
       </div>
-      <div class="hero-stats">
-        <div class="stat">Distance<br /><strong>1.25 MI</strong></div>
-        <div class="stat">Time Left<br /><strong>2:20 HR</strong></div>
-        <div class="stat">Elevation<br /><strong>322 FT</strong></div>
-        <div class="stat">Direction<br /><strong>N/W</strong></div>
+      <div
+        class="mx-auto mt-7.5 mb-1.25 grid max-w-5xl grid-cols-4 gap-2.5 rounded-xl bg-white/85 p-3 shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-sm"
+      >
+        <div
+          class="flex flex-col items-center justify-center py-6 px-4 sm:p-4 text-xs text-center uppercase tracking-[0.06em] bg-gray-100/60 text-slate-500 rounded-xl shadow-md border border-slate-200/70 transition-all duration-300 hover:-translate-y-0.75 hover:shadow-xl"
+        >
+          Distance<br /><strong
+            class="mt-1.5 block text-lg md:text-xl font-bold text-slate-900"
+          >
+            1.25 MI</strong
+          >
+        </div>
+        <div
+          class="flex flex-col items-center justify-center py-6 px-4 sm:p-4 text-xs text-center uppercase tracking-[0.06em] bg-gray-100/60 text-slate-500 rounded-xl shadow-md border border-slate-200/70 transition-all duration-300 hover:-translate-y-0.75 hover:shadow-xl"
+        >
+          Time Left<br /><strong
+            class="mt-1.5 block text-xl font-bold text-gray-900"
+          >
+            2:20 HR</strong
+          >
+        </div>
+        <div
+          class="flex flex-col items-center justify-center py-6 px-4 sm:p-4 text-xs text-center uppercase tracking-[0.06em] bg-gray-100/60 text-slate-500 rounded-xl shadow-md border border-slate-200/70 transition-all duration-300 hover:-translate-y-0.75 hover:shadow-xl"
+        >
+          Elevation<br /><strong
+            class="mt-1.5 block text-xl font-bold text-gray-900"
+          >
+            322 FT
+          </strong>
+        </div>
+        <div
+          class="flex flex-col items-center justify-center py-6 px-4 sm:p-4 text-xs text-center uppercase tracking-[0.06em] bg-gray-100/60 text-slate-500 rounded-xl shadow-md border border-slate-200/70 transition-all duration-300 hover:-translate-y-0.75 hover:shadow-xl"
+        >
+          Direction<br /><strong
+            class="mt-1.5 block text-xl font-bold text-gray-900"
+          >
+            N/W</strong
+          >
+        </div>
       </div>
     </section>
 
     <!-- Tours (Our Tour) -->
-    <section class="tours" id="tours">
-  <!-- Content Wrapper: Keeps everything perfectly aligned and centered -->
-  <div class="tours-container">
-    
-    <h2 class="section-title">Our Tour</h2>
+    <section
+      class="flex px-4 py-16 w-full items-center justify-center h-auto bg-[#f0f2f5]"
+      id="tours"
+    >
+      <div class="mx-auto flex w-full max-w-300 flex-col items-center">
+        <h2
+          class="mb-10 text-center text-3xl font-bold text-slate-900 md:text-4xl"
+        >
+          Our Tour
+        </h2>
 
-    <div class="tour-grid">
-      <article class="tour-card" data-tour="new-york">
-        <img src="./assests/ny-bg.avif" alt="New York" />
-        <h3>New York</h3>
-        <p>City that never sleeps — parks, museums and skyline.</p>
-        <button class="btn-primary">Learn More</button>
+        <div class="grid w-full grid-cols-1 gap-8 md:grid-cols-3">
+          <!-- Card 1 -->
+          <article
+            class="flex flex-col items-center overflow-hidden rounded-xl bg-white text-center shadow-md"
+          >
+            <img
+              src="./assests/ny-bg.avif"
+              alt="New York"
+              class="h-44 w-full object-cover"
+            />
+            <div
+              class="flex w-full grow flex-col items-center justify-between p-5"
+            >
+              <div>
+                <h3 class="mb-2 text-xl font-bold text-slate-800">New York</h3>
+                <p class="mb-5 text-sm text-slate-600">
+                  City that never sleeps — parks, museums and skyline.
+                </p>
+              </div>
+              <button id="btn-primary"
+                class="w-full rounded-md bg-amber-500 py-2.5 px-4 font-semibold text-white transition duration-300 hover:bg-amber-600"
+              >
+                Learn More
+              </button>
+            </div>
       </article>
 
-      <article class="tour-card" data-tour="norway">
-        <img src="./assests/norc-bg.avif" alt="Norway" />
-        <h3>Norway City</h3>
-        <p>Scenic fjords, northern lights and coastal drives.</p>
-        <button class="btn-primary">Learn More</button>
+          <!-- Card 2 -->
+          <article
+            class="flex flex-col items-center overflow-hidden rounded-xl bg-white text-center shadow-md"
+          >
+            <img
+              src="./assests/norc-bg.avif"
+              alt="Norway"
+              class="h-44 w-full object-cover"
+            />
+            <div
+              class="flex w-full grow flex-col items-center justify-between p-5"
+            >
+              <div>
+                <h3 class="mb-2 text-xl font-bold text-slate-800">
+                  Norway City
+                </h3>
+                <p class="mb-5 text-sm text-slate-600">
+                  Scenic fjords, northern lights and coastal drives.
+                </p>
+              </div>
+              <button
+                class="w-full rounded-md bg-amber-500 py-2.5 px-4 font-semibold text-white transition duration-300 hover:bg-amber-600"
+              >
+                Learn More
+              </button>
+            </div>
       </article>
 
-      <article class="tour-card" data-tour="uae">
-        <img src="./assests/ua-bg.avif" alt="United Arab" />
-        <h3>United Arab</h3>
-        <p>Luxury, desert safaris and modern architecture.</p>
-        <button class="btn-primary">Learn More</button>
+          <!-- Card 3 -->
+          <article
+            class="flex flex-col items-center overflow-hidden rounded-xl bg-white text-center shadow-md"
+          >
+            <img
+              src="./assests/ua-bg.avif"
+              alt="United Arab"
+              class="h-44 w-full object-cover"
+            />
+            <div
+              class="flex w-full grow flex-col items-center justify-between p-5"
+            >
+              <div>
+                <h3 class="mb-2 text-xl font-bold text-slate-800">
+                  United Arab
+                </h3>
+                <p class="mb-5 text-sm text-slate-600">
+                  Luxury, desert safaris and modern architecture.
+                </p>
+              </div>
+              <button
+                class="w-full rounded-md bg-amber-500 py-2.5 px-4 font-semibold text-white transition duration-300 hover:bg-amber-600"
+              >
+                Learn More
+              </button>
+            </div>
       </article>
     </div>
 
-    <!-- Button Wrapper: Cleared out chaotic margins and added clear top separation -->
-    <div class="btn-wrapper">
+        <div class="mt-10 flex w-full items-center justify-center">
       <button
         id="tour-lists"
-        class="text-white bg-amber-600 border-none rounded-md cursor-pointer font-bold flex justify-center items-center text-lg py-2 px-4 w-48 h-12 hover:bg-amber-700 transition duration-300 ease-in-out"
+            class="h-12 cursor-pointer rounded-md bg-amber-600 px-8 text-lg font-bold text-white shadow-md transition duration-300 hover:bg-amber-700"
       >
         Explore More
       </button>

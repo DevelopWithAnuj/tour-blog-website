@@ -2,8 +2,6 @@
 GLOBAL RESET
 ========================================= */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   font-family: Arial, sans-serif;
 }
@@ -399,7 +397,7 @@ HERO SECTION
   flex-grow: 1; /* Pushes the button to the bottom if text lengths vary */
 }
 
-.tour-card .btn-primary {
+/* .tour-card .btn-primary {
   margin: 0 16px;
   background: #f39c12;
   color: white;
@@ -414,7 +412,7 @@ HERO SECTION
 .tour-card .btn-primary:hover {
   background: #e67e22;
   transform: translateY(-2px);
-}
+} */
 
 .btn-wrapper {
   display: flex;
