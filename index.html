@@ -232,32 +232,76 @@
 
 
     <!-- Booking Section -->
-    <section class="booking-section" id="booking">
-      <div class="booking-card glass">
-        <h2>Book Your Trip</h2>
-        <p>
-          Plan your perfect journey with us. Easy booking, instant confirmation.
-        </p>
+    <section class="relative overflow-hidden bg-slate-950 py-16 text-white md:py-24" id="booking">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.18),transparent_45%)]"></div>
+      <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-wider text-amber-300">Ready when you are</p>
+            <h2 class="mt-2 text-3xl font-black leading-tight md:text-5xl">Book Your Trip in Minutes</h2>
+            <p class="mt-4 max-w-xl text-base leading-7 text-white/70 md:text-lg">
+              Plan your perfect journey with us. Pick a destination, choose your dates, and get instant confirmation &mdash; no back-and-forth emails.
+            </p>
 
-        <form class="booking-form" id="bookingForm">
-          <input id="fullname" type="text" placeholder="Full Name" required />
-          <input
-            id="e-mail"
-            type="email"
-            placeholder="Email Address"
-            required
-          />
-          <input id="tripdate" type="date" required />
-          <select id="place" required>
-            <option value="">Select destination</option>
-            <option>New York</option>
-            <option>Norway</option>
-            <option>United Arab</option>
-            <option>Thailand</option>
-            <option>Italy</option>
-          </select>
-          <button id="booking-btn" type="submit">Book Now</button>
-        </form>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+                Instant Confirmation
+              </span>
+              <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+                Best Price Guarantee
+              </span>
+              <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+                Free Cancellation
+              </span>
+            </div>
+
+            <a
+              href="./booking.html"
+              class="mt-8 inline-flex items-center gap-2 rounded-full bg-amber-400 px-7 py-3.5 font-bold text-slate-950 shadow-lg shadow-amber-500/25 transition hover:-translate-y-0.5 hover:bg-amber-300"
+            >
+              Start Booking
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+
+            <div class="mt-8 grid grid-cols-3 gap-3">
+              <a href="./booking.html?tour=new-york" class="group rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-center transition hover:-translate-y-0.5 hover:border-amber-400/40">
+                <span class="block text-sm font-bold text-white">New York</span>
+                <span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-amber-300">Book <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              </a>
+              <a href="./booking.html?tour=norway" class="group rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-center transition hover:-translate-y-0.5 hover:border-amber-400/40">
+                <span class="block text-sm font-bold text-white">Norway</span>
+                <span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-amber-300">Book <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              </a>
+              <a href="./booking.html?tour=uae" class="group rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-center transition hover:-translate-y-0.5 hover:border-amber-400/40">
+                <span class="block text-sm font-bold text-white">United Arab</span>
+                <span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-amber-300">Book <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              </a>
+            </div>
+          </div>
+
+          <a
+            href="../Booking-Panel/booking.html"
+            class="group block rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-md transition hover:-translate-y-1 hover:border-amber-400/40 hover:shadow-2xl hover:shadow-amber-500/10"
+          >
+            <div class="grid grid-cols-3 gap-2">
+              <img src="./assests/ny-bg.avif" class="w-full rounded-xl object-cover aspect-square" alt="New York" />
+              <img src="./assests/norc-bg.avif" class="w-full rounded-xl object-cover aspect-square" alt="Norway" />
+              <img src="./assests/ua-bg.avif" class="w-full rounded-xl object-cover aspect-square" alt="United Arab" />
+            </div>
+            <div class="flex items-center justify-between px-2 py-4">
+              <div>
+                <p class="text-sm font-bold text-white">Choose from 3 curated destinations</p>
+                <p class="text-xs text-white/60">Starting from $3,200 per person</p>
+              </div>
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400 text-slate-950 transition group-hover:translate-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+          </a>
+        </div>
       </div>
     </section>
 
