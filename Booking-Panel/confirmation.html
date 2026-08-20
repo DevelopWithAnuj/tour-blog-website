@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Confirmed | Drimora</title>
+    <link rel="stylesheet" href="../src/output.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../components/sidebar.js"></script>
+    <style>
+      @media print {
+        #sidebar, #sidebar-backdrop, .no-print, header, .md\:hidden {
+          display: none !important;
+        }
+        main {
+          padding-left: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
+
+    <site-sidebar active="book"></site-sidebar>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="md:pl-60 pt-16 md:pt-0 min-h-screen">
+      <div class="mx-auto max-w-3xl px-4 py-10 md:px-10 md:py-14">
+
+        <!-- Stepper -->
+        <div class="no-print mb-10 flex items-center justify-center gap-2 md:gap-4">
+          <div class="flex items-center gap-2">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white"><i data-lucide="check" class="h-4 w-4 text-emerald-100"></i></span>
+            <span class="hidden text-sm font-bold text-emerald-400 sm:inline">Trip Details</span>
+          </div>
+          <span class="h-px w-8 bg-emerald-500/50 md:w-16"></span>
+          <div class="flex items-center gap-2">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white"><i data-lucide="check" class="h-4 w-4"></i></span>
+            <span class="hidden text-sm font-bold text-emerald-400 sm:inline">Payment</span>
+          </div>
+          <span class="h-px w-8 bg-amber-400/50 md:w-16"></span>
+          <div class="flex items-center gap-2">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-400 text-sm font-black text-slate-950">3</span>
+            <span class="hidden text-sm font-bold text-amber-400 sm:inline">Confirmation</span>
+          </div>
+        </div>
+
+        <!-- Guard message shown if no confirmed booking found -->
+        <div id="noBookingState" class="hidden rounded-2xl border border-amber-400/20 bg-amber-400/5 p-8 text-center">
+          <i data-lucide="ticket-x" class="mx-auto h-10 w-10 text-amber-400"></i>
+          <h2 class="mt-4 text-xl font-black text-white">No confirmed booking found</h2>
+          <p class="mt-2 text-sm text-white/60">Start a new booking to see your confirmation here.</p>
+          <a href="../Booking-Panel/booking.html" class="mt-5 inline-flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
+            Start Booking <i data-lucide="arrow-right" class="h-4 w-4"></i>
+          </a>
+        </div>
+
+        <div id="confirmContent" class="hidden">
+          <div class="text-center">
+            <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white">
+              <i data-lucide="check-check" class="h-8 w-8"></i>
+            </span>
+            <h1 class="mt-5 text-3xl font-black md:text-4xl">Booking Confirmed!</h1>
+            <p id="confirmLead" class="mx-auto mt-3 max-w-lg text-sm leading-6 text-white/60 md:text-base"></p>
+            <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm font-black text-amber-300">
+              <i data-lucide="hash" class="h-4 w-4"></i> <span id="confirmRef"></span>
+            </p>
+          </div>
+
+          <div class="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            <img id="tripImg" src="" alt="" class="h-44 w-full object-cover" />
+            <div class="p-6 md:p-8">
+              <h2 id="tripName" class="text-xl font-black text-white"></h2>
+
+              <dl class="mt-5 grid gap-4 sm:grid-cols-2">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="calendar" class="mt-0.5 h-4 w-4 text-amber-400"></i>
+                  <div>
+                    <dt class="text-xs font-bold uppercase tracking-wide text-white/40">Dates</dt>
+                    <dd id="tripDates" class="text-sm font-bold text-white"></dd>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <i data-lucide="users" class="mt-0.5 h-4 w-4 text-amber-400"></i>
+                  <div>
+                    <dt class="text-xs font-bold uppercase tracking-wide text-white/40">Travelers</dt>
+                    <dd id="tripTravelers" class="text-sm font-bold text-white"></dd>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <i data-lucide="sparkles" class="mt-0.5 h-4 w-4 text-amber-400"></i>
+                  <div>
+                    <dt class="text-xs font-bold uppercase tracking-wide text-white/40">Package</dt>
+                    <dd id="tripPackage" class="text-sm font-bold text-white"></dd>
+                  </div>
+                </div>
+                <div class="flex items-start gap-3">
+                  <i data-lucide="user" class="mt-0.5 h-4 w-4 text-amber-400"></i>
+                  <div>
+                    <dt class="text-xs font-bold uppercase tracking-wide text-white/40">Traveler name</dt>
+                    <dd id="tripName2" class="text-sm font-bold text-white"></dd>
+                  </div>
+                </div>
+              </dl>
+
+              <div class="mt-6 border-t border-white/10 pt-5">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="flex items-center gap-2 text-white/50"><i data-lucide="credit-card" class="h-4 w-4"></i>Paid via</span>
+                  <span id="paymentMethod" class="font-bold text-white"></span>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-sm">
+                  <span class="flex items-center gap-2 text-white/50"><i data-lucide="receipt" class="h-4 w-4"></i>Transaction ID</span>
+                  <span id="transactionId" class="font-bold text-white"></span>
+                </div>
+                <div class="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+                  <span class="text-sm font-bold text-white/50">Total paid</span>
+                  <span id="totalPaid" class="text-2xl font-black text-amber-400"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-print mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button id="downloadReceipt" type="button" class="inline-flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-300">
+              <i data-lucide="download" class="h-4 w-4"></i> Download Receipt
+            </button>
+            <button id="printReceipt" type="button" class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-white/30">
+              <i data-lucide="printer" class="h-4 w-4"></i> Print
+            </button>
+            <a href="../index.html" class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-white/30">
+              <i data-lucide="home" class="h-4 w-4"></i> Back to Home
+            </a>
+            <button id="bookAnother" type="button" class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:border-white/30">
+              <i data-lucide="plus" class="h-4 w-4"></i> Book Another Trip
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var raw = localStorage.getItem("drimoraBooking");
+        var noBookingState = document.getElementById("noBookingState");
+        var confirmContent = document.getElementById("confirmContent");
+        var booking = raw ? JSON.parse(raw) : null;
+
+        if (!booking || !booking.paid) {
+          noBookingState.classList.remove("hidden");
+          lucide.createIcons();
+          return;
+        }
+
+        confirmContent.classList.remove("hidden");
+
+        function formatDate(value) {
+          var d = new Date(value + "T00:00:00");
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+        }
+
+        var travelersLabel = booking.adults + (booking.adults === 1 ? " adult" : " adults");
+        if (booking.children > 0) {
+          travelersLabel += ", " + booking.children + (booking.children === 1 ? " child" : " children");
+        }
+        var packageLabel = booking.package.id.charAt(0).toUpperCase() + booking.package.id.slice(1);
+        var methodLabel = { card: "Card", paypal: "PayPal", bank: "Bank Transfer" }[booking.payment.method] || booking.payment.method;
+        var datesLabel = formatDate(booking.checkin) + " – " + formatDate(booking.checkout);
+
+        document.getElementById("confirmRef").textContent = booking.reference;
+        document.getElementById("confirmLead").textContent =
+          booking.traveler.fullname + ", your trip to " + booking.destination.name + " is booked. " +
+          "A confirmation email is on its way to " + booking.traveler.email + ".";
+
+        document.getElementById("tripImg").src = `.${booking.destination.img}`;
+        document.getElementById("tripImg").alt = booking.destination.name;
+        document.getElementById("tripName").textContent = booking.destination.name;
+        document.getElementById("tripDates").textContent = datesLabel;
+        document.getElementById("tripTravelers").textContent = travelersLabel;
+        document.getElementById("tripPackage").textContent = packageLabel;
+        document.getElementById("tripName2").textContent = booking.traveler.fullname;
+        document.getElementById("paymentMethod").textContent = methodLabel + (booking.payment.last4 ? " •••• " + booking.payment.last4 : "");
+        document.getElementById("transactionId").textContent = booking.payment.transactionId;
+        document.getElementById("totalPaid").textContent = "$" + booking.total.toLocaleString();
+
+        document.getElementById("downloadReceipt").addEventListener("click", function () {
+          var lines = [
+            "DRIMORA — BOOKING RECEIPT",
+            "==========================",
+            "Reference: " + booking.reference,
+            "Transaction ID: " + booking.payment.transactionId,
+            "Paid: " + new Date(booking.payment.paidAt).toLocaleString(),
+            "",
+            "Traveler: " + booking.traveler.fullname,
+            "Email: " + booking.traveler.email,
+            "Phone: " + booking.traveler.phone,
+            "",
+            "Destination: " + booking.destination.name,
+            "Dates: " + datesLabel,
+            "Travelers: " + travelersLabel,
+            "Package: " + packageLabel,
+            "Payment method: " + methodLabel + (booking.payment.last4 ? " (ending " + booking.payment.last4 + ")" : ""),
+            "",
+            "TOTAL PAID: $" + booking.total.toLocaleString(),
+            "",
+            "Thank you for booking with Drimora."
+          ];
+          var blob = new Blob([lines.join("\n")], { type: "text/plain" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "drimora-receipt-" + booking.reference + ".txt";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+
+        document.getElementById("printReceipt").addEventListener("click", function () {
+          window.print();
+        });
+
+        document.getElementById("bookAnother").addEventListener("click", function () {
+          localStorage.removeItem("drimoraBooking");
+          window.location.href = "booking.html";
+        });
+
+        lucide.createIcons();
+      })();
+    </script>
+  </body>
+</html>
