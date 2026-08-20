@@ -55,6 +55,9 @@ function logout() {
 function scrollToBlogs() {
   document.getElementById("blogs")?.scrollIntoView({ behavior: "smooth" });
 }
+function scrollToTours() {
+  document.getElementById("tours")?.scrollIntoView({ behavior: "smooth" });
+}
 
 function goDashboard() {
   if (role === "admin") {

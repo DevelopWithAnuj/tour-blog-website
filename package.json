@@ -20,6 +20,7 @@
   "homepage": "https://github.com/DevelopWithAnuj/tour-travel-website#readme",
   "dependencies": {
     "@tailwindcss/cli": "^4.3.2",
+    "lucide": "^1.30.0",
     "tailwindcss": "^4.3.2"
   }
 }
