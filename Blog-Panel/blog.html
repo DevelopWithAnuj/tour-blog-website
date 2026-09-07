@@ -5,25 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog | Drimora</title>
     <link rel="stylesheet" href="../src/output.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../components/sidebar.js"></script>
   </head>
 
-  <body>
-    <!-- Navbar -->
-    <header class="navbar">
-      <h1 class="logo">Drimora</h1>
-      <button class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav id="navMenu" class="nav-menu">
-        <a href="index.html#home">Home</a>
-        <a href="index.html#blogs">Blogs</a>
-        <a href="index.html#about">About</a>
-        <a href="index.html#contact">Contact</a>
-        <button onclick="logout()" class="logout-btn">Logout</button>
-      </nav>
-    </header>
+  <body class="md:pl-60 pt-16 md:pt-0">
+    <site-sidebar
+      active=""
+      home-href="../index.html"
+      tours-href="../Our-Tour/our-tour.html"
+      book-href="../Booking-Panel/booking.html"
+      sections="Blogs:../index.html#blogs"
+    ></site-sidebar>
     <!-- Page loader -->
     <div id="pageLoader">
       <div class="page-spinner"></div>

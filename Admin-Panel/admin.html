@@ -5,22 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel | Drimora</title>
     <link rel="stylesheet" href="../src/output.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../components/sidebar.js"></script>
   </head>
-  <body>
-    <!-- Navbar -->
-    <header class="navbar">
-      <h1 class="logo">Drimora</h1>
-      <button class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav id="navMenu" class="nav-menu">
-        <a href="index.html">Home</a>
-        <a href="admin-dashboard.html">Dashboard</a>
-        <button onclick="logout()" class="logout-btn">Logout</button>
-      </nav>
-    </header>
+    <body class="md:pl-60 pt-16 md:pt-0">
+      <site-sidebar
+        home-href="../index.html"
+        tours-href="../Our-Tour/our-tour.html"
+        book-href="../Booking-Panel/booking.html"
+        sections="Admin Dashboard:./admin-dashboard.html|Add Blog:./admin.html|Bookings:./admin-bookings.html"
+      ></site-sidebar>
 
     <div class="admin-container">
       <h2>✍️ Add New Blog</h2>

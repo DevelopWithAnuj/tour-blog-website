@@ -4,7 +4,10 @@
  * Renders the Drimora sidebar + mobile top bar in one drop-in tag.
  * Attributes:
  *   active     - which nav item to highlight: home | tours | book | about | contact
- *   home-href  - defaults to "../index.html" (change if this page lives in a subfolder)
+ *   home-href  - defaults to "../index.html"
+ *   tours-href - defaults to "../Our-Tour/our-tour.html"
+ *   book-href  - defaults to "../Booking-Panel/booking.html"
+ *   sections   - optional local links: "Places:#places|Gallery:#gallery"
  */
 (function () {
   function navLink(key, href, icon, label, active) {
@@ -35,10 +38,27 @@
     );
   }
 
+  function parseSections(value) {
+    if (!value) return [];
+    return value.split("|").reduce(function (links, item) {
+      var parts = item.split(":");
+      if (parts.length >= 2 && parts[0] && parts.slice(1).join(":")) {
+        links.push({ label: parts[0].trim(), href: parts.slice(1).join(":").trim() });
+      }
+      return links;
+    }, []);
+  }
+
   class SiteSidebar extends HTMLElement {
     connectedCallback() {
       var active = this.getAttribute("active") || "";
       var home = this.getAttribute("home-href") || "../index.html";
+      var tours = this.getAttribute("tours-href") || "../Our-Tour/our-tour.html";
+      var book = this.getAttribute("book-href") || "../Booking-Panel/booking.html";
+      var sections = parseSections(this.getAttribute("sections"));
+      var sectionLinks = sections.map(function (section) {
+        return navLink("__section", section.href, "map-pin", section.label, active);
+      }).join("");
 
       this.innerHTML =
         '<div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>' +
@@ -60,10 +80,11 @@
         '<i data-lucide="x" class="w-5 h-5"></i>' +
         "</button>" +
         "</div>" +
-        '<nav class="flex flex-col gap-1.5">' +
+        '<nav class="flex flex-col gap-1.5" aria-label="Main navigation">' +
         navLink("home", home + "#home", "home", "Home", active) +
-        navLink("tours", home + "#tours", "compass", "Tours", active) +
-        navLink("book", "booking.html", "ticket", "Book", active) +
+        navLink("tours", tours, "compass", "Tours", active) +
+        navLink("book", book, "ticket", "Book", active) +
+        sectionLinks +
         navLink("about", home + "#about", "info", "About", active) +
         navLink("contact", home + "#contact", "mail", "Contact", active) +
         "</nav>" +

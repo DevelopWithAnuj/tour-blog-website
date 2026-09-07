@@ -6,38 +6,29 @@
     <title>Drimora - Travel Blog</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="src/output.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="components/header.js"></script>
     <script src="script.js" defer></script>
     <script src="Our-Tour/our-tour.js" defer></script>
   </head>
   <body>
-    <!-- Navbar -->
-    <header class="navbar">
-      <a
-        href="../index.html"
-        class="text-2xl font-black text-amber-400 transition-transform duration-300 hover:scale-105 md:text-3xl"
-        id="nY-logo"
-      >
-        Drimora
-      </a>
-      <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav id="navMenu" class="nav-menu">
-        <a href="#home">Home</a>
-        <a href="#tours">Tours</a>
-        <a href="#booking">Book</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-        <button onclick="logout()">Logout</button>
-      </nav>
-    </header>
-
+    <site-sidebar
+      active="home"
+      home-href="./index.html"
+      tours-href="./Our-Tour/our-tour.html"
+      book-href="./Booking-Panel/booking.html"
+    ></site-sidebar>
+    <main class="md:pl-60 pt-16 md:pt-0">
+      <site-header
+        title="Home"
+        subtitle="Tour & Travel"
+        search="true"
+      ></site-header>
     <!-- Hero Large Banner -->
     <section class="w-full" id="home">
       <div
-        class="flex mt-22 h-125 w-full items-center justify-center bg-cover bg-center md:h-162.5"
+        class="flex h-125 w-full items-center justify-center bg-cover bg-center md:h-162.5"
         style="
           background-image:
             linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
@@ -491,6 +482,8 @@
         <div class="footer-social">Follow us</div>
       </div>
     </footer>
+
+    </main>
 
     <div id="pageLoader">
       <div class="page-spinner"></div>

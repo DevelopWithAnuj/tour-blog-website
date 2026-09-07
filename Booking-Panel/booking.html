@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../src/output.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="../components/sidebar.js"></script>
+    <script src="../components/header.js"></script>
     <style>
       .dest-card input:checked + .dest-card-body {
         border-color: rgb(251 191 36);
@@ -35,10 +36,21 @@
     </style>
   </head>
   <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
-    <site-sidebar active="book"></site-sidebar>
+    <site-sidebar
+      active="book"
+      home-href="../index.html"
+      tours-href="../Our-Tour/our-tour.html"
+      book-href="./booking.html"
+    ></site-sidebar>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="md:pl-60 pt-16 md:pt-0 min-h-screen">
+      <site-header
+        title="Booking"
+        subtitle="Tour & Travel Booking Page"
+        search="true"
+      ></site-header>
+
       <div class="mx-auto max-w-5xl px-4 py-10 md:px-10 md:py-14">
         <!-- Stepper -->
         <div class="mb-10 flex items-center justify-center gap-2 md:gap-4">

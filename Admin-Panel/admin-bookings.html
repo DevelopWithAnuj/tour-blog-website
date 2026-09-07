@@ -4,22 +4,17 @@
   <meta charset="UTF-8" />
   <title>Admin Bookings | Drimora</title>
   <link rel="stylesheet" href="../src/output.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../components/sidebar.js"></script>
 </head>
-<body>
+<body class="md:pl-60 pt-16 md:pt-0">
 
-<header class="navbar">
-  <h1 class="logo">Drimora</h1>
-  <button class="hamburger" id="hamburger">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <nav id="navMenu" class="nav-menu">
-    <a href="admin-dashboard.html">Blogs</a>
-    <a href="admin-bookings.html">Bookings</a>
-    <button onclick="logout()">Logout</button>
-  </nav>
-</header>
+<site-sidebar
+  home-href="../index.html"
+  tours-href="../Our-Tour/our-tour.html"
+  book-href="../Booking-Panel/booking.html"
+  sections="Admin Dashboard:./admin-dashboard.html|Add Blog:./admin.html|Bookings:./admin-bookings.html"
+></site-sidebar>
 
 <section class="admin-container">
   <h2>📋 Booking Dashboard</h2>
