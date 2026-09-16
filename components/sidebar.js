@@ -20,7 +20,9 @@
         '<span class="flex items-center gap-2.5"><i data-lucide="' +
         icon +
         '" class="w-4 h-4"></i>' +
+        '<span class="sidebar-label">' +
         label +
+        '</span>' +
         "</span>" +
         '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>' +
         "</a>"
@@ -32,8 +34,9 @@
       '" class="flex items-center gap-2.5 px-3.5 py-2.5 text-slate-300 hover:text-amber-400 hover:bg-white/5 font-semibold text-sm rounded-lg transition-all duration-300">' +
       '<i data-lucide="' +
       icon +
-      '" class="w-4 h-4"></i>' +
+      '" class="w-4 h-4"></i><span class="sidebar-label">' +
       label +
+      '</span>' +
       "</a>"
     );
   }
@@ -51,6 +54,14 @@
 
   class SiteSidebar extends HTMLElement {
     connectedCallback() {
+      if (!document.getElementById("sidebar-component-styles")) {
+        var styles = document.createElement("style");
+        styles.id = "sidebar-component-styles";
+        styles.textContent =
+          ".sidebar-page-controls{display:flex}.sidebar-collapse-control{display:none}#sidebar.sidebar-collapsed{width:4.5rem!important}@media (min-width:768px){.sidebar-collapse-control{display:inline-flex}}";
+        document.head.appendChild(styles);
+      }
+
       var active = this.getAttribute("active") || "";
       var home = this.getAttribute("home-href") || "../index.html";
       var tours = this.getAttribute("tours-href") || "../Our-Tour/our-tour.html";
@@ -70,12 +81,23 @@
         '<i data-lucide="menu" class="w-6 h-6"></i>' +
         "</button>" +
         "</div>" +
-        '<aside id="sidebar" class="fixed top-0 left-0 z-50 h-screen w-60 bg-slate-950/95 backdrop-blur-md border-r border-white/10 flex flex-col justify-between p-5 transition-transform duration-300 -translate-x-full md:translate-x-0">' +
+        '<aside id="sidebar" class="fixed top-0 left-0 z-50 h-screen w-60 bg-slate-950/95 backdrop-blur-md border-r border-white/10 flex flex-col justify-between p-5 transition-all duration-300 -translate-x-full md:translate-x-0">' +
         '<div class="flex flex-col gap-6">' +
         '<div class="flex items-center justify-between px-2 pt-2">' +
         '<a href="' +
         home +
         '" class="text-2xl font-black text-amber-400 transition-transform duration-300 hover:scale-105">Drimora</a>' +
+        '<div class="sidebar-page-controls items-center gap-1">' +
+        '<button type="button" onclick="navigateBack()" class="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-amber-400" aria-label="Go back" title="Go back">' +
+        '<i data-lucide="arrow-left" class="w-4 h-4"></i>' +
+        '</button>' +
+        '<button type="button" onclick="navigateForward()" class="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-amber-400" aria-label="Go forward" title="Go forward">' +
+        '<i data-lucide="arrow-right" class="w-4 h-4"></i>' +
+        '</button>' +
+        '<button type="button" onclick="toggleSidebarCollapse()" class="sidebar-collapse-control rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-amber-400" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">' +
+        '<i data-sidebar-collapse-icon data-lucide="chevron-left" class="w-5 h-5"></i>' +
+        '</button>' +
+        '</div>' +
         '<button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">' +
         '<i data-lucide="x" class="w-5 h-5"></i>' +
         "</button>" +
@@ -124,6 +146,40 @@
         backdrop.classList.add("hidden");
       }, 300);
     }
+  };
+
+  window.toggleSidebarCollapse = function toggleSidebarCollapse() {
+    var sidebar = document.getElementById("sidebar");
+    var collapseButton = sidebar && sidebar.querySelector("[data-sidebar-collapse-icon]");
+    var collapseControl = collapseButton && collapseButton.closest("button");
+    if (!sidebar || !collapseButton) return;
+
+    var isCollapsed = sidebar.classList.toggle("sidebar-collapsed");
+    sidebar.style.setProperty("width", isCollapsed ? "4.5rem" : "", "important");
+    sidebar.style.setProperty("inline-size", isCollapsed ? "4.5rem" : "", "important");
+    sidebar.style.paddingLeft = isCollapsed ? "0.75rem" : "";
+    sidebar.style.paddingRight = isCollapsed ? "0.75rem" : "";
+    sidebar.querySelectorAll("nav a, #sidebar > div:last-child button").forEach(function (link) {
+      link.classList.toggle("justify-center", isCollapsed);
+      link.classList.toggle("px-3.5", !isCollapsed);
+      link.classList.toggle("px-2", isCollapsed);
+      var text = link.querySelector(".sidebar-label");
+      if (text) text.classList.toggle("hidden", isCollapsed);
+    });
+
+    collapseButton.setAttribute("data-lucide", isCollapsed ? "chevron-right" : "chevron-left");
+    collapseControl.setAttribute("aria-label", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+    collapseControl.setAttribute("title", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+    collapseControl.setAttribute("aria-expanded", String(!isCollapsed));
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.navigateBack = function navigateBack() {
+    window.history.back();
+  };
+
+  window.navigateForward = function navigateForward() {
+    window.history.forward();
   };
 
   if (typeof window.logout !== "function") {

@@ -4,7 +4,10 @@
   "description": "🔗 Live Demo: https://developwithanuj.github.io/Minor-project--tour-travel-web/",
   "main": "login.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
   },
   "repository": {
     "type": "git",
@@ -13,7 +16,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/DevelopWithAnuj/tour-travel-website/issues"
   },
@@ -22,5 +25,11 @@
     "@tailwindcss/cli": "^4.3.2",
     "lucide": "^1.30.0",
     "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vite": "^8.3.0"
   }
 }
