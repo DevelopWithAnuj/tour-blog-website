@@ -1,20 +1,23 @@
 {
   "name": "travel-blog",
   "version": "1.0.0",
-  "description": "🔗 Live Demo: https://developwithanuj.github.io/Minor-project--tour-travel-web/",
-  "main": "login.js",
+  "description": "Travel blog frontend and backend project",
+  "main": "backend/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite --host 0.0.0.0",
+    "client": "vite --host 0.0.0.0",
+    "server": "nodemon backend/index.js",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DevelopWithAnuj/tour-travel-website.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Anuj Prajapati",
   "license": "ISC",
   "type": "module",
   "bugs": {
@@ -23,11 +26,22 @@
   "homepage": "https://github.com/DevelopWithAnuj/tour-travel-website#readme",
   "dependencies": {
     "@tailwindcss/cli": "^4.3.2",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
     "lucide": "^1.30.0",
+    "mongoose": "^9.10.1",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.7",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "vite": "^8.3.0"
