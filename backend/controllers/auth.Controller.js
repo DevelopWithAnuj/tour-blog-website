@@ -176,17 +176,21 @@ const verifyEmail = asyncHandler(async (req, res) => {
     );
   }
 
-  let hashedToken = crypto
+  const hashedToken = crypto
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
 
   const user = await User.findOne({
     emailVerificationToken: hashedToken,
-    emailVerificationExpiry: { $gt: Date.now() },
   });
 
-  if (!user) {
+  if (!user || !user.emailVerificationExpiry) {
+    throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invaild or expired');
+  }
+
+  const expiryTime = new Date(user.emailVerificationExpiry).getTime();
+  if (Number.isNaN(expiryTime) || expiryTime <= Date.now()) {
     throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invaild or expired');
   }
 
@@ -341,10 +345,14 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({
     forgotPasswordToken: hashedToken,
-    forgotPasswordExpiry: { $gt: Date.now() },
   });
 
-  if (!user) {
+  if (!user || !user.forgotPasswordExpiry) {
+    throw new ApiError(HttpStatus.UNAUTHORIZED, 'Token is invalid or expired');
+  }
+
+  const expiryTime = new Date(user.forgotPasswordExpiry).getTime();
+  if (Number.isNaN(expiryTime) || expiryTime <= Date.now()) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, 'Token is invalid or expired');
   }
 
