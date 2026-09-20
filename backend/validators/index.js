@@ -32,6 +32,7 @@ const userRegisterValidator = () => {
       .withMessage('Email is invalid!'),
     body('username')
       .trim()
+      .toLowerCase()
       .notEmpty()
       .withMessage('Username is required!')
       .matches(/^[a-z0-9_]{4,20}$/)
@@ -78,7 +79,7 @@ const userForgotPasswordValidator = () => {
 
 const userResetForgotPasswordValidator = () => {
   return [
-    passwordValidationChain('newPassword', { minLength: null, maxLength: 72 }),
+    passwordValidationChain('newPassword', { minLength: 6, maxLength: 72 }),
   ];
 };
 
