@@ -2,13 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cookieParser from "cookie-parser"
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
-app.use(cookieParser())
+app.use(cookieParser());
 
 // cors configuration
 app.use(
@@ -21,18 +21,14 @@ app.use(
 );
 
 // import the routes
-import { ApiPath } from './utils/constants.js';
-import { adminRoutes } from './routes/adminRoutes.js';
-import { authRoutes } from './routes/authRoutes.js';
-import { blogRoutes } from './routes/blogRoutes.js';
-import { bookingRoutes } from './routes/bookingRoutes.js';
-import { tourRoutes } from './routes/tourRoutes.js';
 import healthCheckRouter from './routes/healthCheck.route.js';
+import { ApiPath } from './utils/constants.js';
+import authRouter from './routes/auth.Routes.js';
+import { errorHandler, notFoundHandler } from './middleware/errorMiddleware.js';
 
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
-
-
-
+app.use(`${ApiPath.BASE}${ApiPath.AUTH}`, authRouter);
+app.use(`${ApiPath.BASE}`, notFoundHandler);
 
 // frontend build serve
 const __filename = fileURLToPath(import.meta.url);
@@ -48,5 +44,7 @@ app.get('/{*splat}', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Welcome to Tour & travel');
 });
-export default app;
 
+app.use(errorHandler);
+
+export default app;
