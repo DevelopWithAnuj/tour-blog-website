@@ -23,18 +23,6 @@ const authLimiter = rateLimit({
   },
 });
 
-const strictAuthLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    statusCode: 429,
-    message: 'Too many requests, please slow down.',
-  },
-});
-
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
@@ -62,6 +50,8 @@ app.get('/', (req, res) => {
   res.send('Welcome to Tour & travel');
 });
 
+app.use(`${ApiPath.BASE}`, notFoundHandler);
+
 // frontend build serve
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,8 +62,6 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
-
-app.use(`${ApiPath.BASE}`, notFoundHandler);
 
 app.use(errorHandler);
 
