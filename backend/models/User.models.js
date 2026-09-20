@@ -2,7 +2,11 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { AvailableUserRoles, UserRolesEnum } from '../utils/constants.js';
+import {
+  AvailableUserRoles,
+  Config,
+  UserRolesEnum,
+} from '../utils/constants.js';
 
 const userSchema = new Schema(
   {
@@ -22,7 +26,6 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     email: {
       type: String,
@@ -55,15 +58,29 @@ const userSchema = new Schema(
     },
     forgotPasswordToken: {
       type: String,
+      select: false,
+      index: true,
     },
     forgotPasswordExpiry: {
       type: Date,
+      select: false,
     },
     emailVerificationToken: {
       type: String,
+      select: false,
+      index: true,
     },
     emailVerificationExpiry: {
       type: Date,
+      select: false,
+    },
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
     },
   },
   {
@@ -90,7 +107,7 @@ userSchema.methods.generateAccessToken = function () {
       role: this.role || 'user',
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    { expiresIn: Config.ACCESS_TOKEN_EXPIRY }
   );
 };
 
@@ -100,11 +117,11 @@ userSchema.methods.generateRefreshToken = function () {
       _id: this._id,
     },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d' }
   );
 };
 
-userSchema.methods.generateTemporaryToken = function () {
+userSchema.methods.generateTemporaryToken = function (expiryMs = 24 * 60 * 60 * 1000) {
   const unHashedToken = crypto.randomBytes(20).toString('hex');
 
   const hashedToken = crypto
@@ -112,7 +129,7 @@ userSchema.methods.generateTemporaryToken = function () {
     .update(unHashedToken)
     .digest('hex');
 
-  const tokenExpiry = new Date(Date.now() + 20 * 60 * 1000);
+  const tokenExpiry = new Date(Date.now() + expiryMs);
 
   return { unHashedToken, hashedToken, tokenExpiry };
 };

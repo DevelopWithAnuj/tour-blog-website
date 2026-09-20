@@ -7,11 +7,15 @@ export const validate = (req, res, next) => {
   if (errors.isEmpty()) {
     return next();
   }
+
   const extractedErrors = [];
-  errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
+  errors.array().forEach((err) => {
+    extractedErrors.push({ [err.path]: err.msg });
+  });
+
   throw new ApiError(
     HttpStatus.UNPROCESSABLE_ENTITY,
-    'Recieved data is not vaild',
+    'Received data is not valid',
     extractedErrors
   );
 };

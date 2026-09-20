@@ -8,15 +8,37 @@ export function notFoundHandler(req, res, next) {
 }
 
 export function errorHandler(err, req, res, next) {
+  if (!(err instanceof ApiError)) {
+    console.error('Unhandled error:', err);
+  }
+
+  let statusCode = err.statusCode;
+  let message = err.message || 'Internal server error';
+  let errors = err.errors || [];
+
+  if (err && err.code === 11000) {
+    statusCode = HttpStatus.CONFLICT;
+    message = 'User with same email or username already exists';
+    errors = [];
+  }
+
+  if (err && err.name === 'ValidationError' && err.errors) {
+    statusCode = HttpStatus.BAD_REQUEST;
+    message = 'Validation failed';
+    errors = Object.entries(err.errors).map(([key, value]) => ({
+      [key]: value.message,
+    }));
+  }
+
   const error =
     err instanceof ApiError
       ? err
       : new ApiError(
-          err.statusCode && err.statusCode >= HttpStatus.BAD_REQUEST
-            ? err.statusCode
+          statusCode && statusCode >= HttpStatus.BAD_REQUEST
+            ? statusCode
             : HttpStatus.INTERNAL_SERVER_ERROR,
-          err.message || 'Server error',
-          err.errors || []
+          err instanceof ApiError ? message : 'Internal server error',
+          errors
         );
 
   res.status(error.statusCode).json({
