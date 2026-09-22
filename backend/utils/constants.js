@@ -25,13 +25,18 @@ export const UserRolesEnum = {
 
 export const AvailableUserRoles = Object.values(UserRolesEnum);
 
+const PORT = Number(process.env.PORT) || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const SERVER_URL = process.env.SERVER_URL || `http://${HOST}:${PORT}`;
+
 export const Config = {
-  PORT: process.env.PORT || 5000,
-  HOST: process.env.HOST || '0.0.0.0',
+  PORT,
+  HOST,
   MONGO_URI: process.env.MONGO_URI,
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  SERVER_URL: process.env.SERVER_URL || 'http://localhost:5000',
+  NODE_ENV,
+  SERVER_URL,
   ACCESS_TOKEN_EXPIRY: normalizeAccessTokenExpiry(),
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY || '7d',
 };
@@ -64,7 +69,7 @@ export const HttpStatus = {
 
 export const CookieOptions = {
   httpOnly: true,
-  secure: Config.NODE_ENV === 'production',
+  secure: NODE_ENV === 'production',
   sameSite: 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

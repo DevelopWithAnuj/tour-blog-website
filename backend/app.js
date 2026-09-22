@@ -46,8 +46,30 @@ import { errorHandler, notFoundHandler } from './middleware/errorMiddleware.js';
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}`, authLimiter, authRouter);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Tour & travel');
+app.get(`${ApiPath.BASE}${ApiPath.TOURS}`, (req, res) => {
+
+  const tours = [
+    {
+      id: 1,
+      title: 'Tour 1',
+      description: 'Description for Tour 1',
+      price: 100,
+    },
+    {
+      id: 2,
+      title: 'Tour 2',
+      description: 'Description for Tour 2',
+      price: 200,
+    },
+    {
+      id: 3,
+      title: 'Tour 3',
+      description: 'Description for Tour 3',
+      price: 300,
+    }
+  ]
+
+  res.send(tours);
 });
 
 app.use(`${ApiPath.BASE}`, notFoundHandler);

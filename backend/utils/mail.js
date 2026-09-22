@@ -1,5 +1,6 @@
 import Mailgen from 'mailgen';
 import nodemailer from 'nodemailer';
+import { Config } from './constants.js';
 
 const getProductLink = () => {
   if (process.env.CLIENT_URL) return process.env.CLIENT_URL;
@@ -8,7 +9,7 @@ const getProductLink = () => {
     return process.env.CORS_ORIGIN.split(',')[0];
   }
 
-  return 'http://localhost:3000';
+  return `${Config.SERVER_URL}`;
 };
 
 const createTransporter = () => {
