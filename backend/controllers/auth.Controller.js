@@ -36,9 +36,29 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
+const oauthCallback = asyncHandler(async (req, res) => {
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    req.user._id
+  );
+
+  const accessTokenOptions = {
+    ...CookieOptions,
+    maxAge: 15 * 60 * 1000,
+  };
+
+  res
+    .cookie('accessToken', accessToken, accessTokenOptions)
+    .cookie('refreshToken', refreshToken, CookieOptions)
+    .redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard`);
+});
+
 const registerUser = asyncHandler(async (req, res) => {
-  const email = String(req.body.email || '').trim().toLowerCase();
-  const username = String(req.body.username || '').trim().toLowerCase();
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
+  const username = String(req.body.username || '')
+    .trim()
+    .toLowerCase();
   const password = String(req.body.password || '');
   const fullName = req.body.fullName || req.body.fullname || undefined;
 
@@ -120,7 +140,9 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const email = String(req.body.email || '').trim().toLowerCase();
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
   const password = String(req.body.password || '');
 
   if (!email) {
@@ -249,7 +271,9 @@ const verifyEmail = asyncHandler(async (req, res) => {
 });
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
-  const email = String(req.body.email || '').trim().toLowerCase();
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
 
   if (!email) {
     throw new ApiError(HttpStatus.BAD_REQUEST, 'Email is required');
@@ -280,13 +304,15 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     }
   }
 
-  return res.status(HttpStatus.OK).json(
-    new ApiResponse(
-      HttpStatus.OK,
-      {},
-      'If an account exists for that email, a verification link has been sent.'
-    )
-  );
+  return res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        {},
+        'If an account exists for that email, a verification link has been sent.'
+      )
+    );
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -340,7 +366,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
-  const email = String(req.body.email || '').trim().toLowerCase();
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
   const user = await User.findOne({ email });
 
   if (user) {
@@ -414,7 +442,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    throw new ApiError(HttpStatus.BAD_REQUEST, 'Old and new passwords are required');
+    throw new ApiError(
+      HttpStatus.BAD_REQUEST,
+      'Old and new passwords are required'
+    );
   }
 
   if (oldPassword === newPassword) {
@@ -444,6 +475,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 export {
+  oauthCallback,
   registerUser,
   loginUser,
   logoutUser,

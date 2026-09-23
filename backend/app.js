@@ -4,8 +4,11 @@ import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import logger from './config/logger.js';
 import { Config } from './utils/constants.js';
+import passport from './config/passport.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -26,6 +29,18 @@ const authLimiter = rateLimit({
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
+app.use(passport.initialize())
+
+const morganFormat = ':method :url :status :response-time ms';
+app.use(
+  morgan(morganFormat, {
+    stream: {
+      write: (message) => {
+        logger.info(message.trim());
+      },
+    },
+  })
+);
 
 // cors configuration
 app.use(

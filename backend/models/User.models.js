@@ -45,7 +45,9 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: function(){
+        return this.authProvider === 'local'
+      },
       select: false,
     },
     isEmailVerified: {
@@ -73,6 +75,19 @@ const userSchema = new Schema(
     emailVerificationExpiry: {
       type: Date,
       select: false,
+    },
+    googleId: {
+      type: String,
+      select: false,
+    },
+    githubId: {
+      type: String,
+      select: false,
+    },
+    authProvider:{
+      type: String,
+      enum:['local', 'google', 'github'],
+      default: 'local',
     },
   },
   {
