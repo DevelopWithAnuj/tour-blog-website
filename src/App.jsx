@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+
 import HomePage from './pages/Home.jsx';
 import LoginPage from './pages/Auth/LoginPage.jsx';
 import TourListingPage from './pages/Tours/TourListingPage.jsx';
@@ -35,13 +37,34 @@ export default function App() {
 
         {/* User dashboard uses Sidebar */}
         <Route element={<DashboardLayout role="user" />}>
-          <Route path="/dashboard" element={<UserDashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboardPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* Admin pages use Sidebar with admin links */}
         <Route element={<DashboardLayout role="admin" />}>
-          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin-bookings" element={<AdminBookingsPage />} />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-bookings"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBookingsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

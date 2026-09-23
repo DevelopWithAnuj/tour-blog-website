@@ -1,8 +1,8 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
-import { User } from '../models/User.models';
-import { UserRolesEnum } from '../utils/constants';
+import { User } from '../models/User.models.js';
+import { UserRolesEnum } from '../utils/constants.js';
 
 passport.use(
   new GoogleStrategy(
