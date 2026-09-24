@@ -7,7 +7,7 @@ const userLinks = [
 ];
 const adminLinks = [
   { to: '/admin-dashboard', label: 'Dashboard' },
-  { to: '/admin-bookings', label: 'Bokkings' },
+  { to: '/admin-bookings', label: 'Bookings' },
 ];
 
 export default function DashboardLayout({role = 'user'})

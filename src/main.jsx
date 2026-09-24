@@ -1,11 +1,13 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import logger from './utils/logger.js';
+import App from './App.jsx';
+import './input.css';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/inter';
+import { AuthProvider } from './context/AuthContext.jsx';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-import App from './App.jsx';
-import logger from './utils/logger.js';
-import './input.css';
-import { AuthProvider } from './context/AuthContext.jsx';
 
 logger.info('Frontend app initialized');
 
