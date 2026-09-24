@@ -1,0 +1,32 @@
+export const tours = [
+  {
+    id: 1,
+    destination: 'Bali, Indonesia',
+    location: 'Southeast Asia',
+    price: 899,
+    duration: '5 Days / 4 Nights',
+    category: 'Beach',
+    image: '/images/bali.jpg',
+    description: 'Explore pristine beaches, ancient temples, and lush rice terraces.',
+  },
+  {
+    id: 2,
+    destination: 'Swiss Alps',
+    location: 'Switzerland',
+    price: 1499,
+    duration: '7 Days / 6 Nights',
+    category: 'Mountain',
+    image: '/images/swiss-alps.jpg',
+    description: 'Scenic train rides, alpine hikes, and charming mountain villages.',
+  },
+  {
+    id: 3,
+    destination: 'New York City',
+    location: 'USA',
+    price: 749,
+    duration: '4 Days / 3 Nights',
+    category: 'City',
+    image: '/images/new-york.jpg',
+    description: 'Iconic skyline, Broadway shows, and world-class museums.',
+  },
+];

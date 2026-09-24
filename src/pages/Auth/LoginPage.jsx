@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
 
+
 export default function LoginPage() {
   const { login, loginWithGoogle, loginWithGitHub } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ export default function LoginPage() {
       setError(error.response?.data?.message || 'Login failed');
     }
   };
+
+
 
   return (
     <section className="login-page">

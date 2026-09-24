@@ -1,19 +1,25 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import requestLogger from '../utils/requestLogger.js';
 
 function HomePage() {
   const [tour, setTour] = useState([]);
 
   useEffect(() => {
+    const startTime = Date.now();
+    const url = '/api/v1/tours';
+
     axios
-      .get('/api/v1/tours')
+      .get(url)
       .then((res) => {
+        requestLogger.logFetch(url, startTime);
         setTour(res.data);
       })
       .catch((err) => {
+        requestLogger.logFetch(url, startTime);
         console.log(err);
       });
-  });
+  }, []);
 
   return (
     <>

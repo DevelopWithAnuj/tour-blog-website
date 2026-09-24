@@ -9,6 +9,8 @@ import rateLimit from 'express-rate-limit';
 import logger from './config/logger.js';
 import { Config } from './utils/constants.js';
 import passport from './config/passport.js';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -29,7 +31,25 @@ const authLimiter = rateLimit({
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
-app.use(passport.initialize())
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: 'sessions',
+      ttl: 14 * 24 * 60 * 60,
+      autoRemove: 'native',
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+    },
+  })
+);
+app.use(passport.initialize());
 
 const morganFormat = ':method :url :status :response-time ms';
 app.use(
@@ -62,7 +82,6 @@ app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}`, authLimiter, authRouter);
 
 app.get(`${ApiPath.BASE}${ApiPath.TOURS}`, (req, res) => {
-
   const tours = [
     {
       id: 1,
@@ -81,8 +100,8 @@ app.get(`${ApiPath.BASE}${ApiPath.TOURS}`, (req, res) => {
       title: 'Tour 3',
       description: 'Description for Tour 3',
       price: 300,
-    }
-  ]
+    },
+  ];
 
   res.send(tours);
 });
