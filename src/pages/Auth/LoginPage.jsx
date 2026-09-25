@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, GitBranch } from 'lucide-react';
+import { useState, ViewTransition, startTransition } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { BadgeCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
-import loginBg from '../../assets/login-bg.avif';
+import { FaGithub } from 'react-icons/fa';
 
 function GoogleIcon(props) {
   return (
@@ -30,12 +30,25 @@ function GoogleIcon(props) {
 export default function LoginPage() {
   const { login, loginWithGoogle, loginWithGitHub } = useAuth();
   const navigate = useNavigate();
-
+ const [searchParams] = useSearchParams();
+ const justVerified = searchParams.get('verified') === '1';
+ 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [photo, setPhoto] = useState('/img/login-hero.png');
+
+  const changePhoto = () => {
+    startTransition(() => {
+      setPhoto(
+        photo === '/img/login-hero.png'
+          ? '/img/login-hero1.png'
+          : '/img/login-hero.png'
+      );
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,6 +85,13 @@ export default function LoginPage() {
             Sign in to manage your bookings and trips.
           </p>
 
+          {justVerified && !error && (
+            <p className="mt-6 flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-2.5 text-sm text-emerald-300">
+              <BadgeCheck className="h-4 w-4 shrink-0" />
+              Email verified - you can sign in now.
+            </p>
+          )}
+
           {error && (
             <p className="mt-6 rounded-lg border border-rose-400/30 bg-rose-400/10 px-4 py-2.5 text-sm text-rose-300">
               {error}
@@ -95,9 +115,17 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="text-sm text-white/70">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="text-sm text-white/70">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-amber-400 hover:text-amber-300"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative mt-1.5">
                 <input
                   id="password"
@@ -150,25 +178,33 @@ export default function LoginPage() {
               onClick={loginWithGitHub}
               className="flex items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
             >
-              <GitBranch className="h-4.5 w-4.5" />
+              <FaGithub className="h-4.5 w-4.5" />
               Continue with GitHub
             </button>
           </div>
 
           <p className="mt-8 text-center text-sm text-white/50">
             New to Drimora?{' '}
-            <span className="text-white/80">Sign-up is coming soon.</span>
+            <Link
+              to="/register"
+              className="text-amber-400 hover:text-amber-300"
+            >
+              Create an account
+            </Link>
           </p>
         </div>
       </div>
 
       {/* Right: destination image */}
-      <div className="relative hidden overflow-hidden lg:block">
-        <img
-          src={loginBg}
-          alt="A scenic travel destination"
-          className="h-full w-full object-cover"
-        />
+      <div className="relative hidden h-full min-h-screen overflow-hidden lg:block">
+        <ViewTransition name="main-hero-image">
+          <img
+            src={photo}
+            alt="A scenic travel destination"
+            className="h-full w-full object-cover object-center"
+            onClick={changePhoto}
+          />
+        </ViewTransition>
         <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
         <div className="absolute bottom-10 left-10 right-10">
           <p className="font-display text-2xl text-white">

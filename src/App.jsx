@@ -7,6 +7,10 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 import HomePage from './pages/Home.jsx';
 import LoginPage from './pages/Auth/LoginPage.jsx';
+import RegisterPage from './pages/Auth/RegisterPage.jsx';
+import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/Auth/ResetPasswordPage.jsx';
+
 import TourListingPage from './pages/Tours/TourListingPage.jsx';
 import TourDetailsPage from './pages/Tours/TourDetailsPage.jsx';
 import BookingPage from './pages/Booking/BookingPage.jsx';
@@ -33,6 +37,12 @@ export default function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:id" element={<BlogPostPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/reset-password/:resetToken"
+            element={<ResetPasswordPage />}
+          />
         </Route>
 
         {/* User dashboard uses Sidebar */}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogIn, LayoutDashboard, Home } from 'lucide-react';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
@@ -39,9 +39,14 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8">
         <Link
           to="/"
-          className="font-display text-2xl font-semibold tracking-tight text-white"
+          className="font-display flex gap-1 text-2xl font-semibold tracking-tight text-white"
         >
           Drimora
+          <img
+            src="/logo.png"
+            alt="Drimora_logo"
+            className="h-10 w-10 shrink-0 rounded-lg object-contain"
+          />
         </Link>
 
         {/* Desktop nav */}
@@ -70,8 +75,9 @@ export default function Header() {
           </Link>
           <Link
             to="/login"
-            className="rounded-full bg-amber-500 px-5 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-400"
+            className="rounded-full bg-amber-500 px-5 py-2 flex gap-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-400"
           >
+            <LogIn className="h-4.5 w-4.5" />
             Login
           </Link>
         </div>
@@ -120,16 +126,18 @@ export default function Header() {
                 ))}
                 <Link
                   to="/dashboard"
-                  className="rounded-lg px-3 py-2.5 text-sm text-white/80 hover:bg-white/5"
+                  className="rounded-lg flex gap-2 px-3 py-2.5 text-sm text-white/80 hover:bg-white/5"
                 >
+                  <LayoutDashboard className="h-4.5 w-4.5" />
                   Dashboard
                 </Link>
               </nav>
 
               <Link
                 to="/login"
-                className="mt-auto rounded-full bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-slate-950"
+                className="mt-auto flex gap-4 items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-slate-950"
               >
+                <LogIn className="h-4.5 w-4.5" />
                 Login
               </Link>
             </Dialog.Content>

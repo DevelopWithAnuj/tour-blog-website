@@ -34,6 +34,42 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
+  const register = async ({ email, username, password, fullname }) => {
+    const res = await axios.post(
+      '/api/v1/auth/register',
+      {email, username, password, fullname},
+      {withCredentials:true}
+    )
+    return res.data
+  };
+
+  const resendVerificationEmail = async (email) => {
+    const res = await axios.post(
+      '/api/v1/auth/resend-email-verification',
+      { email },
+      { withCredentials: true }
+    );
+    return res.data;
+  };
+
+  const forgotPassword = async (email) => {
+    const res = await axios.post(
+      '/api/v1/auth/forgot-password',
+      { email },
+      { withCredentials: true }
+    );
+    return res.data;
+  };
+
+  const resetPassword = async (resetToken, newPassword) => {
+    const res = await axios.post(
+      `/api/v1/auth/reset-password/${resetToken}`,
+      { newPassword },
+      { withCredentials: true }
+    );
+    return res.data;
+  };
+
   const logout = async () => {
     await axios.post('/api/v1/auth/logout', {}, { withCredentials: true });
     setUser(null);
@@ -52,6 +88,10 @@ export function AuthProvider({ children }) {
         user,
         loading,
         login,
+        register,
+        resendVerificationEmail,
+        forgotPassword,
+        resetPassword,
         logout,
         loginWithGoogle,
         loginWithGitHub,
