@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useServerStatus } from './context/ServerStatusContext.jsx';
+import ServerUnavailablePage from './pages/ServerUnavailablePage.jsx';
 
 import PublicLayout from './layouts/PublicLayout.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
@@ -23,6 +25,19 @@ import AdminDashboardPage from './pages/Admin/AdminDashboardPage.jsx';
 import AdminBookingsPage from './pages/Admin/AdminBookingsPage.jsx';
 
 export default function App() {
+  const { status, retry } = useServerStatus();
+
+  if (status === 'checking') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white/70 text-sm">
+        Connecting to Drimora…
+      </div>
+    );
+  }
+
+  if (status === 'down') {
+    return <ServerUnavailablePage onRetry={retry} retrying={false} />;
+  }
   return (
     <BrowserRouter>
       <Routes>
