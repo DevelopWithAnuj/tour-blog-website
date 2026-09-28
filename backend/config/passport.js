@@ -67,7 +67,7 @@ passport.use(
             user.isEmailVerified = true;
             await user.save({ validateBeforeSave: false });
           } else {
-            await User.create({
+            user = await User.create({
               githubId: profile.id,
               email,
               username: profile.username + '_' + Date.now(),

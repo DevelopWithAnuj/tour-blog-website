@@ -27,8 +27,8 @@ function formatCurrency(amount) {
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-sm text-slate-500">{label}</p>
+    <div className="rounded-2xl border border-slate-200 bg-gray-200/80 p-5 shadow-sm">
+      <p className="text-sm text-slate-600/90">{label}</p>
       <p className="mt-1 text-3xl font-bold text-slate-900">{value}</p>
     </div>
   );
@@ -45,16 +45,16 @@ function BookingCard({ booking, tour }) {
         : undefined;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-blue-900 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-lg font-bold text-amber-700">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-200/90 text-lg font-bold text-amber-700">
           {(tour?.destination || 'T').charAt(0)}
         </div>
         <div>
           <p className="font-semibold text-slate-900">
             {tour?.destination || 'Tour unavailable'}
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-300/80">
             {tour?.location ? `${tour.location} · ` : ''}
             {formatDate(booking.date)}
           </p>
@@ -67,13 +67,13 @@ function BookingCard({ booking, tour }) {
         >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
-        <p className="w-20 text-right font-semibold text-slate-900">
+        <p className="w-20 text-right font-semibold text-slate-100/80">
           {formatCurrency(amount)}
         </p>
         {tour && (
           <Link
             to={`/tours/${tour.id}`}
-            className="hidden text-sm font-medium text-amber-600 hover:text-amber-700 sm:inline"
+            className="hidden text-sm font-medium text-amber-500 hover:text-amber-700 sm:inline"
           >
             View tour
           </Link>
@@ -113,13 +113,13 @@ export default function UserDashboardPage() {
   return (
     <section className="dashboard-page space-y-8">
       <div>
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-amber-600">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-600">
           Welcome back
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-bold text-gray-100/90 sm:text-3xl">
           Hello, {displayName}
         </h1>
-        <p className="mt-2 text-slate-500">
+        <p className="mt-2 text-slate-400">
           {user?.email ? `Signed in as ${user.email}` : 'Track every trip you\'ve booked with Drimora, from pending requests to confirmed getaways.'}
         </p>
       </div>

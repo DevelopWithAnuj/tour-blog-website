@@ -235,22 +235,32 @@ The current project structure includes a React frontend under `src/pages`, legac
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
-| GET | `/api/tours` | List tours. |
-| GET | `/api/tours/:id` | Get tour details. |
-| GET | `/api/tours/categories` | List tour categories. |
-| POST | `/api/bookings` | Create booking. |
-| GET | `/api/bookings` | List bookings for user or admin. |
-| GET | `/api/bookings/:id` | Get booking detail. |
-| PATCH | `/api/bookings/:id/confirm` | Confirm booking. |
-| GET | `/api/blog/posts` | List blog posts. |
-| GET | `/api/blog/posts/:id` | Get blog post detail. |
-| GET | `/api/blog/categories` | List blog categories. |
-| POST | `/api/auth/login` | Log user in. |
-| POST | `/api/auth/logout` | Log user out. |
-| GET | `/api/auth/me` | Get current session user. |
-| GET | `/api/admin/dashboard` | Get admin dashboard metrics. |
-| GET | `/api/admin/bookings` | Get all bookings for admin. |
-| GET | `/api/admin/users` | Get all users for admin. |
+| GET | `/api/v1/healthcheck` | Server status check. |
+| POST | `/api/v1/auth/register` | Register user and send verification email. |
+| GET | `/api/v1/auth/verify-email/:verificationToken` | Verify email. |
+| POST | `/api/v1/auth/resend-email-verification` | Resend verification link. |
+| POST | `/api/v1/auth/login` | Log user in. |
+| POST | `/api/v1/auth/logout` | Log user out. |
+| GET | `/api/v1/auth/current-user` | Get current session user. |
+| POST | `/api/v1/auth/refresh-token` | Refresh access token. |
+| POST | `/api/v1/auth/forgot-password` | Request password reset. |
+| POST | `/api/v1/auth/reset-password/:resetToken` | Reset password. |
+| POST | `/api/v1/auth/change-password` | Change password. |
+| GET | `/api/v1/auth/google`, `/github` | OAuth sign-in. |
+
+| GET | `/api/v1/tours` | Tours. |
+| GET | `/api/v1/tours/:id` | Get tour details. |
+| GET | `/api/v1/tours/categories` | List tour categories. |
+| POST | `/api/v1/bookings` | Create booking. |
+| GET | `/api/v1/bookings` | List bookings for user or admin. |
+| GET | `/api/v1/bookings/:id` | Get booking detail. |
+| PATCH | `/api/v1/bookings/:id/confirm` | Confirm booking. |
+| GET | `/api/v1/blog` | List blog posts. |
+| GET | `/api/v1/blog/:id` | Get blog post detail. |
+| GET | `/api/v1/blog/categories` | List blog categories. |
+| GET | `/api/v1/admin/dashboard` | Get admin dashboard metrics. |
+| GET | `/api/v1/admin/bookings` | Get all bookings for admin. |
+| GET | `/api/v1/admin/users` | Get all users for admin. |
 
 ## 10. Non-Functional Requirements
 

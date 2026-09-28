@@ -4,11 +4,11 @@
   "description": "Travel blog frontend and backend project",
   "main": "backend/index.js",
   "scripts": {
-    "client": "vite --host 0.0.0.0",
+    "client": "vite",
     "server": "nodemon backend/index.js",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

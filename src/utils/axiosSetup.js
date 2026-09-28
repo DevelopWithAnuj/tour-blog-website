@@ -6,9 +6,10 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     const noResponse = !error.response; // request never reached the server (server/DB down)
-    const serverError = error.response && error.response.status >= 500;
+    const serverError = error.response && error.response?.status >= 500;
+    const isHealthCheck = error.config?.url?.includes('/healthcheck');
 
-    if (noResponse || serverError) {
+    if (noResponse || (isHealthCheck &&serverError)) {
       window.dispatchEvent(new Event('server-unavailable'));
     }
 

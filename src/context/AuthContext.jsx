@@ -34,10 +34,10 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
-  const register = async ({ email, username, password, fullname }) => {
+  const register = async ({ email, username, password, fullName }) => {
     const res = await axios.post(
       '/api/v1/auth/register',
-      {email, username, password, fullname},
+      {email, username, password, fullName},
       {withCredentials:true}
     )
     return res.data

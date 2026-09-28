@@ -22,3 +22,59 @@
     font-family: var(--font-sans);
   }
 }
+
+@layer components {
+  .dashboard-shell {
+    @apply flex min-h-screen bg-slate-50/90  text-slate-900;
+  }
+
+  .dashboard-content {
+    @apply min-w-0 flex-1 p-1 sm:p-2 lg:p-3;
+  }
+
+  .dashboard-page {
+    @apply space-y-8 rounded-2xl bg-blue-950 p-5 shadow-sm ring-1 ring-slate-200;
+  }
+
+  .admin-dashboard-page,
+  .admin-bookings-page,
+  .blog-page,
+  .blog-post-page,
+  .booking-page,
+  .confirmation-page,
+  .payment-page,
+  .tour-details-page,
+  .tour-listing-page {
+    @apply rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200;
+  }
+
+  @media (min-width: 640px) {
+    .dashboard-page,
+    .admin-dashboard-page,
+    .admin-bookings-page,
+    .blog-page,
+    .blog-post-page,
+    .booking-page,
+    .confirmation-page,
+    .payment-page,
+    .tour-details-page,
+    .tour-listing-page {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .dashboard-page,
+    .admin-dashboard-page,
+    .admin-bookings-page,
+    .blog-page,
+    .blog-post-page,
+    .booking-page,
+    .confirmation-page,
+    .payment-page,
+    .tour-details-page,
+    .tour-listing-page {
+      padding: 2rem;
+    }
+  }
+}

@@ -117,7 +117,7 @@ export default function RegisterPage() {
           alt="A scenic travel destination"
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
         <div className="absolute bottom-10 left-10 right-10">
           <p className="font-display text-2xl text-white">
             Start planning your next trip.
@@ -256,27 +256,27 @@ export default function RegisterPage() {
           </form>
 
           <div className="my-6 flex items-center gap-3">
-                      <span className="h-px flex-1 bg-white/10" />
-                      <span className="text-xs text-white/40">or sign up with</span>
-                      <span className="h-px flex-1 bg-white/10" />
-                    </div>
-          
-                    <div className="flex flex-col gap-3">
-                      <button
-                        onClick={loginWithGoogle}
-                        className="flex items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
-                      >
-                        <GoogleIcon />
-                        Continue with Google
-                      </button>
-                      <button
-                        onClick={loginWithGitHub}
-                        className="flex items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
-                      >
-                        <FaGithub className="h-4.5 w-4.5" />
-                        Continue with GitHub
-                      </button>
-                    </div>
+            <span className="h-px flex-1 bg-white/10" />
+            <span className="text-xs text-white/40">or sign up with</span>
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={loginWithGoogle}
+              className="flex items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
+            >
+              <GoogleIcon />
+              Continue with Google
+            </button>
+            <button
+              onClick={loginWithGitHub}
+              className="flex items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
+            >
+              <FaGithub className="h-4.5 w-4.5" />
+              Continue with GitHub
+            </button>
+          </div>
 
           <p className="mt-8 text-center text-sm text-white/50">
             Already have an account?{' '}
