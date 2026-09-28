@@ -16,4 +16,4 @@ pnpm-debug.log*
 Thumbs.db
 
 .agents/
-.vscode/settings.json
+.vscode/*
