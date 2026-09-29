@@ -23,11 +23,20 @@ import BlogPostPage from './pages/Blog/BlogPostPage.jsx';
 import UserDashboardPage from './pages/Dashboard/UserDashboardPage.jsx';
 import AdminDashboardPage from './pages/Admin/AdminDashboardPage.jsx';
 import AdminBookingsPage from './pages/Admin/AdminBookingsPage.jsx';
+import { useState } from 'react';
 
 export default function App() {
   const { status, retry } = useServerStatus();
+  const [retrying, setRetrying] = useState(false);
 
-  if (status === 'checking') {
+  const handleRetry = async () => {
+    setRetrying(true);
+    await retry();
+    setRetrying(false);
+  };
+
+
+  if (status === 'checking' && !retrying) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white/70 text-sm">
         Connecting to Drimora…
@@ -35,9 +44,10 @@ export default function App() {
     );
   }
 
-  if (status === 'down') {
-    return <ServerUnavailablePage onRetry={retry} retrying={false} />;
+  if (status === 'down' || (status === 'checking' && retrying)) {
+    return <ServerUnavailablePage onRetry={handleRetry} retrying={retrying} />;
   }
+
   return (
     <BrowserRouter>
       <Routes>
