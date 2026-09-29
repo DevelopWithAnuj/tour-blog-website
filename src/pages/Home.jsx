@@ -16,12 +16,7 @@ function HomePage() {
       .get(url)
       .then((res) => {
         requestLogger.logFetch(url, startTime);
-
-        if (Array.isArray(res.data)) {
-          setTours(res.data);
-        } else {
-          setTours(res.data.tours || []);
-        }
+        setTours(res.data.data?.tours || [])
       })
       .catch((err) => {
         requestLogger.logFetch(url, startTime);

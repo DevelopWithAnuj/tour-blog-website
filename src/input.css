@@ -1,8 +1,8 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: "Inter Variable", "Inter", sans-serif;
-  --font-display: "Fraunces Variable", "Fraunces", serif;
+  --font-sans: 'Inter Variable', 'Inter', sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces', serif;
 }
 
 @layer base {
@@ -45,7 +45,7 @@
   .payment-page,
   .tour-details-page,
   .tour-listing-page {
-    @apply rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200;
+    @apply rounded-2xl bg-white p-5 text-slate-900 shadow-sm ring-1 ring-slate-200;
   }
 
   @media (min-width: 640px) {

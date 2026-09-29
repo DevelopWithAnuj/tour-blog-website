@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Home, LogOut } from 'lucide-react';
 export default function DashboardHeader({ role = 'user' }) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const displayName = user?.fullName || user?.username || 'Traveler';
 
