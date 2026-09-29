@@ -3,12 +3,13 @@ import { Tour, TOUR_CATEGORIES } from '../models/Tour.models.js';
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { HttpStatus } from '../utils/constants.js';
+import mongoose from 'mongoose';
 
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const SORTS = {
   newest: { createdAt: -1 },
-  'price-asc': { price: -1 },
+  'price-asc': { price: 1 },
   'price-desc': { price: -1 },
 };
 
@@ -42,12 +43,12 @@ const getTours = asyncHandler(async (req, res) => {
     Tour.countDocuments(filter),
   ]);
 
-  res.status(HttpStatus.OK).json();
+  res.status(HttpStatus.OK).json(
   new ApiResponse(
     HttpStatus.OK,
     { tours, total, page, pages: Math.ceil(total / limit) },
     'Tours fetched successfully'
-  );
+  ))
 });
 
 const getTourCategories = asyncHandler(async (req, res) => {

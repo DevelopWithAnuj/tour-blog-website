@@ -39,9 +39,7 @@ export function errorHandler(err, req, res, next) {
     errors = [{ path: err.path, msg: 'Invalid resource ID' }];
   }
 
-  if (statusCode && statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
-    message = err?.message || message;
-  } else {
+  if (statusCode && statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
     statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     message = 'Internal server error';
   }
