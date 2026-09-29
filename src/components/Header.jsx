@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Menu, X, User, LogIn, LayoutDashboard, Home } from 'lucide-react';
+import { Menu, X, User, LogIn } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
@@ -10,6 +11,8 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -66,20 +69,34 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white transition-colors hover:border-amber-400/60 hover:text-amber-300"
-          >
-            <User className="h-4 w-4" />
-            Dashboard
-          </Link>
-          <Link
-            to="/login"
-            className="rounded-full bg-amber-500 px-5 py-2 flex gap-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-400"
-          >
-            <LogIn className="h-4.5 w-4.5" />
-            Login
-          </Link>
+          {user ? (
+            <>
+              <Link
+                to={user.role === 'admin' ? '/admin-dashboard' : '/dashboard'}
+                className="flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white transition-colors hover:border-amber-400/60 hover:text-amber-300"
+              >
+                <User className="h-4 w-4" />
+                {user.fullName || user.username}
+              </Link>
+              <button
+                onClick={async () => {
+                  await logout();
+                  navigate('/');
+                }}
+                className="rounded-full bg-white/10 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-full bg-amber-500 px-5 py-2 flex gap-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-400"
+            >
+              <LogIn className="h-4.5 w-4.5" />
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Mobile trigger */}
@@ -124,22 +141,36 @@ export default function Header() {
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  to="/dashboard"
-                  className="rounded-lg flex gap-2 px-3 py-2.5 text-sm text-white/80 hover:bg-white/5"
-                >
-                  <LayoutDashboard className="h-4.5 w-4.5" />
-                  Dashboard
-                </Link>
               </nav>
 
-              <Link
-                to="/login"
-                className="mt-auto flex gap-4 items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-slate-950"
-              >
-                <LogIn className="h-4.5 w-4.5" />
-                Login
-              </Link>
+              {user ? (
+                <div className="mt-auto flex flex-col gap-3">
+                  <Link
+                    to={user.role === 'admin' ? '/admin-dashboard' : '/dashboard'}
+                    className="flex items-center justify-center gap-2 rounded-full border border-white/20 px-5 py-3 text-center text-sm text-white transition-colors hover:border-amber-400/60 hover:text-amber-300"
+                  >
+                    <User className="h-4 w-4" />
+                    {user.fullName || user.username}
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      await logout();
+                      navigate('/');
+                    }}
+                    className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="mt-auto flex items-center justify-center gap-4 rounded-full bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-slate-950"
+                >
+                  <LogIn className="h-4.5 w-4.5" />
+                  Login
+                </Link>
+              )}
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>

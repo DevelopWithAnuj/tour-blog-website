@@ -71,8 +71,11 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await axios.post('/api/v1/auth/logout', {}, { withCredentials: true });
-    setUser(null);
+     try {
+       await axios.post('/api/v1/auth/logout', {}, { withCredentials: true });
+     } finally {
+       setUser(null);
+     }
   };
 
   const loginWithGoogle = () => {

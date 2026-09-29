@@ -28,6 +28,13 @@ const authLimiter = rateLimit({
   },
 });
 
+const sessionCheckLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
@@ -51,6 +58,7 @@ app.use(
 );
 app.use(passport.initialize());
 
+// winston & morgan logger format
 const morganFormat = ':method :url :status :response-time ms';
 app.use(
   morgan(morganFormat, {
@@ -80,11 +88,14 @@ import { errorHandler, notFoundHandler } from './middleware/errorMiddleware.js';
 import tourRouter from './routes/tour.Routes.js'
 
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
+app.use(`${ApiPath.BASE}${ApiPath.AUTH}/current-user`, sessionCheckLimiter);
+app.use(`${ApiPath.BASE}${ApiPath.AUTH}/refresh-token`, sessionCheckLimiter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}`, authLimiter, authRouter);
 
 app.use(`${ApiPath.BASE}${ApiPath.TOURS}`, tourRouter)
 
 app.use(`${ApiPath.BASE}`, notFoundHandler);
+
 
 // frontend build serve
 const __filename = fileURLToPath(import.meta.url);

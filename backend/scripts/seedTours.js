@@ -4,6 +4,7 @@ import { Tour } from '../models/Tour.models.js';
 
 const tours = [
   {
+    _id: 1,
     title: 'Fjords & Northern Lights',
     destination: 'Norway',
     location: 'Tromse, Norway',
@@ -12,7 +13,10 @@ const tours = [
     duration: '6 days / 5 nights',
     category: 'nature',
     image: '/img/tours/Norway/images 6.jfif',
-    images: ['/img/tours/Norway/images 10.jfif', '/img/tours/Norway/images 15.jfif'],
+    images: [
+      '/img/tours/Norway/images 10.jfif',
+      '/img/tours/Norway/images 15.jfif',
+    ],
     itinerary: [
       {
         day: 1,
@@ -39,6 +43,7 @@ const tours = [
     exclusions: ['Flights', 'Travel insurance', 'Personal expenses'],
   },
   {
+    _id:2,
     title: 'Big Apple Explorer',
     destination: 'New York',
     location: 'New York, USA',
@@ -68,6 +73,7 @@ const tours = [
     exclusions: ['Flights', 'Visa fees', 'Meals not listed'],
   },
   {
+    _id:3,
     title: 'Kyoto & Tokyo Classic',
     destination: 'Japan',
     location: 'Tokyo & Kyoto, Japan',

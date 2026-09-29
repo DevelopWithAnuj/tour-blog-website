@@ -61,35 +61,26 @@ export default function App() {
         </Route>
 
         {/* User dashboard uses Sidebar */}
-        <Route element={<DashboardLayout role="user" />}>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <UserDashboardPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout role="user" />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<UserDashboardPage />} />
         </Route>
 
         {/* Admin pages use Sidebar with admin links */}
-        <Route element={<DashboardLayout role="admin" />}>
-          <Route
-            path="/admin-dashboard"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin-bookings"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminBookingsPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout role="admin" />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+          <Route path="/admin-bookings" element={<AdminBookingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

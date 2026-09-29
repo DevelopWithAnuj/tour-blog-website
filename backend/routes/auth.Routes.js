@@ -100,9 +100,9 @@ router
     validate,
     resetForgotPassword
   );
+  router.route('/logout').post(logoutUser);
 
 // secure routes
-router.route('/logout').post(verifyJWT, logoutUser);
 router.route('/current-user').get(verifyJWT, getCurrentUser);
 router
   .route('/change-password')

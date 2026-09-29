@@ -55,8 +55,9 @@ export default function LoginPage() {
     setError('');
     setSubmitting(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const res = await login(email, password);
+      const role = res?.data?.user?.role;
+      navigate(role === 'admin' ? '/admin-dashboard' : '/dashboard');
     } catch (err) {
       setError(
         err.response?.data?.message || 'Login failed. Please try again.'

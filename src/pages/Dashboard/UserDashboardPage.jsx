@@ -51,10 +51,10 @@ function BookingCard({ booking, tour }) {
           {(tour?.destination || 'T').charAt(0)}
         </div>
         <div>
-          <p className="font-semibold text-slate-900">
+          <p className="font-semibold text-white">
             {tour?.destination || 'Tour unavailable'}
           </p>
-          <p className="text-sm text-slate-300/80">
+          <p className="text-sm text-slate-300">
             {tour?.location ? `${tour.location} · ` : ''}
             {formatDate(booking.date)}
           </p>
@@ -67,13 +67,13 @@ function BookingCard({ booking, tour }) {
         >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
-        <p className="w-20 text-right font-semibold text-slate-100/80">
+        <p className="w-20 text-right font-semibold text-white">
           {formatCurrency(amount)}
         </p>
         {tour && (
           <Link
             to={`/tours/${tour.id}`}
-            className="hidden text-sm font-medium text-amber-500 hover:text-amber-700 sm:inline"
+            className="hidden text-sm font-medium text-amber-300 hover:text-amber-200 sm:inline"
           >
             View tour
           </Link>
