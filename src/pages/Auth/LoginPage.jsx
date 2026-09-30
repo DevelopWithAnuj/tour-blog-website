@@ -1,5 +1,11 @@
 import { useState, ViewTransition, startTransition } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { BadgeCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { FaGithub } from 'react-icons/fa';
@@ -28,17 +34,27 @@ function GoogleIcon(props) {
 }
 
 export default function LoginPage() {
-  const { login, loginWithGoogle, loginWithGitHub } = useAuth();
+  const { user, login, loginWithGoogle, loginWithGitHub } = useAuth();
   const navigate = useNavigate();
- const [searchParams] = useSearchParams();
- const justVerified = searchParams.get('verified') === '1';
- 
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const justVerified = searchParams.get('verified') === '1';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [photo, setPhoto] = useState('/img/login-hero.png');
+
+  if (user) {
+    return (
+      <Navigate
+        to={user.role === 'admin' ? '/admin-dashboard' : '/dashboard'}
+        replace
+      />
+    );
+  }
 
   const changePhoto = () => {
     startTransition(() => {
@@ -50,6 +66,8 @@ export default function LoginPage() {
     });
   };
 
+  const from = location.state?.from?.pathname;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -57,7 +75,7 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       const role = res?.data?.user?.role;
-      navigate(role === 'admin' ? '/admin-dashboard' : '/dashboard');
+      navigate(from || (role === 'admin' ? '/admin-dashboard' : '/dashboard'));
     } catch (err) {
       setError(
         err.response?.data?.message || 'Login failed. Please try again.'

@@ -3,10 +3,10 @@ import mongoose, { Schema } from 'mongoose';
 export const TOUR_CATEGORIES = [
   'adventure',
   'beach',
-  'premium',
+  'culture',
   'city',
   'nature',
-  'culture',
+  'luxury',
 ];
 
 const itineraryDaySchema = new Schema(

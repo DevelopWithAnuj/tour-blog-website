@@ -356,6 +356,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       .json(new ApiResponse(HttpStatus.OK, {}, 'Access token refreshed'));
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
+      res.clearCookie('accessToken', CookieOptions);
+      res.clearCookie('refreshToken', CookieOptions);
       throw new ApiError(HttpStatus.UNAUTHORIZED, 'Refresh token expired');
     }
 

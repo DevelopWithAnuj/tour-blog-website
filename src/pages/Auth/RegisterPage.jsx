@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, MailCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { FaGithub } from 'react-icons/fa';
@@ -29,7 +29,7 @@ function GoogleIcon(props) {
   );
 }
 export default function RegisterPage() {
-  const { register, loginWithGoogle, loginWithGitHub } = useAuth();
+  const { user, register, loginWithGoogle, loginWithGitHub } = useAuth();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState('');
@@ -42,6 +42,15 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(null);
+
+  if (user) {
+    return (
+      <Navigate
+        to={user.role === 'admin' ? '/admin-dashboard' : '/dashboard'}
+        replace
+      />
+    );
+  }
 
   const validate = () => {
     if (!email.trim()) return 'Email is required.';

@@ -4,7 +4,6 @@ import { Tour } from '../models/Tour.models.js';
 
 const tours = [
   {
-    _id: 1,
     title: 'Fjords & Northern Lights',
     destination: 'Norway',
     location: 'Tromse, Norway',
@@ -43,7 +42,6 @@ const tours = [
     exclusions: ['Flights', 'Travel insurance', 'Personal expenses'],
   },
   {
-    _id:2,
     title: 'Big Apple Explorer',
     destination: 'New York',
     location: 'New York, USA',
@@ -73,7 +71,6 @@ const tours = [
     exclusions: ['Flights', 'Visa fees', 'Meals not listed'],
   },
   {
-    _id:3,
     title: 'Kyoto & Tokyo Classic',
     destination: 'Japan',
     location: 'Tokyo & Kyoto, Japan',
@@ -100,8 +97,8 @@ const tours = [
   },
 ];
 
-await connectDB()
-await Tour.deleteMany({})
-await Tour.insertMany(tours)
+await connectDB();
+await Tour.deleteMany({});
+await Tour.insertMany(tours);
 console.log(`Seeded ${tours.length} tours`);
-await mongoose.disconnect()
+await mongoose.disconnect();
