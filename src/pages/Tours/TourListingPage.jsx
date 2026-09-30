@@ -163,7 +163,9 @@ function TourListingPage() {
                 {tour.category}
               </span>
               <h3 className="mt-1 text-lg font-bold">{tour.title}</h3>
-              <p className="text-sm text-slate-500">{tour.location}</p>
+              <p className="text-sm text-slate-500">
+                {tour.destination ? `${tour.destination} · ${tour.location}` : tour.location}
+              </p>
               <p className="mt-3 flex justify-between text-sm">
                 <span className="font-bold text-amber-600">
                   ₹{Number(tour.price).toLocaleString('en-IN')}

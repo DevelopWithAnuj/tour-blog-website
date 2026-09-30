@@ -13,6 +13,12 @@ const itineraryDaySchema = new Schema(
   { day: Number, title: String, description: String },
   { _id: false }
 );
+
+const faqSchema = new Schema(
+  { question: { type: String, required: true }, answer: { type: String, required: true } },
+  { _id: false }
+);
+
 const tourSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -32,6 +38,7 @@ const tourSchema = new Schema(
     itinerary: [itineraryDaySchema],
     inclusions: [String],
     exclusions: [String],
+    faq: [faqSchema],
     availableDates: [Date],
     isActive: { type: Boolean, default: true },
   },

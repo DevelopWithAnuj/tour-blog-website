@@ -90,6 +90,25 @@ export default function TourDetailsPage() {
         </div>
       )}
 
+      {tour.faq?.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold">Frequently asked questions</h2>
+          <div className="mt-3 space-y-3">
+            {tour.faq.map((item, index) => (
+              <div
+                key={`${item.question}-${index}`}
+                className="rounded-xl border border-slate-200 p-4"
+              >
+                <p className="font-semibold text-slate-800">{item.question}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {item.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <h2 className="text-xl font-bold">Included</h2>

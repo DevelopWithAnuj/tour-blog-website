@@ -40,6 +40,18 @@ const tours = [
       'Guided tours',
     ],
     exclusions: ['Flights', 'Travel insurance', 'Personal expenses'],
+    faq: [
+      {
+        question: 'Is the Northern Lights guaranteed?',
+        answer:
+          'The aurora is a natural phenomenon, so we cannot guarantee sightings, but our guides choose the best viewing windows and locations for the highest possible chance.',
+      },
+      {
+        question: 'What is the best time to go?',
+        answer:
+          'Late September to March offers the strongest chance of seeing the aurora, with winter conditions making the fjord experience especially dramatic.',
+      },
+    ],
   },
   {
     title: 'Big Apple Explorer',
@@ -69,6 +81,18 @@ const tours = [
     ],
     inclusions: ['Hotel stay', 'Metro pass', 'Broadway ticket'],
     exclusions: ['Flights', 'Visa fees', 'Meals not listed'],
+    faq: [
+      {
+        question: 'Do I need to book Broadway tickets in advance?',
+        answer:
+          'We recommend booking early for popular shows, especially during weekends and peak tourist seasons.',
+      },
+      {
+        question: 'Is the tour good for first-time visitors?',
+        answer:
+          'Yes. The route is designed to hit the classic highlights without overwhelming the schedule, and local guides add helpful context.',
+      },
+    ],
   },
   {
     title: 'Kyoto & Tokyo Classic',
@@ -94,6 +118,18 @@ const tours = [
     ],
     inclusions: ['Hotel stay', 'JR rail pass', 'Tea ceremony'],
     exclusions: ['Flights', 'Lunches', 'Insurance'],
+    faq: [
+      {
+        question: 'Do I need a visa for this trip?',
+        answer:
+          'Visa requirements vary by nationality and travel dates. We recommend checking the latest rules before departure and can share documentation guidance if needed.',
+      },
+      {
+        question: 'Is the bullet train included?',
+        answer:
+          'Yes, the planned JR rail pass is included in the package, making it easy to move between Tokyo and Kyoto.',
+      },
+    ],
   },
 ];
 

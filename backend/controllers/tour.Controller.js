@@ -39,7 +39,7 @@ const getTours = asyncHandler(async (req, res) => {
       .sort(SORTS[sort] || SORTS.newest)
       .skip((page - 1) * limit)
       .limit(limit)
-      .select('-itinerary -inclusions -exclusions -availableDates'),
+      .select('-itinerary -inclusions -exclusions -faq -availableDates'),
     Tour.countDocuments(filter),
   ]);
 
