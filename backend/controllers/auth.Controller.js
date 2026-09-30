@@ -49,7 +49,9 @@ const oauthCallback = asyncHandler(async (req, res) => {
   res
     .cookie('accessToken', accessToken, accessTokenOptions)
     .cookie('refreshToken', refreshToken, CookieOptions)
-    .redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard`);
+    .redirect(
+      `${process.env.CLIENT_URL || 'http://localhost:5173'}/${req.user.role === 'admin' ? 'admin-dashboard' : 'dashboard'}`
+    );
 });
 
 const registerUser = asyncHandler(async (req, res) => {

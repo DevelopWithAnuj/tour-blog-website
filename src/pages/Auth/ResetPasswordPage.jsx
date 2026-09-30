@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -14,6 +14,13 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!done) return;
+
+    const redirectTimer = window.setTimeout(() => navigate('/login'), 2000);
+    return () => window.clearTimeout(redirectTimer);
+  }, [done, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +39,6 @@ export default function ResetPasswordPage() {
     try {
       await resetPassword(resetToken, newPassword);
       setDone(true);
-      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(
         err.response?.data?.message ||

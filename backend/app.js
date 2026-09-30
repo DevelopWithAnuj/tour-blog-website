@@ -1,4 +1,5 @@
 import express from 'express';
+import { existsSync } from 'node:fs';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
@@ -13,7 +14,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
 app.use(helmet());
 
 const authLimiter = rateLimit({
@@ -100,12 +101,15 @@ app.use(`${ApiPath.BASE}`, notFoundHandler);
 // frontend build serve
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const frontendBuildPath = path.join(__dirname, '../dist');
+const frontendIndexPath = path.join(frontendBuildPath, 'index.html');
 
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(frontendBuildPath));
 
 // React routes fallback
-app.get('/{*splat}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+app.get('/{*splat}', (req, res, next) => {
+  if (!existsSync(frontendIndexPath)) return next();
+  res.sendFile(frontendIndexPath);
 });
 
 app.use(errorHandler);

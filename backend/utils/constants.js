@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import logger from '../config/logger.js';
 
 dotenv.config({
   path: fileURLToPath(new URL('../.env', import.meta.url)),
@@ -10,12 +11,19 @@ const normalizeAccessTokenExpiry = () => {
 
   if (!configured) return '15m';
 
-  if (configured.endsWith('m')) {
-    const minutes = Number.parseInt(configured, 10);
-    return Number.isNaN(minutes) || minutes > 15 ? '15m' : configured;
+  const match = /^(\d+)m$/.exec(configured);
+  if (!match) {
+    logger.warn(`Unsupported ACCESS_TOKEN_EXPIRY "${configured}"; using 15m.`);
+    return '15m';
   }
 
-  return '15m';
+  const minutes = Number(match[1]);
+  if (minutes < 1 || minutes > 15) {
+    logger.warn(`ACCESS_TOKEN_EXPIRY "${configured}" is outside the 1m-15m range; using 15m.`);
+    return '15m';
+  }
+
+  return configured;
 };
 
 export const UserRolesEnum = {
@@ -67,9 +75,16 @@ export const HttpStatus = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
+const parseDuration = (str) => {
+  // simple 'Xd' parser
+  const match = /^(\d+)d$/.exec(str);
+  return match
+    ? Number(match[1]) * 24 * 60 * 60 * 1000
+    : 7 * 24 * 60 * 60 * 1000;
+};
 export const CookieOptions = {
   httpOnly: true,
   secure: NODE_ENV === 'production',
   sameSite: 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: parseDuration(process.env.REFRESH_TOKEN_EXPIRY || '7d'),
 };

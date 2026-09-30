@@ -7,14 +7,15 @@ const SORT_OPTIONS = [
   { value: 'price-asc', label: 'Price: low to high' },
   { value: 'price-desc', label: 'Price: high to low' },
 ];
-
-export default function TourListingPage() {
+function TourListingPage() {
   const [tours, setTours] = useState([]);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -26,6 +27,10 @@ export default function TourListingPage() {
   }, []);
 
   useEffect(() => {
+    setPage(1);
+  }, [category, query, sort]);
+
+  useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError('');
@@ -35,10 +40,14 @@ export default function TourListingPage() {
           category: category || undefined,
           q: query || undefined,
           sort,
+          page,
         },
         signal: controller.signal,
       })
-      .then((res) => setTours(res.data.data.tours))
+      .then((res) => {
+        setTours(res.data.data.tours);
+        setTotalPages(res.data.data.pages || 1);
+      })
       .catch((err) => {
         if (!axios.isCancel(err)) setError('Unable to load tours.');
       })
@@ -46,7 +55,7 @@ export default function TourListingPage() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [category, query, sort]);
+  }, [category, query, sort, page]);
 
   const chip = (active) =>
     `rounded-full px-4 py-1.5 text-sm font-medium capitalize transition ${
@@ -54,6 +63,27 @@ export default function TourListingPage() {
         ? 'bg-slate-900 text-white'
         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
     }`;
+
+  const goToPage = (p) => {
+    if (p < 1 || p > totalPages || p === page) return;
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const pageNumbers = () => {
+    const pages = [];
+    const windowSize = 1;
+    for (let p = 1; p <= totalPages; p++) {
+      const isEdge = p === 1 || p === totalPages;
+      const isNearCurrent = Math.abs(p - page) <= windowSize;
+      if (isEdge || isNearCurrent) {
+        pages.push(p);
+      } else if (pages[pages.length - 1] !== '…') {
+        pages.push('…');
+      }
+    }
+    return pages;
+  };
 
   return (
     <section className="tour-listing-page text-slate-900">
@@ -144,6 +174,55 @@ export default function TourListingPage() {
           </Link>
         ))}
       </div>
+
+      {!loading && !error && totalPages > 1 && (
+        <nav
+          aria-label="Tour listing pagination"
+          className="mt-10 flex items-center justify-center gap-1.5"
+        >
+          <button
+            onClick={() => goToPage(page - 1)}
+            disabled={page === 1}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          {pageNumbers().map((p, i) =>
+            p === '…' ? (
+              <span
+                key={`ellipsis-${i}`}
+                className="px-2 text-sm text-slate-400"
+              >
+                …
+              </span>
+            ) : (
+              <button
+                key={p}
+                onClick={() => goToPage(p)}
+                aria-current={p === page ? 'page' : undefined}
+                className={`h-9 w-9 rounded-lg text-sm font-medium transition ${
+                  p === page
+                    ? 'bg-slate-900 text-white'
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
+
+          <button
+            onClick={() => goToPage(page + 1)}
+            disabled={page === totalPages}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+          </button>
+        </nav>
+      )}
     </section>
   );
 }
+
+export default TourListingPage;

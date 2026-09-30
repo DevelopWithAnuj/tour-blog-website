@@ -73,7 +73,7 @@ const userForgotPasswordValidator = () => {
       .notEmpty()
       .withMessage('Email is required!')
       .isEmail()
-      .withMessage('Email is Invaild!'),
+      .withMessage('Email is Invalid!'),
   ];
 };
 

@@ -103,7 +103,7 @@ function HomePage() {
                     {tour.image ? (
                       <img
                         src={tour.image}
-                        alt={tour.destination}
+                        alt={tour.title}
                         className="h-full w-full object-cover transition duration-300 hover:scale-105"
                       />
                     ) : (
@@ -116,10 +116,10 @@ function HomePage() {
                   {/* Content */}
                   <div className="p-5">
                     <h3 className="text-xl font-bold text-slate-900">
-                      {tour.destination}
+                      {tour.title}
                     </h3>
                     <p className="mt-1 text-sm text-slate-400">
-                      {tour.location}
+                      {tour.destination} · {tour.location}
                     </p>
                     <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">
                       {tour.description}
