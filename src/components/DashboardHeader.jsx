@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext.jsx';
 import { Home, LogOut } from 'lucide-react';
 export default function DashboardHeader({ role = 'user' }) {
   const { user, logout } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const displayName = user?.fullName || user?.username || 'Traveler';
@@ -10,6 +12,12 @@ export default function DashboardHeader({ role = 'user' }) {
   const handleLogout = async () => {
     try {
       await logout();
+      toast('Signed out successfully.', { type: 'success' });
+    } catch (error) {
+      toast(
+        error.response?.data?.message || 'Unable to sign out. Please try again.',
+        { type: 'error' }
+      );
     } finally {
       navigate('/login');
     }

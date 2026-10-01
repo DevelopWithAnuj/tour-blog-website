@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useToast } from '../../context/ToastContext.jsx';
 
 export default function TourDetailsPage() {
   const { id } = useParams();
+  const { toast } = useToast();
   const [tour, setTour] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -137,6 +139,7 @@ export default function TourDetailsPage() {
         </div>
         <Link
           to="/booking"
+          onClick={() => toast(`${tour.title} selected for booking.`, { type: 'info' })}
           state={{
             tour: { _id: tour._id, title: tour.title, price: tour.price },
           }}

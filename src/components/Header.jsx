@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X, User, LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
@@ -12,6 +13,7 @@ const NAV_LINKS = [
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,6 +32,20 @@ export default function Header() {
 
   const isActive = (to) =>
     to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast('Signed out successfully!!', { type: 'success' });
+    } catch (error) {
+      toast(
+        error.response?.data?.message || 'Unable to sign out. Please try again!!',
+        { type: 'error' }
+      );
+    } finally {
+      navigate('/');
+    }
+  };
 
   return (
     <header
@@ -79,10 +95,7 @@ export default function Header() {
                 {user.fullName || user.username}
               </Link>
               <button
-                onClick={async () => {
-                  await logout();
-                  navigate('/');
-                }}
+                onClick={handleLogout}
                 className="rounded-full bg-white/10 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
               >
                 Logout
@@ -153,10 +166,7 @@ export default function Header() {
                     {user.fullName || user.username}
                   </Link>
                   <button
-                    onClick={async () => {
-                      await logout();
-                      navigate('/');
-                    }}
+                    onClick={handleLogout}
                     className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20"
                   >
                     Logout

@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { BadgeCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 import { FaGithub } from 'react-icons/fa';
 
 function GoogleIcon(props) {
@@ -35,6 +36,7 @@ function GoogleIcon(props) {
 
 export default function LoginPage() {
   const { user, login, loginWithGoogle, loginWithGitHub } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -75,6 +77,7 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       const role = res?.data?.user?.role;
+      toast('Signed in successfully.', { type: 'success' });
       navigate(from || (role === 'admin' ? '/admin-dashboard' : '/dashboard'));
     } catch (err) {
       setError(
