@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { bookings } from '../../data/bookings.js';
-import { tours } from '../../data/tours.js';
+import { useToast } from '../../context/ToastContext.jsx';
 
 const STATUS_STYLES = {
   confirmed: 'bg-emerald-100 text-emerald-700',
@@ -70,9 +71,17 @@ function BookingCard({ booking, tour }) {
         <p className="w-20 text-right font-semibold text-white">
           {formatCurrency(amount)}
         </p>
+        {booking.paymentStatus !== 'paid' && booking.status !== 'cancelled' && (
+          <Link
+            to={`/booking/payment?id=${booking._id}`}
+            className="rounded-lg bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400"
+          >
+            Pay now
+          </Link>
+        )}
         {tour && (
           <Link
-            to={`/tours/${tour.id}`}
+            to={`/tours/${tour._id}`}
             className="hidden text-sm font-medium text-amber-300 hover:text-amber-200 sm:inline"
           >
             View tour
@@ -85,30 +94,42 @@ function BookingCard({ booking, tour }) {
 
 export default function UserDashboardPage() {
   const { user } = useAuth();
-  const displayName = user?.fullName || user?.username || 'Traveler';
+  const { toast } = useToast();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
-  const enrichedBookings = bookings
-    .map((booking) => ({
-      booking,
-      tour: tours.find((t) => t.id === booking.tourId),
-    }))
-    .sort(
-      (a, b) => new Date(b.booking.date || 0) - new Date(a.booking.date || 0)
-    );
+  useEffect(() => {
+    const controller = new AbortController();
+
+    axios
+      .get('/api/v1/bookings', { signal: controller.signal })
+      .then((res) => setBookings(res.data.data.bookings))
+      .catch((error) => {
+        if (axios.isCancel(error)) return;
+        setLoadError(true);
+        toast(error.response?.data?.message || 'Unable to load bookings.', {
+          type: 'error',
+        });
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [toast]);
+
+  const enrichedBookings = bookings.map((b) => ({ booking: b, tour: b.tour }));
 
   const upcomingCount = bookings.filter(
     (b) => b.status !== 'cancelled' && new Date(b.date) >= new Date()
   ).length;
 
-  const totalSpent = enrichedBookings.reduce((sum, { booking, tour }) => {
-    const amount =
-      typeof booking.totalAmount === 'number'
-        ? booking.totalAmount
-        : tour
-          ? tour.price * (booking.guestCount || 1)
-          : 0;
-    return sum + (amount || 0);
-  }, 0);
+  const totalSpent = bookings
+    .filter((b) => b.paymentStatus === 'paid')
+    .reduce((sum, b) => sum + b.totalAmount, 0);
+
+  const displayName = user?.fullName || user?.username || 'Traveler';
 
   return (
     <section className="dashboard-page space-y-8">
@@ -120,7 +141,9 @@ export default function UserDashboardPage() {
           Hello, {displayName}
         </h1>
         <p className="mt-2 text-slate-400">
-          {user?.email ? `Signed in as ${user.email}` : 'Track every trip you\'ve booked with Drimora, from pending requests to confirmed getaways.'}
+          {user?.email
+            ? `Signed in as ${user.email}`
+            : "Track every trip you've booked with Drimora, from pending requests to confirmed getaways."}
         </p>
       </div>
 
@@ -130,7 +153,11 @@ export default function UserDashboardPage() {
         <StatCard label="Total spent" value={formatCurrency(totalSpent)} />
       </div>
 
-      {enrichedBookings.length === 0 ? (
+      {loading ? (
+        <p className="text-slate-400">Loading…</p>
+      ) : loadError ? (
+        <p className="text-rose-400">Unable to load bookings.</p>
+      ) : enrichedBookings.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
           <p className="text-lg font-semibold text-slate-800">
             No bookings yet
@@ -148,7 +175,7 @@ export default function UserDashboardPage() {
       ) : (
         <div className="space-y-4">
           {enrichedBookings.map(({ booking, tour }) => (
-            <BookingCard key={booking.id} booking={booking} tour={tour} />
+            <BookingCard key={booking._id} booking={booking} tour={tour} />
           ))}
         </div>
       )}
