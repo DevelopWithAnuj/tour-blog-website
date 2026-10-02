@@ -48,9 +48,12 @@ export default function LoginPage() {
   const [photo, setPhoto] = useState('/img/login-hero.png');
 
   if (user) {
+    const from = location.state?.from
+    const fallback = user.role === 'admin' ? '/admin-dashboard' : '/dashboard'
     return (
       <Navigate
-        to={user.role === 'admin' ? '/admin-dashboard' : '/dashboard'}
+        to={from ? from.pathname + from.search : fallback}
+        state={from?.state}
         replace
       />
     );
@@ -66,7 +69,7 @@ export default function LoginPage() {
     });
   };
 
-  const from = location.state?.from?.pathname;
+  const from = location.state?.from;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +78,14 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       const role = res?.data?.user?.role;
-      navigate(from || (role === 'admin' ? '/admin-dashboard' : '/dashboard'));
+      navigate(
+        from
+          ? `${from.pathname}${from.search || ''}`
+          : role === 'admin'
+            ? '/admin-dashboard'
+            : '/dashboard',
+        { state: from?.state }
+      );
     } catch (err) {
       setError(
         err.response?.data?.message || 'Login failed. Please try again.'

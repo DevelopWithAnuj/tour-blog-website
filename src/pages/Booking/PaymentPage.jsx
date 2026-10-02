@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { CreditCard, Smartphone } from 'lucide-react';
-
+import { formatBookingId } from '../../utils/formatBookingId.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -69,8 +69,13 @@ export default function PaymentPage() {
           <div className="text-sm">
             <p className="font-semibold">{booking.tour?.title}</p>
             <p className="text-slate-500">
-              {new Date(booking.date).toLocaleDateString()} ·{' '}
-              {booking.guestCount} guest(s)
+              {new Date(booking.date).toLocaleDateString(undefined, {
+                timeZone: 'UTC',
+              })}{' '}
+              · {booking.guestCount} guest(s)
+            </p>
+            <p className="text-xs text-slate-400">
+              Booking {formatBookingId(booking._id)}
             </p>
             <p className="mt-2 text-lg font-bold text-amber-600">{amount}</p>
           </div>

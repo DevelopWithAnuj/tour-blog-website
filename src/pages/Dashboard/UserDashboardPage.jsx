@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { formatBookingId } from '../../utils/formatBookingId.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 
@@ -23,7 +24,7 @@ function formatDate(value) {
 
 function formatCurrency(amount) {
   if (typeof amount !== 'number') return '—';
-  return `$${amount.toLocaleString()}`;
+  return `₹${amount.toLocaleString()}`;
 }
 
 function StatCard({ label, value }) {
@@ -36,6 +37,7 @@ function StatCard({ label, value }) {
 }
 
 function BookingCard({ booking, tour }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const status = booking.status || 'pending';
   const statusClass = STATUS_STYLES[status] || STATUS_STYLES.pending;
   const amount =
@@ -46,49 +48,117 @@ function BookingCard({ booking, tour }) {
         : undefined;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-blue-900 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-200/90 text-lg font-bold text-amber-700">
-          {(tour?.destination || 'T').charAt(0)}
+    <article className="rounded-2xl border border-slate-700 bg-blue-900 p-5 shadow-sm transition hover:shadow-md">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-200/90 text-lg font-bold text-amber-700">
+            {(tour?.destination || 'T').charAt(0)}
+          </div>
+          <div>
+            <p className="font-semibold text-white">
+              {tour?.destination || 'Tour unavailable'}
+            </p>
+            <p className="text-sm text-slate-300">
+              {tour?.location ? `${tour.location} · ` : ''}
+              {formatDate(booking.date)}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="font-semibold text-white">
-            {tour?.destination || 'Tour unavailable'}
-          </p>
-          <p className="text-sm text-slate-300">
-            {tour?.location ? `${tour.location} · ` : ''}
-            {formatDate(booking.date)}
-          </p>
+
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2.5">
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </span>
+              <span className="rounded-full border border-slate-600 bg-slate-800 px-2.5 py-1 text-xs capitalize text-slate-200">
+                {booking.paymentStatus}
+              </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {booking.paymentStatus !== 'paid' && status !== 'cancelled' && (
+              <Link
+                to={`/booking/payment?id=${booking._id}`}
+                className="inline-flex min-h-9 items-center rounded-lg bg-amber-500 px-3 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-400"
+              >
+                Pay now
+              </Link>
+            )}
+            <button
+              type="button"
+              aria-expanded={detailsOpen}
+              onClick={() => setDetailsOpen((open) => !open)}
+              className="inline-flex min-h-9 items-center rounded-lg border border-slate-500 px-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            >
+              {detailsOpen ? 'Hide details' : 'Details'}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 sm:justify-end">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-        <p className="w-20 text-right font-semibold text-white">
-          {formatCurrency(amount)}
-        </p>
-        {booking.paymentStatus !== 'paid' && booking.status !== 'cancelled' && (
-          <Link
-            to={`/booking/payment?id=${booking._id}`}
-            className="rounded-lg bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400"
-          >
-            Pay now
-          </Link>
-        )}
-        {tour && (
-          <Link
-            to={`/tours/${tour._id}`}
-            className="hidden text-sm font-medium text-amber-300 hover:text-amber-200 sm:inline"
-          >
-            View tour
-          </Link>
-        )}
-      </div>
-    </div>
+      {detailsOpen && (
+        <dl className="mt-5 grid gap-x-6 gap-y-3 border-t border-slate-700 pt-4 text-sm sm:grid-cols-2">
+          <div>
+            <dt className="text-slate-400">Booking ID</dt>
+            <dd className="break-all font-medium text-white"> {formatBookingId(booking._id)}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Tour</dt>
+            <dd className="font-medium text-white">
+              {tour?.title || tour?.destination || 'Tour unavailable'}
+              {tour && (
+                <Link
+                  to={`/tours/${tour._id}`}
+                  className="ml-3 font-medium text-amber-300 hover:text-amber-200"
+                >
+                  View tour
+                </Link>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Amount</dt>
+            <dd className="font-semibold text-white">{formatCurrency(amount)}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Traveler</dt>
+            <dd className="font-medium text-white">{booking.travelerName}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Email</dt>
+            <dd className="break-all font-medium text-white">
+              {booking.travelerEmail}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Guests</dt>
+            <dd className="font-medium text-white">{booking.guestCount}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Payment</dt>
+            <dd className="font-medium capitalize text-white">
+              {booking.paymentStatus || 'unpaid'}
+            </dd>
+          </div>
+          {booking.travelerPhone && (
+            <div>
+              <dt className="text-slate-400">Phone</dt>
+              <dd className="font-medium text-white">
+                {booking.travelerPhone}
+              </dd>
+            </div>
+          )}
+          {booking.specialRequests && (
+            <div className="sm:col-span-2">
+              <dt className="text-slate-400">Special requests</dt>
+              <dd className="whitespace-pre-wrap font-medium text-white">
+                {booking.specialRequests}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </article>
   );
 }
 
@@ -175,7 +245,11 @@ export default function UserDashboardPage() {
       ) : (
         <div className="space-y-4">
           {enrichedBookings.map(({ booking, tour }) => (
-            <BookingCard key={booking._id} booking={booking} tour={tour} />
+            <BookingCard
+              key={booking._id}
+              booking={booking}
+              tour={tour}
+            />
           ))}
         </div>
       )}

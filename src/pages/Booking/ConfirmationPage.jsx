@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { CheckCircle2 } from 'lucide-react';
-
+import { formatBookingId } from '../../utils/formatBookingId.js';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,9 +32,11 @@ export default function ConfirmationPage() {
   if (loading) return <section className="confirmation-page">Loading…</section>;
   if (!booking)
     return <section className="confirmation-page">Booking not found.</section>;
+  if (booking.paymentStatus !== 'paid')
+    return <Navigate to={`/booking/payment?id=${id}`} replace />;
 
   const rows = [
-    ['Booking ID', booking._id],
+    ['Booking ID', formatBookingId(booking._id)],
     ['Tour', booking.tour?.title],
     ['Travel date', new Date(booking.date).toLocaleDateString()],
     ['Guests', booking.guestCount],

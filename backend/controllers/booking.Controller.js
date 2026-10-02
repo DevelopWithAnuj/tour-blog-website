@@ -81,6 +81,9 @@ const getBookingById = asyncHandler(async (req, res) => {
 
 const payBooking = asyncHandler(async (req, res) => {
   const booking = await findAccessibleBooking(req);
+  if (String(booking.user._id ?? booking.user) !== String(req.user._id)) {
+    throw new ApiError(HttpStatus.NOT_FOUND, 'Booking not found');
+  }
 
   if (booking.status === 'cancelled') {
     throw new ApiError(HttpStatus.CONFLICT, 'Booking is cancelled!');
@@ -113,6 +116,12 @@ const cancelBooking = asyncHandler(async (req, res) => {
   if (booking.status === 'cancelled') {
     throw new ApiError(HttpStatus.CONFLICT, 'Booking already cancelled');
   }
+  if (booking.paymentStatus === 'paid') {
+    throw new ApiError(
+      HttpStatus.CONFLICT,
+      'Paid bookings cannot be cancelled online. Please contact support.'
+    );
+  }
 
   booking.status = 'cancelled';
   await booking.save();
@@ -128,6 +137,10 @@ const confirmBooking = asyncHandler(async (req, res) => {
       HttpStatus.CONFLICT,
       'Cannot confirm a cancelled booking'
     );
+  }
+
+  if (booking.paymentStatus !== 'paid') {
+    throw new ApiError(HttpStatus.CONFLICT, 'Cannot confirm an unpaid booking');
   }
 
   booking.status = 'confirmed';
