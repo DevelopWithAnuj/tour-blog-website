@@ -1,6 +1,6 @@
-import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import DashboardHeader from '../components/DashboardHeader';
+import PageTransition from '../components/PageTransition.jsx';
 
 const userLinks = [
   { to: '/dashboard', label: 'Overview' },
@@ -21,7 +21,7 @@ return (
         <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader role={role} />
         <main className='dashboard-content'>
-            <Outlet />
+            <PageTransition />
         </main>
     </div>
     </div>
