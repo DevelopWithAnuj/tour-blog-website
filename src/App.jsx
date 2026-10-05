@@ -18,8 +18,10 @@ import TourDetailsPage from './pages/Tours/TourDetailsPage.jsx';
 import BookingPage from './pages/Booking/BookingPage.jsx';
 import PaymentPage from './pages/Booking/PaymentPage.jsx';
 import ConfirmationPage from './pages/Booking/ConfirmationPage.jsx';
+
 import BlogPage from './pages/Blog/BlogPage.jsx';
 import BlogPostPage from './pages/Blog/BlogPostPage.jsx';
+
 import UserDashboardPage from './pages/Dashboard/UserDashboardPage.jsx';
 import AdminDashboardPage from './pages/Admin/AdminDashboardPage.jsx';
 import AdminBookingsPage from './pages/Admin/AdminBookingsPage.jsx';
@@ -56,9 +58,6 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/tours" element={<TourListingPage />} />
           <Route path="/tours/:id" element={<TourDetailsPage />} />
-          <Route path="/booking" element={<BookingPage />} />
-          <Route path="/booking/payment" element={<PaymentPage />} />
-          <Route path="/booking/confirmation" element={<ConfirmationPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:id" element={<BlogPostPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -68,6 +67,18 @@ export default function App() {
             path="/reset-password/:resetToken"
             element={<ResetPasswordPage />}
           />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <PublicLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/booking/payment" element={<PaymentPage />} />
+          <Route path="/booking/confirmation" element={<ConfirmationPage />} />
         </Route>
 
         {/* User dashboard uses Sidebar */}

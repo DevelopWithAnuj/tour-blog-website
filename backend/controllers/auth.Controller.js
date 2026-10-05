@@ -384,12 +384,19 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     try {
+      const resetUrlBase =
+        process.env.CLIENT_URL || process.env.FORGOT_PASSWORD_REDIRECT_URL;
+      const passwordResetUrl = new URL(
+        `/reset-password/${encodeURIComponent(unHashedToken)}`,
+        resetUrlBase
+      ).toString();
+
       await sendEmail({
         email: user?.email,
         subject: 'Password Reset request',
         mailgenContent: forgotPasswordMailgenContent(
           user.username,
-          `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`
+          passwordResetUrl
         ),
       });
     } catch (mailError) {

@@ -1,12 +1,33 @@
-import { Router } from "express";
-import { requireRole, verifyJWT } from "../middleware/auth.Middleware";
-import { UserRolesEnum } from "../utils/constants";
+import { Router } from 'express';
+import { requireRole, verifyJWT } from '../middleware/auth.Middleware.js';
+import { validate } from '../middleware/validator.Middleware.js';
+import { UserRolesEnum } from '../utils/constants.js';
+import {
+  bookingCreateValidator,
+  bookingPaymentValidator,
+} from '../validators/index.js';
+import {
+  createBooking,
+  cancelBooking,
+  confirmBooking,
+  getBookingById,
+  getBookings,
+  payBooking,
+} from '../controllers/booking.Controller.js';
 
+const router = Router();
 
-const router =  Router()
-// requireRole middleware exists in auth.Middleware.js but is never used anywhere. Right now nothing server-side actually enforces admin-only access — ProtectedRoute is frontend-only and trivially bypassed by calling the API directly. When you wire up adminRoutes.js and bookingRoutes.js, apply both:
+router.use(verifyJWT);
+
 router
-  .route('/bookings')
-  .get(verifyJWT, requireRole(UserRolesEnum.ADMIN), getBookings);
+  .route('/')
+  .post(bookingCreateValidator(), validate, createBooking)
+  .get(getBookings);
+router.route('/:id').get(getBookingById);
+router.route('/:id/pay').post(bookingPaymentValidator(), validate, payBooking);
+router.route('/:id/cancel').patch(cancelBooking);
+router
+  .route('/:id/confirm')
+  .patch(requireRole(UserRolesEnum.ADMIN), confirmBooking);
 
-export default router
+export default router;

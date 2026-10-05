@@ -11,14 +11,14 @@ const passwordValidationChain = (
   }
 
   if (minLength !== null) {
-    chain.isLength({ min: minLength }).withMessage(
-      `Password must be at least ${minLength} characters!`
-    );
+    chain
+      .isLength({ min: minLength })
+      .withMessage(`Password must be at least ${minLength} characters!`);
   }
 
-  return chain.isLength({ max: maxLength }).withMessage(
-    `Password must be at most ${maxLength} characters!`
-  );
+  return chain
+    .isLength({ max: maxLength })
+    .withMessage(`Password must be at most ${maxLength} characters!`);
 };
 
 const userRegisterValidator = () => {
@@ -83,10 +83,40 @@ const userResetForgotPasswordValidator = () => {
   ];
 };
 
+const bookingCreateValidator = () => [
+  body('tourId').isMongoId().withMessage('Valid tour is required'),
+  body('date')
+    .isISO8601()
+    .withMessage('Valid travel date is required')
+    .custom((v) => new Date(v) > new Date())
+    .withMessage('Travel date must be in the future'),
+  body('guestCount')
+    .isInt({ min: 1, max: 20 })
+    .withMessage('Guests must be between 1 and 20'),
+  body('travelerName').trim().notEmpty().withMessage('Name is required'),
+  body('travelerEmail').trim().isEmail().withMessage('Valid email is required'),
+  body('travelerPhone')
+    .optional({ values: 'falsy' })
+    .trim()
+    .isLength({ max: 20 }),
+  body('specialRequests').optional().trim().isLength({ max: 500 }),
+];
+
+const bookingPaymentValidator = () => [
+  body('method').isIn(['card', 'upi', 'netbanking']).withMessage('Invalid payment method'),
+  body('cardNumber')
+    .if(body('method').equals('card'))
+    .customSanitizer((v) => String(v || '').replace(/\s/g, ''))
+    .matches(/^\d{16}$/)
+    .withMessage('Card number must be 16 digits'),
+];
+
 export {
   userRegisterValidator,
   userLoginValidator,
   userChangeCurrentPasswordValidator,
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
+  bookingCreateValidator,
+  bookingPaymentValidator
 };
