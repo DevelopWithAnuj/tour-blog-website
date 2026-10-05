@@ -1,139 +1,145 @@
-import { useEffect, useState } from 'react';
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { CreditCard, Smartphone } from 'lucide-react';
-import { formatBookingId } from '../../utils/formatBookingId.js';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '../../context/ToastContext.jsx';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Banknote, CreditCard, Loader2, Lock, Smartphone } from 'lucide-react';
+import {
+  BookingSteps,
+  OrderSummary,
+  formatPrice,
+} from '../../components/BookingParts.jsx';
+
+const METHODS = [
+  { id: 'upi', label: 'UPI', hint: 'Pay with any UPI app', icon: Smartphone },
+  { id: 'card', label: 'Card', hint: 'Credit or debit card', icon: CreditCard },
+  {
+    id: 'netbanking',
+    label: 'Net banking',
+    hint: 'Choose your bank',
+    icon: Banknote,
+  },
+];
+
+const makeBookingId = () =>
+  `DRM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
 export default function PaymentPage() {
-  const id = useSearchParams()[0].get('id');
+  const { state } = useLocation();
   const navigate = useNavigate();
-
-  const [booking, setBooking] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [method, setMethod] = useState('card');
-  const [cardNumber, setCardNumber] = useState('');
+  const [method, setMethod] = useState('upi');
   const [paying, setPaying] = useState(false);
+  const timer = useRef(null);
 
-  useEffect(() => {
-    if (!id) return;
-    axios
-      .get(`/api/v1/bookings/${id}`)
-      .then((res) => setBooking(res.data.data.booking))
-      .catch(() => setBooking(null))
-      .finally(() => setLoading(false));
-  }, [id]);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  if (!id) return <Navigate to="/tours" replace />;
-  if (loading) return <section className="payment-page">Loading…</section>;
-  if (!booking)
-    return <section className="payment-page">Booking not found.</section>;
-  if (booking.paymentStatus === 'paid')
-    return <Navigate to={`/booking/confirmation?id=${id}`} replace />;
+  if (!state?.tour || !state?.details) {
+    return <Navigate to="/tours" replace />;
+  }
 
-  const amount = `₹${booking.totalAmount.toLocaleString('en-IN')}`;
+  const { tour, details } = state;
+  const total = tour.price * details.guests;
 
-  const handlePay = async (e) => {
-    e.preventDefault();
+  const handlePay = () => {
     setPaying(true);
-    try {
-      await axios.post(`/api/v1/bookings/${id}/pay`, { method, cardNumber });
-      toast('Payment successful', { type: 'success' });
-      navigate(`/booking/confirmation?id=${id}`);
-    } catch (err) {
-      const first = err.response?.data?.errors?.[0];
-      toast(
-        (first && Object.values(first)[0]) ||
-          err.response?.data?.message ||
-          'Payment failed.',
-        { type: 'error' }
-      );
-    } finally {
-      setPaying(false);
-    }
+    // Demo only: replace with a real gateway call and booking API request.
+    timer.current = setTimeout(() => {
+      navigate('/booking/confirmation', {
+        replace: true,
+        state: { tour, details, method, bookingId: makeBookingId() },
+      });
+    }, 1500);
   };
 
   return (
-    <section className="payment-page mx-auto max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Payment</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm">
-            <p className="font-semibold">{booking.tour?.title}</p>
-            <p className="text-slate-500">
-              {new Date(booking.date).toLocaleDateString(undefined, {
-                timeZone: 'UTC',
-              })}{' '}
-              · {booking.guestCount} guest(s)
-            </p>
-            <p className="text-xs text-slate-400">
-              Booking {formatBookingId(booking._id)}
-            </p>
-            <p className="mt-2 text-lg font-bold text-amber-600">{amount}</p>
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 md:px-8">
+      <BookingSteps current={2} />
+
+      <h1 className="mt-8 animate-fade-up font-display text-4xl sm:text-5xl">
+        How would you like to pay?
+      </h1>
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_22rem]">
+        <div className="animate-fade-up space-y-4">
+          <div
+            role="radiogroup"
+            aria-label="Payment method"
+            className="space-y-3"
+          >
+            {METHODS.map(({ id, label, hint, icon: Icon }) => {
+              const selected = method === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setMethod(id)}
+                  disabled={paying}
+                  className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
+                    selected
+                      ? 'border-amber-400 bg-amber-400/10'
+                      : 'border-white/10 bg-slate-900 hover:border-white/25'
+                  }`}
+                >
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-full ${
+                      selected
+                        ? 'bg-amber-500 text-slate-950'
+                        : 'bg-white/10 text-white/70'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-semibold text-white">
+                      {label}
+                    </span>
+                    <span className="text-sm text-white/55">{hint}</span>
+                  </span>
+                  <span
+                    className={`h-5 w-5 rounded-full border-2 transition ${
+                      selected
+                        ? 'border-amber-400 bg-amber-400 shadow-[inset_0_0_0_3px_#0f172a]'
+                        : 'border-white/30'
+                    }`}
+                  />
+                </button>
+              );
+            })}
           </div>
 
-          <Separator className="my-5" />
+          <p className="flex items-center gap-2 text-sm text-white/45">
+            <Lock className="h-4 w-4" />
+            This is a demo checkout. No real payment is taken.
+          </p>
 
-          <form onSubmit={handlePay}>
-            <Tabs value={method} onValueChange={setMethod}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="card">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Card
-                </TabsTrigger>
-                <TabsTrigger value="upi">
-                  <Smartphone className="mr-2 h-4 w-4" />
-                  UPI
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="card" className="mt-4">
-                <Label htmlFor="card">Card number (mock)</Label>
-                <Input
-                  id="card"
-                  inputMode="numeric"
-                  maxLength={19}
-                  required={method === 'card'}
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  placeholder="4242 4242 4242 4242"
-                  className="mt-1"
-                />
-                <p className="mt-1 text-xs text-slate-400">
-                  Test mode: a card ending in 0000 is declined.
-                </p>
-              </TabsContent>
-
-              <TabsContent value="upi" className="mt-4 text-sm text-slate-500">
-                Mock UPI: no details needed.
-              </TabsContent>
-            </Tabs>
-
-            <Button
-              type="submit"
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <button
+              onClick={handlePay}
               disabled={paying}
-              className="mt-6 w-full bg-amber-500 text-white hover:bg-amber-600"
+              className="flex min-w-48 items-center justify-center gap-2 rounded-full bg-amber-500 px-8 py-3.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.98] disabled:opacity-70"
             >
-              {paying ? 'Processing…' : `Pay ${amount}`}
-            </Button>
-          </form>
+              {paying ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing…
+                </>
+              ) : (
+                `Pay ${formatPrice(total)}`
+              )}
+            </button>
+            {!paying && (
+              <Link
+                to="/booking"
+                state={{ tour }}
+                className="text-sm text-white/60 hover:text-white"
+              >
+                Edit details
+              </Link>
+            )}
+          </div>
+        </div>
 
-          <Link
-            to="/dashboard"
-            className="mt-5 inline-block text-sm text-slate-500 hover:text-slate-900"
-          >
-            Pay later from dashboard
-          </Link>
-        </CardContent>
-      </Card>
-    </section>
+        <OrderSummary tour={tour} details={details} />
+      </div>
+    </div>
   );
 }
