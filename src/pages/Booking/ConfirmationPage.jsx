@@ -1,36 +1,65 @@
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Check } from 'lucide-react';
+import axios from 'axios';
 import {
   BookingSteps,
   formatDate,
   formatPrice,
+  apiMessage,
 } from '../../components/BookingParts.jsx';
+import { formatBookingId } from '@/utils/formatBookingId.js';
 
 export default function ConfirmationPage() {
-  const { state } = useLocation();
+  const [params] = useSearchParams();
+  const id = params.get('id');
+  const [booking, setBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
-  if (!state?.tour || !state?.bookingId) {
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    axios
+      .get(`/api/v1/bookings/${id}`)
+      .then((res) => setBooking(res.data.data.booking))
+      .catch((err) => setLoadError(apiMessage(err)))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <p className="p-10 text-center text-white/60">Loading...</p>;
+  }
+  if (!id || (!loadError && booking?.paymentStatus !== 'paid')) {
     return <Navigate to="/dashboard" replace />;
   }
-
-  const { tour, details, bookingId, method } = state;
-  const total = tour.price * details.guests;
+  if (loadError) {
+    return (
+      <p role="alert" className="p-10 text-center text-rose-300">
+        {loadError}
+      </p>
+    );
+  }
 
   const rows = [
-    ['Booking ID', bookingId],
-    ['Tour', tour.title],
-    ['Travel date', formatDate(details.date)],
-    ['Travellers', details.guests],
+    ['Booking ID', formatBookingId(booking._id)],
+    ['Tour', booking.tour?.title],
+    ['Travel date', formatDate(booking.date)],
+    ['Travellers', booking.guestCount],
     [
       'Paid with',
-      method === 'netbanking' ? 'Net banking' : method.toUpperCase(),
+      booking.paymentMethod === 'netbanking'
+        ? 'Net banking'
+        : booking.paymentMethod.toUpperCase(),
     ],
-    ['Total paid', formatPrice(total)],
+    ['Total paid', formatPrice(booking.totalAmount)],
   ];
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-10 md:px-8">
-      <BookingSteps current={4} />
+      <BookingSteps current={3} />
 
       <div className="mt-12 text-center">
         <span className="mx-auto flex h-16 w-16 animate-scale-in items-center justify-center rounded-full bg-emerald-400/15 text-emerald-400">
@@ -44,7 +73,7 @@ export default function ConfirmationPage() {
           className="mt-3 animate-fade-up text-white/60"
         >
           A confirmation has been sent to{' '}
-          <span className="text-white">{details.email}</span>.
+          <span className="text-white">{booking.travelerEmail}</span>.
         </p>
       </div>
 

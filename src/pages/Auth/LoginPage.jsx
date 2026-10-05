@@ -47,7 +47,7 @@ export default function LoginPage() {
     );
   }
 
-  const from = location.state?.from?.pathname;
+  const from = location.state?.from;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +58,14 @@ export default function LoginPage() {
     try {
       const res = await login(email.trim(), password);
       const role = res?.data?.user?.role;
-      navigate(from || (role === 'admin' ? '/admin-dashboard' : '/dashboard'));
+      navigate(
+        from
+          ? from.pathname + from.search
+          : role === 'admin'
+            ? '/admin-dashboard'
+            : '/dashboard',
+        { state: from?.state }
+      );
     } catch (err) {
       const message =
         err.response?.data?.message || 'Login failed. Please try again.';

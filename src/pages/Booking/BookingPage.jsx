@@ -13,13 +13,22 @@ const MAX_GUESTS = 10;
 const tomorrow = () => {
   const d = new Date();
   d.setDate(d.getDate() + 1);
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
-function Field({ label, error, children }) {
+function Field({ id, label, error, children }) {
   return (
     <div>
-      <label className="text-sm text-white/70">{label}</label>
+      {id ? (
+        <label htmlFor={id} className="text-sm text-white/70">
+          {label}
+        </label>
+      ) : (
+        <p className="text-sm text-white/70">{label}</p>
+      )}
       {children}
       {error && <p className="mt-1.5 text-xs text-rose-300">{error}</p>}
     </div>
@@ -31,17 +40,16 @@ export default function BookingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const tour = state?.tour;
-
   const [form, setForm] = useState({
     name: user?.fullName || '',
     email: user?.email || '',
     phone: '',
     date: '',
-    guests: 2,
+    guests: 1,
     requests: '',
   });
   const [errors, setErrors] = useState({});
-
+  const [submitting, setSubmitting] = useState(false);
   if (!tour) {
     return (
       <div className="mx-auto flex max-w-md animate-scale-in flex-col items-center px-6 py-32 text-center">
@@ -78,7 +86,20 @@ export default function BookingPage() {
     const found = validate();
     setErrors(found);
     if (Object.keys(found).length) return;
-    navigate('/booking/payment', { state: { tour, details: form } });
+    setSubmitting(true);
+    navigate('/booking/payment', {
+      state: {
+        tour,
+        details: {
+          date: form.date,
+          guests: form.guests,
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          requests: form.requests.trim(),
+        },
+      },
+    });
   };
 
   return (
@@ -95,8 +116,9 @@ export default function BookingPage() {
           noValidate
           className="animate-fade-up space-y-6"
         >
-          <Field label="Full name" error={errors.name}>
+          <Field id="traveler-name" label="Full name" error={errors.name}>
             <input
+              id="traveler-name"
               value={form.name}
               onChange={set('name')}
               placeholder="As on the passport"
@@ -105,8 +127,9 @@ export default function BookingPage() {
           </Field>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Email" error={errors.email}>
+            <Field id="traveler-email" label="Email" error={errors.email}>
               <input
+                id="traveler-email"
                 type="email"
                 value={form.email}
                 onChange={set('email')}
@@ -114,8 +137,9 @@ export default function BookingPage() {
                 className={fieldClass}
               />
             </Field>
-            <Field label="Phone" error={errors.phone}>
+            <Field id="traveler-phone" label="Phone" error={errors.phone}>
               <input
+                id="traveler-phone"
                 type="tel"
                 value={form.phone}
                 onChange={set('phone')}
@@ -126,8 +150,9 @@ export default function BookingPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Travel date" error={errors.date}>
+            <Field id="travel-date" label="Travel date" error={errors.date}>
               <input
+                id="travel-date"
                 type="date"
                 min={tomorrow()}
                 value={form.date}
@@ -163,8 +188,9 @@ export default function BookingPage() {
             </Field>
           </div>
 
-          <Field label="Special requests (optional)">
+          <Field id="special-requests" label="Special requests (optional)">
             <textarea
+              id="special-requests"
               rows={4}
               value={form.requests}
               onChange={set('requests')}
@@ -175,6 +201,7 @@ export default function BookingPage() {
 
           <button
             type="submit"
+            disabled={submitting}
             className="w-full rounded-full bg-amber-500 py-3.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.98] sm:w-auto sm:px-10"
           >
             Continue to payment

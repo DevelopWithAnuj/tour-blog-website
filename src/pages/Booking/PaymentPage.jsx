@@ -1,11 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { Banknote, CreditCard, Loader2, Lock, Smartphone } from 'lucide-react';
 import {
   BookingSteps,
   OrderSummary,
+  apiMessage,
   formatPrice,
 } from '../../components/BookingParts.jsx';
+import axios from 'axios';
 
 const METHODS = [
   { id: 'upi', label: 'UPI', hint: 'Pay with any UPI app', icon: Smartphone },
@@ -18,34 +26,106 @@ const METHODS = [
   },
 ];
 
-const makeBookingId = () =>
-  `DRM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-
 export default function PaymentPage() {
-  const { state } = useLocation();
+  const location = useLocation();
+  const [params, setParams] = useSearchParams();
+  const id = params.get('id');
+  const { tour, details } = location.state || {};
   const navigate = useNavigate();
+  const [booking, setBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [cardNumber, setCardNumber] = useState('');
   const [method, setMethod] = useState('upi');
   const [paying, setPaying] = useState(false);
-  const timer = useRef(null);
+  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
 
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    axios
+      .get(`/api/v1/bookings/${id}`)
+      .then((res) => setBooking(res.data.data.booking))
+      .catch((err) => setLoadError(apiMessage(err)))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  if (!state?.tour || !state?.details) {
+  if (loading) {
+    return <p className="p-10 text-center text-white/60">Loading...</p>;
+  }
+  if (loadError) {
+    return (
+      <div className="p-10 text-center">
+        <p role="alert" className="text-rose-300">
+          {loadError}
+        </p>
+        <Link to="/dashboard" className="mt-4 inline-block text-amber-300">
+          View my trips
+        </Link>
+      </div>
+    );
+  }
+  if (booking?.status === 'cancelled') {
+    return <Navigate to="/dashboard" replace />;
+  }
+  if (booking?.paymentStatus === 'paid') {
+    return <Navigate to={`/booking/confirmation?id=${id}`} replace />;
+  }
+  if (!booking && (!tour || !details)) {
     return <Navigate to="/tours" replace />;
   }
 
-  const { tour, details } = state;
-  const total = tour.price * details.guests;
+  const currentTour = booking
+    ? {
+        ...tour,
+        title: booking.tour?.title,
+        price: booking.totalAmount / booking.guestCount,
+      }
+    : tour;
+  const currentDetails = booking
+    ? {
+        ...details,
+        date: booking.date,
+        guests: booking.guestCount,
+      }
+    : details;
+  const total = booking
+    ? booking.totalAmount
+    : currentTour.price * currentDetails.guests;
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setPaying(true);
-    // Demo only: replace with a real gateway call and booking API request.
-    timer.current = setTimeout(() => {
-      navigate('/booking/confirmation', {
-        replace: true,
-        state: { tour, details, method, bookingId: makeBookingId() },
+    setError('');
+    try {
+      let currentBooking = booking;
+      if (!currentBooking) {
+        const bookingResponse = await axios.post('/api/v1/bookings', {
+          tourId: currentTour._id,
+          date: currentDetails.date,
+          guestCount: currentDetails.guests,
+          travelerName: currentDetails.name,
+          travelerEmail: currentDetails.email,
+          travelerPhone: currentDetails.phone,
+          specialRequests: currentDetails.requests,
+        });
+        currentBooking = bookingResponse.data.data.booking;
+        setBooking(currentBooking);
+        setParams({ id: currentBooking._id }, { replace: true });
+      }
+
+      await axios.post(`/api/v1/bookings/${currentBooking._id}/pay`, {
+        method,
+        cardNumber: method === 'card' ? cardNumber : undefined,
       });
-    }, 1500);
+      navigate(`/booking/confirmation?id=${currentBooking._id}`, {
+        replace: true,
+      });
+    } catch (err) {
+      setError(apiMessage(err));
+      setPaying(false);
+    }
   };
 
   return (
@@ -106,6 +186,26 @@ export default function PaymentPage() {
             })}
           </div>
 
+          {method === 'card' && (
+            <label className="block text-sm text-white/70">
+              Card number
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="cc-number"
+                value={cardNumber}
+                onChange={(event) => setCardNumber(event.target.value)}
+                placeholder="1234 5678 9012 3456"
+                className="mt-1.5 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+              />
+            </label>
+          )}
+
+          {error && (
+            <p role="alert" className="text-sm text-rose-300">
+              {error}
+            </p>
+          )}
           <p className="flex items-center gap-2 text-sm text-white/45">
             <Lock className="h-4 w-4" />
             This is a demo checkout. No real payment is taken.
@@ -126,19 +226,10 @@ export default function PaymentPage() {
                 `Pay ${formatPrice(total)}`
               )}
             </button>
-            {!paying && (
-              <Link
-                to="/booking"
-                state={{ tour }}
-                className="text-sm text-white/60 hover:text-white"
-              >
-                Edit details
-              </Link>
-            )}
           </div>
         </div>
 
-        <OrderSummary tour={tour} details={details} />
+        <OrderSummary tour={currentTour} details={currentDetails} />
       </div>
     </div>
   );
