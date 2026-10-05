@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Check, ChevronDown, Clock, MapPin, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Clock,
+  MapPin,
+  X,
+} from 'lucide-react';
 
 const shimmer =
   'animate-shimmer bg-[linear-gradient(90deg,#0f172a_25%,#1e293b_50%,#0f172a_75%)] bg-size-[200%_100%]';
@@ -87,9 +95,10 @@ export default function TourDetailsPage() {
     <Link
       to="/booking"
       state={bookingState}
-      className={`block rounded-full bg-amber-500 px-6 py-3.5 text-center text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97] ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-center text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97] ${className}`}
     >
       Book this tour
+      <ArrowRight className="h-4 w-4" />
     </Link>
   );
 

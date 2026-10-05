@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowUpRight, Clock, Search, SearchX, X } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ListFilter,
+  MapPin,
+  Search,
+  SearchX,
+  X,
+} from 'lucide-react';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest first' },
@@ -39,8 +50,11 @@ function TourCard({ tour, index }) {
 
       <div className="p-5">
         <h3 className="font-display text-xl text-white">{tour.title}</h3>
-        <p className="mt-1 text-sm text-white/55">
-          {tour.destination ? `${tour.destination}, ${tour.location}` : tour.location}
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-white/55">
+          <MapPin className="h-4 w-4 shrink-0" />
+          <span>
+            {tour.destination ? `${tour.destination}, ${tour.location}` : tour.location}
+          </span>
         </p>
 
         <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
@@ -75,8 +89,9 @@ function Pagination({ page, totalPages, onChange }) {
       <button
         onClick={() => onChange(page - 1)}
         disabled={page === 1}
-        className={`${base} border border-white/15 text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40`}
+        className={`${base} inline-flex items-center gap-1.5 border border-white/15 text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40`}
       >
+        <ChevronLeft className="h-4 w-4" />
         Previous
       </button>
 
@@ -104,9 +119,10 @@ function Pagination({ page, totalPages, onChange }) {
       <button
         onClick={() => onChange(page + 1)}
         disabled={page === totalPages}
-        className={`${base} border border-white/15 text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40`}
+        className={`${base} inline-flex items-center gap-1.5 border border-white/15 text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40`}
       >
         Next
+        <ChevronRight className="h-4 w-4" />
       </button>
     </nav>
   );
@@ -240,18 +256,21 @@ export default function TourListingPage() {
           </button>
         </form>
 
-        <select
-          value={sort}
-          onChange={(e) => update({ category, q: query, sort: e.target.value })}
-          aria-label="Sort tours"
-          className="rounded-full border border-white/15 bg-slate-900 px-5 py-3 text-sm text-white outline-none focus:border-amber-400"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <ListFilter className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+          <select
+            value={sort}
+            onChange={(e) => update({ category, q: query, sort: e.target.value })}
+            aria-label="Sort tours"
+            className="rounded-full border border-white/15 bg-slate-900 py-3 pl-10 pr-5 text-sm text-white outline-none focus:border-amber-400"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Categories */}
@@ -286,8 +305,9 @@ export default function TourListingPage() {
         {hasFilters && (
           <button
             onClick={() => setParams({})}
-            className="text-amber-400 hover:text-amber-300"
+            className="inline-flex items-center gap-1.5 text-amber-400 hover:text-amber-300"
           >
+            <X className="h-4 w-4" />
             Clear filters
           </button>
         )}
@@ -319,9 +339,10 @@ export default function TourListingPage() {
           </p>
           <button
             onClick={() => setParams({})}
-            className="mt-6 rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97]"
           >
             Show all tours
+            <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       )}
