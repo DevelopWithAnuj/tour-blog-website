@@ -103,7 +103,7 @@ const bookingCreateValidator = () => [
 ];
 
 const bookingPaymentValidator = () => [
-  body('method').isIn(['card', 'upi']).withMessage('Invalid payment method'),
+  body('method').isIn(['card', 'upi', 'netbanking']).withMessage('Invalid payment method'),
   body('cardNumber')
     .if(body('method').equals('card'))
     .customSanitizer((v) => String(v || '').replace(/\s/g, ''))

@@ -92,3 +92,12 @@ export function OrderSummary({ tour, details, children }) {
     </aside>
   );
 }
+
+export const apiMessage = (err) => {
+  const first = err.response?.data?.errors?.[0];
+  return (
+    (first && Object.values(first)[0]) ||
+    err.response?.data?.message ||
+    'Something went wrong.'
+  );
+};

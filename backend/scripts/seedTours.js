@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import connectDB from '../db/db-connection.js';
 import { Tour } from '../models/Tour.models.js';
+import { moreTours } from './moreTours.js';
 
 const tours = [
   {
@@ -135,6 +136,6 @@ const tours = [
 
 await connectDB();
 await Tour.deleteMany({});
-await Tour.insertMany(tours);
-console.log(`Seeded ${tours.length} tours`);
+await Tour.insertMany([...tours, ...moreTours]);
+console.log(`Seeded ${tours.length + moreTours.length} tours`);
 await mongoose.disconnect();

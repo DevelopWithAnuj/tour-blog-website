@@ -105,6 +105,7 @@ const payBooking = asyncHandler(async (req, res) => {
   }
 
   booking.paymentStatus = 'paid';
+  booking.status = 'confirmed'
   await booking.save();
   res
     .status(HttpStatus.OK)
