@@ -1,43 +1,74 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  Compass,
+  Home,
+  LayoutDashboard,
+  LogIn,
+  UserPlus,
+} from 'lucide-react';
 
-const quickLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/tours', label: 'Tours' },
-  { to: '/blog', label: 'Blog' },
-  { to: '/login', label: 'Login' },
-  { to: '/dashboard', label: 'Dashboard' },
+const LINK_GROUPS = [
+  {
+    title: 'Explore',
+    links: [
+      { to: '/', label: 'Home', icon: Home },
+      { to: '/tours', label: 'Tours', icon: Compass },
+      { to: '/blog', label: 'Travel blog', icon: BookOpen },
+    ],
+  },
+  {
+    title: 'Account',
+    links: [
+      { to: '/login', label: 'Sign in', icon: LogIn },
+      { to: '/register', label: 'Create account', icon: UserPlus },
+      { to: '/dashboard', label: 'My trips', icon: LayoutDashboard },
+    ],
+  },
 ];
 
-const socialLinks = [
+const SOCIALS = [
   { href: 'https://facebook.com', label: 'Facebook', icon: FaFacebook },
-  { href: 'https://linkedin.com', label: 'LinkedIn', icon: FaLinkedin },
-  { href: 'https://twitter.com', label: 'Twitter', icon: FaTwitter },
   { href: 'https://instagram.com', label: 'Instagram', icon: FaInstagram },
+  { href: 'https://twitter.com', label: 'Twitter', icon: FaTwitter },
+  { href: 'https://linkedin.com', label: 'LinkedIn', icon: FaLinkedin },
 ];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    // TODO: send to your newsletter endpoint
+    setSubscribed(true);
+    setEmail('');
+  };
 
   return (
-    <footer className="mt-auto bg-[#1a1a1a] pt-10 pb-6 text-white">
-      <div className="mx-auto max-w-7xl px-4 md:px-8">
-        <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1.4fr]">
+    <footer className="mt-auto border-t border-white/10 bg-slate-950">
+      <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
           <div>
-            <h2 className="mb-3 text-2xl font-bold text-amber-600">Drimora Travel</h2>
-            <p className="max-w-md text-gray-400">
-              Explore amazing destinations, discover unforgettable experiences, and
-              find your perfect tour.
+            <p className="font-display text-3xl text-amber-400">Drimora</p>
+            <p className="mt-4 max-w-xs text-white/55">
+              Hand-built tours with the stays, guides and transfers already
+              sorted.
             </p>
-            <div className="mt-5 flex gap-3">
-              {socialLinks.map(({ href, label, icon: Icon }) => (
+            <div className="mt-6 flex gap-2">
+              {SOCIALS.map(({ href, label, icon: Icon }) => (
                 <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 p-2 text-xl text-white transition-transform duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:text-amber-400"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition hover:-translate-y-0.5 hover:border-amber-400/60 hover:text-amber-300"
                 >
                   <Icon />
                 </a>
@@ -45,51 +76,72 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <h3 className="mb-3 font-display text-lg font-semibold text-amber-300">
-              Quick Links
-            </h3>
-            <ul className="space-y-2.5 text-gray-300">
-              {quickLinks.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="transition-colors duration-300 hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {LINK_GROUPS.map((group) => (
+            <nav key={group.title} aria-label={group.title}>
+              <h3 className="text-sm font-semibold text-white">
+                {group.title}
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {group.links.map(({ to, label, icon: Icon }) => (
+                  <li key={to}>
+                    <Link
+                      to={to}
+                      className="flex items-center gap-2 text-white/55 transition hover:text-amber-300"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
 
           <div>
-            <h3 className="mb-3 font-display text-lg font-semibold text-amber-300">
-              Newsletter
+            <h3 className="text-sm font-semibold text-white">
+              Trip ideas in your inbox
             </h3>
-            <p className="mb-4 text-gray-300">
-              Subscribe to our newsletter for the latest travel inspiration and updates.
+            <p className="mt-4 text-white/55">
+              One short email a month. Unsubscribe any time.
             </p>
-            <form onSubmit={(e) => e.preventDefault()} className="flex gap-2.5">
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-                className="flex-1 rounded-sm border border-white/10 bg-white/5 p-2.5 text-white outline-none placeholder:text-gray-400 focus:border-amber-400"
-              />
-              <button
-                type="submit"
-                className="rounded bg-amber-700 px-3.5 py-2.5 font-medium text-white transition-colors duration-300 hover:bg-amber-600"
+
+            {subscribed ? (
+              <p className="mt-5 flex animate-scale-in items-center gap-2 rounded-full bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
+                <Check className="h-4 w-4" />
+                You are on the list.
+              </p>
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className="mt-5 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1.5 pl-4 focus-within:border-amber-400"
               >
-                Subscribe
-              </button>
-            </form>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  aria-label="Email address"
+                  required
+                  className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
+                />
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97]"
+                >
+                  Join
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
-        <div className="mt-8 border-t border-slate-500/40 pt-5 text-center text-sm text-gray-400">
-          <p>&copy; {currentYear} Drimora Travel. All rights reserved.</p>
+        <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-white/40 sm:flex-row sm:justify-between">
+          <p>
+            &copy; {new Date().getFullYear()} Drimora Travel. All rights
+            reserved.
+          </p>
+          <p>Made for people who would rather be somewhere else.</p>
         </div>
       </div>
     </footer>
