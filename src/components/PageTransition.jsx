@@ -1,10 +1,17 @@
+import { motion } from 'motion/react';
 import { Outlet, useLocation } from 'react-router-dom';
 
 export default function PageTransition() {
   const { pathname } = useLocation();
+
   return (
-    <div key={pathname} className="animate-page-in">
+    <motion.div
+      key={pathname}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+    >
       <Outlet />
-    </div>
+    </motion.div>
   );
 }

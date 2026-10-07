@@ -11,6 +11,7 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const LINK_GROUPS = [
   {
@@ -38,6 +39,23 @@ const SOCIALS = [
   { href: 'https://linkedin.com', label: 'LinkedIn', icon: FaLinkedin },
 ];
 
+const footerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.12, delayChildren: 0.08 },
+  },
+};
+
+const footerItemVariants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: 'easeOut' },
+  },
+};
+
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -53,8 +71,14 @@ export default function Footer() {
   return (
     <footer className="mt-auto border-t border-white/10 bg-slate-950">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
-          <div>
+        <motion.div
+          className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]"
+          variants={footerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+        >
+          <motion.div variants={footerItemVariants}>
             <p className="font-display text-3xl text-amber-400">Drimora</p>
             <p className="mt-4 max-w-xs text-white/55">
               Hand-built tours with the stays, guides and transfers already
@@ -62,22 +86,29 @@ export default function Footer() {
             </p>
             <div className="mt-6 flex gap-2">
               {SOCIALS.map(({ href, label, icon: Icon }) => (
-                <a
+                <motion.a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition hover:-translate-y-0.5 hover:border-amber-400/60 hover:text-amber-300"
+                  whileHover={{ y: -4, rotate: -5, scale: 1.08 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 12 }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition hover:border-amber-400/60 hover:text-amber-300"
                 >
                   <Icon />
-                </a>
+                </motion.a>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {LINK_GROUPS.map((group) => (
-            <nav key={group.title} aria-label={group.title}>
+            <motion.nav
+              variants={footerItemVariants}
+              key={group.title}
+              aria-label={group.title}
+            >
               <h3 className="text-sm font-semibold text-white">
                 {group.title}
               </h3>
@@ -94,10 +125,10 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </nav>
+            </motion.nav>
           ))}
 
-          <div>
+          <motion.div variants={footerItemVariants}>
             <h3 className="text-sm font-semibold text-white">
               Trip ideas in your inbox
             </h3>
@@ -124,17 +155,19 @@ export default function Footer() {
                   required
                   className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
                 />
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
                   type="submit"
-                  className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97]"
+                  className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
                 >
                   Join
                   <ArrowRight className="h-4 w-4" />
-                </button>
+                </motion.button>
               </form>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-white/40 sm:flex-row sm:justify-between">
           <p>

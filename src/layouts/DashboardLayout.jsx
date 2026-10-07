@@ -20,7 +20,7 @@ return (
         <Sidebar links={links} />
         <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader role={role} />
-        <main className='dashboard-content bg-[#f3f6f2]'>
+        <main className='dashboard-content bg-yellow-200/70'>
             <PageTransition />
         </main>
     </div>

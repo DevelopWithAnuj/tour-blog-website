@@ -1,18 +1,41 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+  useReducedMotion,
+} from 'motion/react';
 import requestLogger from '../utils/requestLogger.js';
 import Reveal from '../components/Reveal.jsx';
 import {
   ArrowRight,
   Compass,
   Headset,
-  Icon,
   Search,
   ShieldCheck,
 } from 'lucide-react';
 
 const delay = (ms) => ({ animationDelay: `${ms}ms` });
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.4 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease: 'easeOut' },
+  },
+};
 
 const PROMISES = [
   {
@@ -107,6 +130,17 @@ function HomePage() {
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const heroRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const imageY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    prefersReducedMotion ? ['0%', '0%'] : ['0%', '18']
+  );
 
   useEffect(() => {
     const startTime = Date.now();
@@ -148,27 +182,38 @@ function HomePage() {
   return (
     <div className="bg-slate-950 text-white">
       {/* Hero */}
-      <section className="relative -mt-22 flex min-h-[88vh] items-end overflow-hidden pt-22">
-        <img
+      <section
+        ref={heroRef}
+        className="relative -mt-22 flex min-h-[88vh] items-end overflow-hidden pt-22"
+      >
+        <motion.img
           src="/img/login-hero.png"
           alt=""
+          style={{ y: imageY }}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/50 to-slate-950/30" />
         <div className="relative mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
-          <h1
-            style={delay(0)}
-            className="max-w-4xl animate-fade-up font-display text-5xl leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
+          <motion.h1
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-4xl font-display text-5xl leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
           >
-            Pack light. Go somewhere that changes how you see home.
-          </h1>
-          <p
+            <motion.span variants={itemVariants} className="block">
+              Pack light.
+            </motion.span>
+            <motion.span variants={itemVariants} className="block">
+              Go somewhere that changes how you see home.
+            </motion.span>
+          </motion.h1>
+          <motion.p
             style={delay(150)}
             className="mt-6 max-w-xl animate-fade-up text-lg text-white/75"
           >
             Hand-built tours across fjords, old cities and coastlines, with
             guides, stays and transfers already sorted.
-          </p>
+          </motion.p>
           <form
             onSubmit={handleSearch}
             style={delay(300)}
@@ -210,7 +255,12 @@ function HomePage() {
       </section>
       {/* Tours */}
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <motion.div
+          whileHover={{ y: -5 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+          className="mb-10 flex flex-wrap items-end justify-between gap-4"
+        >
           <div>
             <h2 className="font-display text-3xl sm:text-4xl">
               Trips people are booking now
@@ -225,11 +275,31 @@ function HomePage() {
           >
             See all tours
           </Link>
-        </div>
+        </motion.div>
 
         {/* Loading */}
 
-        {loading && <TourSkeletons />}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <TourSkeletons />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+            >
+              {/* Existing tour results */}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Error */}
         {!loading && error && (
