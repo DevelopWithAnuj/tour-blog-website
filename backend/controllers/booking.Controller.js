@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import { HttpStatus } from '../utils/constants.js';
+import { CancellationPolicy, HttpStatus } from '../utils/constants.js';
 import { Booking } from '../models/Booking.models.js';
 import { Tour } from '../models/Tour.models.js';
 
@@ -18,6 +18,14 @@ const findAccessibleBooking = async (req) => {
   );
   const isOwner = booking && String(booking.user) === String(req.user._id);
   if (!booking || (!isOwner && req.user.role !== 'admin')) {
+    throw new ApiError(HttpStatus.NOT_FOUND, 'Booking not found');
+  }
+  return booking;
+};
+
+const findOwnedBooking = async (req) => {
+  const booking = await findAccessibleBooking(req);
+  if (String(booking.user) !== String(req.user._id)) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'Booking not found');
   }
   return booking;
@@ -80,7 +88,7 @@ const getBookingById = asyncHandler(async (req, res) => {
 // Mock gateway
 
 const payBooking = asyncHandler(async (req, res) => {
-  const booking = await findAccessibleBooking(req);
+  const booking = await findOwnedBooking(req);
   if (String(booking.user._id ?? booking.user) !== String(req.user._id)) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'Booking not found');
   }
@@ -105,7 +113,8 @@ const payBooking = asyncHandler(async (req, res) => {
   }
 
   booking.paymentStatus = 'paid';
-  booking.status = 'confirmed'
+  booking.paidAt = new Date();
+  booking.status = 'confirmed';
   await booking.save();
   res
     .status(HttpStatus.OK)
@@ -113,22 +122,34 @@ const payBooking = asyncHandler(async (req, res) => {
 });
 
 const cancelBooking = asyncHandler(async (req, res) => {
-  const booking = await findAccessibleBooking(req);
+  const booking = await findOwnedBooking(req);
+
   if (booking.status === 'cancelled') {
     throw new ApiError(HttpStatus.CONFLICT, 'Booking already cancelled');
   }
-  if (booking.paymentStatus === 'paid') {
+
+  const wasPaid = booking.paymentStatus === 'paid';
+
+  if (wasPaid && !booking.canCancel) {
     throw new ApiError(
       HttpStatus.CONFLICT,
-      'Paid bookings cannot be cancelled online. Please contact support.'
+      `The free cancellation window has closed. Paid bookings can be cancelled within ${CancellationPolicy.WINDOW_HOURS} hours of payment, and at least ${CancellationPolicy.MIN_HOURS_BEFORE_TRAVEL} hours before travel. Please contact support.`
     );
   }
 
   booking.status = 'cancelled';
+  booking.cancelledAt = new Date();
+  if (wasPaid) booking.paymentStatus = 'refunded'; // mock refund
   await booking.save();
   res
     .status(HttpStatus.OK)
-    .json(new ApiResponse(HttpStatus.OK, { booking }, 'Booking cancelled'));
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { booking },
+        wasPaid ? 'Booking cancelled and refund initiated' : 'Booking cancelled'
+      )
+    );
 });
 
 const confirmBooking = asyncHandler(async (req, res) => {
@@ -144,8 +165,10 @@ const confirmBooking = asyncHandler(async (req, res) => {
     throw new ApiError(HttpStatus.CONFLICT, 'Cannot confirm an unpaid booking');
   }
 
-  booking.status = 'confirmed';
-  await booking.save();
+  if (booking.status !== 'confirmed') {
+    booking.status = 'confirmed';
+    await booking.save();
+  }
   res
     .status(HttpStatus.OK)
     .json(

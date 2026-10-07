@@ -19,7 +19,9 @@ const normalizeAccessTokenExpiry = () => {
 
   const minutes = Number(match[1]);
   if (minutes < 1 || minutes > 15) {
-    logger.warn(`ACCESS_TOKEN_EXPIRY "${configured}" is outside the 1m-15m range; using 15m.`);
+    logger.warn(
+      `ACCESS_TOKEN_EXPIRY "${configured}" is outside the 1m-15m range; using 15m.`
+    );
     return '15m';
   }
 
@@ -87,4 +89,15 @@ export const CookieOptions = {
   secure: NODE_ENV === 'production',
   sameSite: 'lax',
   maxAge: parseDuration(process.env.REFRESH_TOKEN_EXPIRY || '7d'),
+};
+
+export const CancellationPolicy = {
+  // Paid booking can be cancelled this long after payment...
+
+  WINDOW_HOURS: Number(process.env.CANCELLATION_WINDOW_HOURS) || 24,
+
+  // ...but never closer than this the travel date.
+
+  MIN_HOURS_BEFORE_TRAVEL:
+    Number(process.env.CANCELLATION_MIN_HOURS_BEFORE_TRAVEL) || 48,
 };

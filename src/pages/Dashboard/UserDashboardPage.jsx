@@ -170,23 +170,28 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
                 >
                   Pay now
                 </Link>
-                <button
-                  type="button"
-                  disabled={isCancelling}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        'Are you sure you want to cancel this booking?'
-                      )
-                    ) {
-                      onCancel(booking._id);
-                    }
-                  }}
-                  className="inline-flex min-h-9 items-center rounded-lg border border-rose-300 px-3 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-100 disabled:cursor-wait disabled:opacity-60"
-                >
-                  {isCancelling ? 'Cancelling…' : 'Cancel'}
-                </button>
               </>
+            )}
+            {booking.canCancel && (
+              <button
+                type="button"
+                disabled={isCancelling}
+                onClick={() => {
+                  const paid = booking.paymentStatus === 'paid';
+                  if (
+                    window.confirm(
+                      paid
+                        ? 'Cancel this paid booking? Your payment will be refunded.'
+                        : 'Are you sure you want to cancel this booking?'
+                    )
+                  ) {
+                    onCancel(booking._id);
+                  }
+                }}
+                className="inline-flex min-h-9 items-center rounded-lg border border-rose-300 px-3 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-100 disabled:cursor-wait disabled:opacity-60"
+              >
+                {isCancelling ? 'Cancelling…' : 'Cancel'}
+              </button>
             )}
             <button
               type="button"
@@ -250,6 +255,24 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
               {booking.paymentStatus || 'unpaid'}
             </dd>
           </div>
+          {booking.paymentStatus === 'paid' && status !== 'cancelled' && (
+            <div>
+              <dt className="text-slate-600">Free cancellation</dt>
+              <dd className="font-medium text-slate-900">
+                {booking.canCancel
+                  ? `Until ${new Date(booking.cancellableUntil).toLocaleString(
+                      'en-IN',
+                      {
+                        day: 'numeric',
+                        month: 'short',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      }
+                    )}`
+                  : 'Window closed. Contact support.'}
+              </dd>
+            </div>
+          )}
           {booking.travelerPhone && (
             <div>
               <dt className="text-slate-600">Phone</dt>
@@ -304,15 +327,14 @@ export default function UserDashboardPage() {
   const handleCancelBooking = async (bookingId) => {
     setCancellingBookingId(bookingId);
     try {
-      await axios.patch(`/api/v1/bookings/${bookingId}/cancel`);
+      const res = await axios.patch(`/api/v1/bookings/${bookingId}/cancel`);
+      const updated = res.data.data.booking;
       setBookings((currentBookings) =>
         currentBookings.map((booking) =>
-          booking._id === bookingId
-            ? { ...booking, status: 'cancelled' }
-            : booking
+          booking._id === bookingId ? updated : booking
         )
       );
-      toast('Booking cancelled.', { type: 'success' });
+      toast(res.data.message, { type: 'success' });
     } catch (error) {
       toast(error.response?.data?.message || 'Unable to cancel this booking.', {
         type: 'error',

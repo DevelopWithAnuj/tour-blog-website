@@ -43,17 +43,19 @@ export default function ConfirmationPage() {
     );
   }
 
+  const methodLabel =
+    {
+      upi: 'UPI',
+      card: 'Card',
+      netbanking: 'Net banking',
+    }[booking.paymentMethod] || '—';
+
   const rows = [
     ['Booking ID', formatBookingId(booking._id)],
     ['Tour', booking.tour?.title],
     ['Travel date', formatDate(booking.date)],
     ['Travellers', booking.guestCount],
-    [
-      'Paid with',
-      booking.paymentMethod === 'netbanking'
-        ? 'Net banking'
-        : booking.paymentMethod.toUpperCase(),
-    ],
+    ['Paid with', methodLabel],
     ['Total paid', formatPrice(booking.totalAmount)],
   ];
 
