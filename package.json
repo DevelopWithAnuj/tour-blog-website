@@ -8,6 +8,7 @@
     "server": "nodemon backend/index.js",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "seed:tours": "node backend/scripts/seedTours.js",
+    "seed:blogs": "node backend/scripts/seedBlogs.js",
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write .",

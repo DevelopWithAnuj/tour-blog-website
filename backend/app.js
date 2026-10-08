@@ -86,19 +86,21 @@ import healthCheckRouter from './routes/healthCheck.route.js';
 import { ApiPath } from './utils/constants.js';
 import authRouter from './routes/auth.Routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorMiddleware.js';
-import tourRouter from './routes/tour.Routes.js'
-import bookingRouter from './routes/booking.Routes.js'
+import tourRouter from './routes/tour.Routes.js';
+import bookingRouter from './routes/booking.Routes.js';
+import blogRouter from './routes/blog.Routes.js';
 
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}/current-user`, sessionCheckLimiter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}/refresh-token`, sessionCheckLimiter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}`, authLimiter, authRouter);
 
-app.use(`${ApiPath.BASE}${ApiPath.TOURS}`, tourRouter)
-app.use(`${ApiPath.BASE}${ApiPath.BOOKINGS}`, bookingRouter)
+app.use(`${ApiPath.BASE}${ApiPath.TOURS}`, tourRouter);
+app.use(`${ApiPath.BASE}${ApiPath.BOOKINGS}`, bookingRouter);
+
+app.use(`${ApiPath.BASE}${ApiPath.BLOGS}`, blogRouter);
 
 app.use(`${ApiPath.BASE}`, notFoundHandler);
-
 
 // frontend build serve
 const __filename = fileURLToPath(import.meta.url);

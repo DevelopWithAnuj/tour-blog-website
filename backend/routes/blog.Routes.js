@@ -1,6 +1,10 @@
-// backend/routes/blogRoutes.js
-export const blogRoutes = {
-  list: '/api/v1/blogs',
-  detail: '/api/v1/blogs/:id',
-  categories: '/api/v1/blogs/categories',
-};
+import { Router } from "express";
+import { getBlogCategories, getPostBySlug, getPosts } from '../controllers/blog.Controller.js'
+
+const router = Router()
+
+router.route('/').get(getPosts)
+router.route('/categories').get(getBlogCategories)
+router.route('/:slug').get(getPostBySlug)
+
+export default router

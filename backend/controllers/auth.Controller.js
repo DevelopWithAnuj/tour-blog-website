@@ -252,12 +252,12 @@ const verifyEmail = asyncHandler(async (req, res) => {
   }).select('+emailVerificationExpiry');
 
   if (!user || !user.emailVerificationExpiry) {
-    throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invaild or expired');
+    throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invalid or expired');
   }
 
   const expiryTime = new Date(user.emailVerificationExpiry).getTime();
   if (Number.isNaN(expiryTime) || expiryTime <= Date.now()) {
-    throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invaild or expired');
+    throw new ApiError(HttpStatus.BAD_REQUEST, 'Token is invalid or expired');
   }
 
   user.emailVerificationToken = undefined;
