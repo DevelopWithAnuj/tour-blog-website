@@ -3,17 +3,40 @@ import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { ArrowRight, Search, X } from 'lucide-react';
+import mountainCover from '../../assets/mountain.avif';
 
-export const categoryLabel = (name) => name.replace(/-/g, ' ');
+export const categoryLabel = (name) =>
+  String(name ?? '')
+    .trim()
+    .replace(/-/g, ' ') || 'General';
 
-export const formatPostDate = (value) =>
-  value
-    ? new Date(value).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      })
-    : '';
+const destinationCovers = {
+  norway: '/img/tours/Norway/images%206.jfif',
+  japan: '/img/tours/Japan/thland-bg.avif',
+  turkey: '/img/tours/Japan/turkey.jpg',
+  italy: '/img/tours/Japan/rome.jpg',
+  bali: mountainCover,
+};
+
+export const postCoverImage = (post) => {
+  const coverImage = post?.coverImage?.trim();
+  if (coverImage && !coverImage.endsWith('/login-hero.png')) return coverImage;
+
+  return destinationCovers[post?.destination?.trim().toLowerCase()] || mountainCover;
+};
+
+export const formatPostDate = (value) => {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};
 
 const shimmer =
   'animate-shimmer bg-[linear-gradient(90deg,#0f172a_25%,#1e293b_50%,#0f172a_75%)] bg-size-[200%_100%]';
@@ -68,16 +91,14 @@ export function PostCard({ post, index = 0, standalone = false }) {
           className="group block h-full overflow-hidden rounded-3xl border border-white/10 bg-slate-900 transition-colors duration-300 hover:border-amber-400/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
         >
           <div className="relative h-52 overflow-hidden bg-slate-800">
-            {post.coverImage && (
-              <motion.img
-                src={post.coverImage}
-                alt=""
-                loading="lazy"
-                variants={{ hover: { scale: 1.07 } }}
-                transition={{ duration: 0.7, ease: EASE }}
-                className="h-full w-full object-cover"
-              />
-            )}
+            <motion.img
+              src={postCoverImage(post)}
+              alt=""
+              loading="lazy"
+              variants={{ hover: { scale: 1.07 } }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-linear-to-t from-slate-950/60 to-transparent" />
             <span className="absolute left-4 top-4 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-medium capitalize text-amber-300 backdrop-blur-md">
               {categoryLabel(post.category)}

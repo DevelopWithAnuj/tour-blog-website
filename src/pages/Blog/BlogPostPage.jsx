@@ -10,7 +10,12 @@ import {
   useTransform,
 } from 'motion/react';
 import { ArrowLeft, Clock, MapPin } from 'lucide-react';
-import { PostCard, categoryLabel, formatPostDate } from './BlogPage.jsx';
+import {
+  PostCard,
+  categoryLabel,
+  formatPostDate,
+  postCoverImage,
+} from './BlogPage.jsx';
 
 const shimmer =
   'animate-shimmer bg-[linear-gradient(90deg,#0f172a_25%,#1e293b_50%,#0f172a_75%)] bg-size-[200%_100%]';
@@ -115,10 +120,14 @@ export default function BlogPostPage() {
   }, [slug]);
 
   const isMissing = notFound || !post;
-  const paragraphs = post ? post.content.split(/\n{2,}/).filter(Boolean) : [];
-  const minutes = post
-    ? Math.max(1, Math.round(post.content.split(/\s+/).length / 200))
-    : 0;
+  const paragraphs =
+    post && typeof post.content === 'string'
+      ? post.content.split(/\n{2,}/).filter((p) => p.trim())
+      : [];
+  const minutes =
+    post && typeof post.content === 'string'
+      ? Math.max(1, Math.round(post.content.split(/\s+/).length / 200))
+      : 0;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -186,7 +195,7 @@ export default function BlogPostPage() {
             </motion.div>
 
             <article ref={articleRef} className="mt-6">
-              {post.coverImage && <CoverImage src={post.coverImage} />}
+              <CoverImage src={postCoverImage(post)} />
 
               <motion.div
                 variants={stagger(0.1, 0.25)}

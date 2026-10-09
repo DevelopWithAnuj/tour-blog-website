@@ -5,7 +5,7 @@ import { HttpStatus } from '../utils/constants.js';
 import { BLOG_CATEGORIES, BlogPost } from '../models/Blog.models.js';
 
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const AUTHOR_FIELDS = 'fullName username avater.url';
+const AUTHOR_FIELDS = 'fullName username avatar.url';
 
 const getPosts = asyncHandler(async (req, res) => {
   const { category, q } = req.query;
