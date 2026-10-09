@@ -255,9 +255,9 @@ The current project structure includes a React frontend under `src/pages`, legac
 | GET | `/api/v1/bookings` | List bookings for user or admin. |
 | GET | `/api/v1/bookings/:id` | Get booking detail. |
 | PATCH | `/api/v1/bookings/:id/confirm` | Confirm booking. |
-| GET | `/api/v1/blog` | List blog posts. |
-| GET | `/api/v1/blog/:id` | Get blog post detail. |
-| GET | `/api/v1/blog/categories` | List blog categories. |
+| GET | `/api/v1/blogs` | List blog posts. |
+| GET | `/api/v1/blogs/:id` | Get blog post detail. |
+| GET | `/api/v1/blogs/categories` | List blog categories. |
 | GET | `/api/v1/admin/dashboard` | Get admin dashboard metrics. |
 | GET | `/api/v1/admin/bookings` | Get all bookings for admin. |
 | GET | `/api/v1/admin/users` | Get all users for admin. |

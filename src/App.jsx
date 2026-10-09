@@ -59,7 +59,7 @@ export default function App() {
           <Route path="/tours" element={<TourListingPage />} />
           <Route path="/tours/:id" element={<TourDetailsPage />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:id" element={<BlogPostPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
