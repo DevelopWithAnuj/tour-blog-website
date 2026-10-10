@@ -1,4 +1,7 @@
 import { body } from 'express-validator';
+import { TOUR_CATEGORIES } from '../models/Tour.models.js';
+import { BLOG_CATEGORIES, BLOG_STATUS } from '../models/Blog.models.js';
+import { UserRolesEnum } from '../utils/constants.js';
 
 const passwordValidationChain = (
   fieldName,
@@ -103,12 +106,119 @@ const bookingCreateValidator = () => [
 ];
 
 const bookingPaymentValidator = () => [
-  body('method').isIn(['card', 'upi', 'netbanking']).withMessage('Invalid payment method'),
+  body('method')
+    .isIn(['card', 'upi', 'netbanking'])
+    .withMessage('Invalid payment method'),
   body('cardNumber')
     .if(body('method').equals('card'))
     .customSanitizer((v) => String(v || '').replace(/\s/g, ''))
     .matches(/^\d{16}$/)
     .withMessage('Card number must be 16 digits'),
+];
+
+const text = (field, max, { required = true } = {}) => {
+  const chain = body(field);
+  if (!required) chain.optional({ values: 'falsy' });
+  chain.isString().withMessage(`${field} must be text`).trim();
+  if (required) chain.notEmpty().withMessage(`${field} is required`);
+  return chain
+    .isLength({ max })
+    .withMessage(`${field} must be at most ${max} characters.`);
+};
+
+const stringList = (field, maxItems, maxLen) => [
+  body(field)
+    .optional()
+    .isArray({ max: maxItems })
+    .withMessage(`${field} has too many items`),
+  body(`${field}.*`)
+    .isString()
+    .trim()
+    .notEmpty()
+    .isLength({ max: maxLen })
+    .withMessage(`Each ${field} entry must be 1-${maxLen} characters.`),
+];
+
+const adminTourValidator = () => [
+  text('title', 120),
+  text('destination', 80),
+  text('location', 120),
+  text('description', 2000),
+  body('price')
+    .isFloat({ min: 0 })
+    .withMessage('Price must be 0 or more')
+    .toFloat(),
+  text('duration', 60),
+  body('category').isIn(TOUR_CATEGORIES).withMessage('Invalid category'),
+  text('image', 500, { required: false }),
+  ...stringList('images', 12, 500),
+  ...stringList('inclusions', 30, 200),
+  ...stringList('exclusions', 30, 200),
+  body('itinerary')
+    .optional()
+    .isArray({ max: 30 })
+    .withMessage('Itinerary has too many days'),
+  body('itinerary.*.day')
+    .isInt({ min: 1 })
+    .withMessage('Itinerary day must be 1 or more')
+    .toInt(),
+  body('itinerary.*.title')
+    .isString()
+    .trim()
+    .notEmpty()
+    .isLength({ max: 120 })
+    .withMessage('Each itinerary day needs a title'),
+  body('itinerary.*.description')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 500 }),
+  body('faq')
+    .optional()
+    .isArray({ max: 20 })
+    .withMessage('Too many FAQ entries'),
+  body('faq.*.question')
+    .isString()
+    .trim()
+    .notEmpty()
+    .isLength({ max: 200 })
+    .withMessage('Each FAQ needs a question'),
+  body('faq.*.answer')
+    .isString()
+    .trim()
+    .notEmpty()
+    .isLength({ max: 1000 })
+    .withMessage('Each FAQ needs an answer'),
+];
+
+const adminToggleActiveValidator = () => [
+  body('isActive')
+    .isBoolean({ strict: true })
+    .withMessage('isActive must be true or false'),
+];
+
+const adminBlogValidator = () => [
+  text('title', 150),
+  body('category').isIn(BLOG_CATEGORIES).withMessage('Invalid category'),
+  text('destination', 80, { required: false }),
+  text('excerpt', 400),
+  text('content', 30000),
+  body('coverImage')
+    .optional({ values: 'falsy' })
+    .isString()
+    .trim()
+    .matches(/^(\/|https?:\/\/)/)
+    .withMessage('Cover image must be a /path or an http(s) URL')
+    .isLength({ max: 500 }),
+  body('status').optional().isIn(BLOG_STATUS).withMessage('Invalid status'),
+];
+
+const adminBlogStatusValidator = () => [
+  body('status').isIn(BLOG_STATUS).withMessage('Invalid status'),
+];
+
+const adminUserRoleValidator = () => [
+  body('role').isIn(Object.values(UserRolesEnum)).withMessage('Invalid role'),
 ];
 
 export {
@@ -118,5 +228,10 @@ export {
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
   bookingCreateValidator,
-  bookingPaymentValidator
+  bookingPaymentValidator,
+  adminTourValidator,
+  adminToggleActiveValidator,
+  adminBlogValidator,
+  adminBlogStatusValidator,
+  adminUserRoleValidator,
 };

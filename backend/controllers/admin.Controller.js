@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { BlogPost } from '../models/Blog.models.js';
+import { BlogPost, BLOG_CATEGORIES } from '../models/Blog.models.js';
 import { Booking, BOOKING_STATUS } from '../models/Booking.models.js';
 import { Tour } from '../models/Tour.models.js';
 import { User } from '../models/User.models.js';
@@ -20,6 +20,47 @@ const getPagination = (query) => {
   );
   return { page, limit, skip: (page - 1) * limit };
 };
+
+const pick = (obj, keys) =>
+  Object.fromEntries(
+    keys.filter((k) => obj[k] !== undefined).map((k) => [k, obj[k]])
+  );
+
+const assertObjectId = (id, label) => {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(HttpStatus.NOT_FOUND, `${label} not found`);
+  }
+};
+
+const searchRegex = (q) => ({
+  $regex: escapeRegex(String(q).trim().slice(0, 100)),
+  $options: 'i',
+});
+
+const TOUR_WRITABLE = [
+  'title',
+  'destination',
+  'location',
+  'description',
+  'price',
+  'duration',
+  'category',
+  'image',
+  'images',
+  'itinerary',
+  'inclusions',
+  'exclusions',
+  'faq',
+];
+const BLOG_WRITABLE = [
+  'title',
+  'category',
+  'destination',
+  'excerpt',
+  'content',
+  'coverImage',
+  'status',
+];
 
 const getDashboard = asyncHandler(async (req, res) => {
   const [
@@ -211,5 +252,226 @@ const getUsers = asyncHandler(async (req, res) => {
       )
     );
 });
+/* ---------- Tours ---------- */
 
-export { getDashboard, getBookings, updateBookingStatus, getUsers };
+const getAdminTours = asyncHandler(async (req, res) => {
+  const { status, q } = req.query;
+  const { page, limit, skip } = getPagination(req.query);
+  const filter = {};
+
+  if (status === 'active') filter.isActive = true;
+  else if (status === 'inactive') filter.isActive = false;
+
+  if (q && String(q).trim()) {
+    const rx = searchRegex(q);
+    filter.$or = [{ title: rx }, { destination: rx }, { location: rx }];
+  }
+
+  const [tours, total] = await Promise.all([
+    Tour.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-itinerary -inclusions -exclusions -faq -availableDates'),
+    Tour.countDocuments(filter),
+  ]);
+
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { tours, total, page, pages: Math.ceil(total / limit) },
+        'Admin tours fetched'
+      )
+    );
+});
+
+const getAdminTourById = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Tour');
+  const tour = await Tour.findById(req.params.id); // includes inactive
+  if (!tour) throw new ApiError(HttpStatus.NOT_FOUND, 'Tour not found');
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { tour }, 'Tour fetched'));
+});
+
+const createTour = asyncHandler(async (req, res) => {
+  const tour = await Tour.create(pick(req.body, TOUR_WRITABLE));
+  res
+    .status(HttpStatus.CREATED)
+    .json(new ApiResponse(HttpStatus.CREATED, { tour }, 'Tour created'));
+});
+
+const updateTour = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Tour');
+  const tour = await Tour.findById(req.params.id);
+  if (!tour) throw new ApiError(HttpStatus.NOT_FOUND, 'Tour not found');
+
+  tour.set(pick(req.body, TOUR_WRITABLE));
+  await tour.save();
+
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { tour }, 'Tour updated'));
+});
+
+// Soft delete: bookings reference tours, so tours are hidden, never removed.
+const setTourActive = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Tour');
+  const tour = await Tour.findById(req.params.id);
+  if (!tour) throw new ApiError(HttpStatus.NOT_FOUND, 'Tour not found');
+
+  tour.isActive = req.body.isActive;
+  await tour.save();
+
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { tour },
+        tour.isActive ? 'Tour activated' : 'Tour hidden from the public site'
+      )
+    );
+});
+
+/* ---------- Blog ---------- */
+
+const getAdminBlogPosts = asyncHandler(async (req, res) => {
+  const { status, q } = req.query;
+  const { page, limit, skip } = getPagination(req.query);
+  const filter = {};
+
+  if (status === 'draft' || status === 'published') filter.status = status;
+
+  if (q && String(q).trim()) {
+    const rx = searchRegex(q);
+    filter.$or = [{ title: rx }, { destination: rx }];
+  }
+
+  const [posts, total] = await Promise.all([
+    BlogPost.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-content')
+      .populate('author', 'fullName username'),
+    BlogPost.countDocuments(filter),
+  ]);
+
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { posts, total, page, pages: Math.ceil(total / limit) },
+        'Admin posts fetched'
+      )
+    );
+});
+
+const getAdminBlogPostById = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Post');
+  const post = await BlogPost.findById(req.params.id);
+  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { post }, 'Post fetched'));
+});
+
+const createBlogPost = asyncHandler(async (req, res) => {
+  const post = await BlogPost.create({
+    ...pick(req.body, BLOG_WRITABLE),
+    author: req.user._id,
+  });
+  res
+    .status(HttpStatus.CREATED)
+    .json(new ApiResponse(HttpStatus.CREATED, { post }, 'Post created'));
+});
+
+// Slug is generated once and never changes, so shared links keep working.
+const updateBlogPost = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Post');
+  const post = await BlogPost.findById(req.params.id);
+  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+
+  post.set(pick(req.body, BLOG_WRITABLE));
+  await post.save(); // the pre-validate hook sets publishedAt on first publish
+
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { post }, 'Post updated'));
+});
+
+const setBlogPostStatus = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Post');
+  const post = await BlogPost.findById(req.params.id);
+  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+
+  post.status = req.body.status;
+  await post.save();
+
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { post },
+        post.status === 'published' ? 'Post published' : 'Post moved to drafts'
+      )
+    );
+});
+
+const deleteBlogPost = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Post');
+  const post = await BlogPost.findByIdAndDelete(req.params.id);
+  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, {}, 'Post deleted'));
+});
+
+/* ---------- Users ---------- */
+
+const updateUserRole = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'User');
+
+  if (String(req.params.id) === String(req.user._id)) {
+    throw new ApiError(
+      HttpStatus.CONFLICT,
+      'You cannot change your own role. Ask another admin.'
+    );
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { role: req.body.role },
+    { returnDocument: 'after', runValidators: true }
+  ).select(USER_FIELDS);
+
+  if (!user) throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { user }, 'User role updated'));
+});
+
+export {
+  getDashboard,
+  getBookings,
+  updateBookingStatus,
+  getUsers,
+  updateUserRole,
+  getAdminTours,
+  getAdminTourById,
+  createTour,
+  updateTour,
+  setTourActive,
+  getAdminBlogPosts,
+  getAdminBlogPostById,
+  createBlogPost,
+  updateBlogPost,
+  setBlogPostStatus,
+  deleteBlogPost,
+};
