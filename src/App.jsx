@@ -25,6 +25,7 @@ import BlogPostPage from './pages/Blog/BlogPostPage.jsx';
 import UserDashboardPage from './pages/Dashboard/UserDashboardPage.jsx';
 import AdminDashboardPage from './pages/Admin/AdminDashboardPage.jsx';
 import AdminBookingsPage from './pages/Admin/AdminBookingsPage.jsx';
+import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
 import { useState } from 'react';
 
 export default function App() {
@@ -36,7 +37,6 @@ export default function App() {
     await retry();
     setRetrying(false);
   };
-
 
   if (status === 'checking' && !retrying) {
     return (
@@ -102,6 +102,7 @@ export default function App() {
         >
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin-bookings" element={<AdminBookingsPage />} />
+          <Route path="/admin-users" element={<AdminUsersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

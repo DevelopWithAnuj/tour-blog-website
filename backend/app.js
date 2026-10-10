@@ -89,6 +89,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorMiddleware.js';
 import tourRouter from './routes/tour.Routes.js';
 import bookingRouter from './routes/booking.Routes.js';
 import blogRouter from './routes/blog.Routes.js';
+import adminRouter from './routes/admin.Routes.js';
 
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}/current-user`, sessionCheckLimiter);
@@ -99,6 +100,7 @@ app.use(`${ApiPath.BASE}${ApiPath.TOURS}`, tourRouter);
 app.use(`${ApiPath.BASE}${ApiPath.BOOKINGS}`, bookingRouter);
 
 app.use(`${ApiPath.BASE}${ApiPath.BLOGS}`, blogRouter);
+app.use(`${ApiPath.BASE}${ApiPath.ADMIN}`, adminRouter);
 
 app.use(`${ApiPath.BASE}`, notFoundHandler);
 

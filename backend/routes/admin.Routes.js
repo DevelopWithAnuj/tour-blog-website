@@ -1,9 +1,20 @@
-// Admin routes for dashboard and management pages
-export const adminRoutes = {
-  dashboard: '/api/admin/dashboard',
-  bookings: '/api/admin/bookings',
-  users: '/api/admin/users',
-};
+import { Router } from 'express';
+import {
+  getBookings,
+  getDashboard,
+  getUsers,
+  updateBookingStatus,
+} from '../controllers/admin.Controller.js';
+import { requireRole, verifyJWT } from '../middleware/auth.Middleware.js';
+import { UserRolesEnum } from '../utils/constants.js';
 
-// requireRole middleware exists in auth.Middleware.js but is never used anywhere. Right now nothing server-side actually enforces admin-only access — ProtectedRoute is frontend-only and trivially bypassed by calling the API directly. When you wire up adminRoutes.js and bookingRoutes.js, apply both:
-// router.get('/dashboard', verifyJWT, requireRole('admin'), getDashboard);
+const router = Router();
+
+router.use(verifyJWT, requireRole(UserRolesEnum.ADMIN));
+
+router.get('/dashboard', getDashboard);
+router.get('/bookings', getBookings);
+router.patch('/bookings/:id/status', updateBookingStatus);
+router.get('/users', getUsers);
+
+export default router;

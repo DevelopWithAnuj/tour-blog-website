@@ -9,21 +9,21 @@ const userLinks = [
 const adminLinks = [
   { to: '/admin-dashboard', label: 'Dashboard' },
   { to: '/admin-bookings', label: 'Bookings' },
+  { to: '/admin-users', label: 'Users' },
 ];
 
-export default function DashboardLayout({role = 'user'})
-{
-const links = role === 'admin' ? adminLinks : userLinks
+export default function DashboardLayout({ role = 'user' }) {
+  const links = role === 'admin' ? adminLinks : userLinks;
 
-return (
+  return (
     <div className="dashboard-shell">
-        <Sidebar links={links} />
-        <div className="flex min-w-0 flex-1 flex-col">
+      <Sidebar links={links} />
+      <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader role={role} />
-        <main className='dashboard-content bg-yellow-200/70'>
-            <PageTransition />
+        <main className="dashboard-content bg-yellow-200/70">
+          <PageTransition />
         </main>
+      </div>
     </div>
-    </div>
-)
+  );
 }
