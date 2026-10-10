@@ -11,6 +11,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 - Help travelers discover curated destinations and tour packages.
 - Allow users to book tours through a clear booking, payment, and confirmation flow.
 - Provide a blog and travel experience-sharing area for travelers and bloggers.
+- Provide clear company information, destination information, and customer support resources.
 - Give users a dashboard to track bookings and personal activity.
 - Give admins tools to manage tours, bookings, users, and blog content.
 - Keep the application responsive, easy to navigate, and friendly for first-time travel planners.
@@ -19,6 +20,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 
 | User Type | Description | Primary Needs |
 | --- | --- | --- |
+| Guest / Non-user | A visitor without an account looking for destinations, tour packages, travel stories, or general help. | Browse public pages, learn about the service, and contact the team. |
 | Traveler | A visitor looking for destinations, tour packages, and booking options. | Search, compare, book, pay, view confirmation. |
 | Travel Blogger | A traveler or creator who shares experiences, tips, itineraries, and guides. | Publish posts, organize by category, build credibility. |
 | Registered User | A logged-in traveler who wants saved history and booking management. | Dashboard, booking status, profile access. |
@@ -38,6 +40,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 | Confirmation | `src/pages/Booking/ConfirmationPage.jsx` | Booking success, booking ID, trip summary. |
 | Blog | `src/pages/Blog/BlogPage.jsx` | Travel stories, guides, tips, and blogger content. |
 | Blog Post | `src/pages/Blog/BlogPostPage.jsx` | Full travel experience or guide article. |
+| Public Information & Support | Planned public pages: About, Contact, Contact Support, Help, Privacy, Terms, and Locations. | Company information, self-service help, legal information, destination discovery, and support contact. |
 | Dashboard | `src/pages/Dashboard/UserDashboardPage.jsx` | User bookings, saved trips, and profile summary. |
 | Auth | `src/pages/Auth/LoginPage.jsx` | Login and user session access. |
 | Admin | `src/pages/Admin/*` | Admin dashboard and booking management. |
@@ -48,7 +51,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 | --- | --- | --- |
 | Tours | `backend/routes/tourRoutes.js`, `backend/controllers/tourController.js`, `backend/services/tourService.js`, `backend/models/Tour.js` | Tour listing, category, and details data. |
 | Bookings | `backend/routes/bookingRoutes.js`, `backend/controllers/bookingController.js`, `backend/services/bookingService.js`, `backend/models/Booking.js` | Create, list, detail, and confirm bookings. |
-| Blog | `backend/routes/blogRoutes.js`, `backend/controllers/blogController.js`, `backend/services/blogService.js`, `backend/models/BlogPost.js` | Blog listing, post detail, and categories. |
+| Blog | `backend/routes/blog.Routes.js`, `backend/controllers/blog.Controller.js`, `backend/models/Blog.models.js` | Blog listing, slug-based post detail, and categories. |
 | Auth | `backend/routes/authRoutes.js`, `backend/controllers/authController.js`, `backend/services/authService.js`, `backend/models/User.js` | Login, logout, session, and role support. |
 | Admin | `backend/routes/adminRoutes.js`, `backend/controllers/adminController.js` | Dashboard metrics, users, and booking management. |
 
@@ -63,6 +66,9 @@ The current project structure includes a React frontend under `src/pages`, legac
 - Payment and confirmation pages for a complete booking experience.
 - Blog listing for travel experiences, guides, and tips.
 - Blog post detail page with title, author, category, publish date, image, and article body.
+- Public About, Contact, Contact Support, Help, Privacy, Terms, and Locations pages.
+- Guest access to public content and general contact/support resources.
+- Authenticated travel-experience submissions with admin review before publication.
 - User dashboard with current bookings, booking status, and past trips.
 - Admin dashboard with bookings overview and basic management.
 - Authentication flow with user and admin roles.
@@ -96,7 +102,15 @@ The current project structure includes a React frontend under `src/pages`, legac
 2. User browses posts by category, destination, or recency.
 3. User opens a blog post.
 4. User reads the full travel experience, tips, and itinerary notes.
-5. Registered bloggers can submit or manage their own posts in a future enhancement.
+5. An authenticated user submits a travel experience and any supported media.
+6. The submission remains unpublished until an admin reviews and approves it.
+
+### Guest Finds Information or Requests Help
+
+1. A guest browses public pages, tours, blog posts, and locations without signing in.
+2. The guest opens Help for common questions or Contact / Contact Support for assistance.
+3. The guest submits a general inquiry with contact details; the form confirms receipt without exposing account or booking data.
+4. The guest can register or sign in when accessing account-only actions such as booking or submitting content.
 
 ### Admin Manages Operations
 
@@ -154,7 +168,28 @@ The current project structure includes a React frontend under `src/pages`, legac
 - List travel blog posts with title, author, category, publish date, and excerpt.
 - Support categories such as travel guide, itinerary, food, culture, budget travel, and personal experience.
 - Show post detail pages with full content and related posts.
-- Use `/api/blog/posts`, `/api/blog/posts/:id`, and `/api/blog/categories`.
+- Allow authenticated users to submit travel experiences with a title, category, destination, excerpt, body, and supported media.
+- Validate submitted text and media type/size; associate every submission with its author.
+- Keep new submissions unpublished until an admin approves them; rejected or pending content must not appear in public listings.
+- Allow users to view and manage their own submissions without exposing another user's drafts.
+- Use `/api/v1/blogs`, `/api/v1/blogs/:slug`, and `/api/v1/blogs/categories` for public blog reads.
+
+### Public Information and Support
+
+- Provide an About page describing the platform, its purpose, and the travel experience it offers.
+- Provide a Contact page with a validated inquiry form that guests and signed-in users can submit.
+- Provide a Contact Support path for help with service or bookings; require authentication before displaying or changing private booking details.
+- Provide a Help page with browsable common questions and clear links to relevant support/contact options.
+- Provide Privacy and Terms pages containing the current policies and effective/updated dates.
+- Provide a Locations page to browse supported destinations and link to relevant tours.
+- Keep these informational and support pages publicly accessible and usable on mobile and desktop.
+
+### Guest and Non-user Access
+
+- Guests may browse public tours, locations, blog posts, About, Help, Privacy, and Terms pages without an account.
+- Guests may submit general contact/support inquiries without signing in, subject to validation and abuse controls.
+- Require authentication for booking, viewing personal booking/account data, and submitting or managing travel content.
+- Preserve private user, booking, and unpublished content data from unauthenticated access.
 
 ### User Dashboard
 
@@ -256,7 +291,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 | GET | `/api/v1/bookings/:id` | Get booking detail. |
 | PATCH | `/api/v1/bookings/:id/confirm` | Confirm booking. |
 | GET | `/api/v1/blogs` | List blog posts. |
-| GET | `/api/v1/blogs/:id` | Get blog post detail. |
+| GET | `/api/v1/blogs/:slug` | Get blog post detail by slug. |
 | GET | `/api/v1/blogs/categories` | List blog categories. |
 | GET | `/api/v1/admin/dashboard` | Get admin dashboard metrics. |
 | GET | `/api/v1/admin/bookings` | Get all bookings for admin. |
@@ -298,6 +333,9 @@ The current project structure includes a React frontend under `src/pages`, legac
 - A user can browse tours, open a tour detail page, and start a booking.
 - A user can complete the booking flow through confirmation.
 - A user can browse blog posts and open a blog post detail page.
+- A guest can access public information, browse locations and content, and submit a general inquiry without signing in.
+- An authenticated user can submit a travel experience, and it remains unpublished until admin approval.
+- Guests cannot book, access private account/booking data, or submit/manage user-generated content.
 - A logged-in user can see their dashboard and booking history.
 - An admin can access admin pages and view booking management data.
 - Backend route files, controllers, services, and models match the product areas described in this PRD.
@@ -305,8 +343,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 
 ## 14. Open Questions
 
-- Should bloggers be a separate role, or should all registered users be able to submit travel experiences?
-- Should blog posts require admin approval before publishing?
+- Should content uploads support image attachments only, or additional media types?
 - Which payment gateway should be used after MVP?
 - Should tour availability be date-based, inventory-based, or manually controlled by admins?
 - Should the project continue migrating legacy HTML pages into React pages, or keep both versions available?
