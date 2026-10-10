@@ -101,6 +101,7 @@ export default function BlogPostPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const controller = new AbortController();
     setLoading(true);
     setNotFound(false);
