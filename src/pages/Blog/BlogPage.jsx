@@ -19,7 +19,8 @@ const destinationCovers = {
 };
 
 export const postCoverImage = (post) => {
-  const coverImage = post?.coverImage?.trim();
+  const coverImage =
+    post?.coverImage?.trim() || post?.images?.[0]?.trim();
   if (coverImage && !coverImage.endsWith('/login-hero.png')) return coverImage;
 
   return destinationCovers[post?.destination?.trim().toLowerCase()] || mountainCover;

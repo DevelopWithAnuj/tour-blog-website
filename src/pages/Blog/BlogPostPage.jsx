@@ -97,6 +97,7 @@ export default function BlogPostPage() {
   const articleRef = useRef(null);
   const [post, setPost] = useState(null);
   const [related, setRelated] = useState([]);
+  const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -105,6 +106,7 @@ export default function BlogPostPage() {
     const controller = new AbortController();
     setLoading(true);
     setNotFound(false);
+    setActiveImage(0);
     axios
       .get(`/api/v1/blogs/${slug}`, { signal: controller.signal })
       .then((res) => {
@@ -129,6 +131,18 @@ export default function BlogPostPage() {
     post && typeof post.content === 'string'
       ? Math.max(1, Math.round(post.content.split(/\s+/).length / 200))
       : 0;
+  const gallery = post
+    ? [
+        ...new Set(
+          [
+            postCoverImage(post),
+            ...(Array.isArray(post.images) ? post.images : []),
+          ]
+            .map((image) => image?.trim())
+            .filter(Boolean)
+        ),
+      ]
+    : [];
 
   return (
     <MotionConfig reducedMotion="user">
@@ -196,7 +210,37 @@ export default function BlogPostPage() {
             </motion.div>
 
             <article ref={articleRef} className="mt-6">
-              <CoverImage src={postCoverImage(post)} />
+              <CoverImage
+                key={gallery[activeImage] || postCoverImage(post)}
+                src={gallery[activeImage] || postCoverImage(post)}
+              />
+              {gallery.length > 1 && (
+                <div
+                  className="mt-3 flex gap-3 overflow-x-auto pb-1"
+                  aria-label="Story image gallery"
+                >
+                  {gallery.map((src, index) => (
+                    <button
+                      key={src}
+                      type="button"
+                      onClick={() => setActiveImage(index)}
+                      aria-label={`Show photo ${index + 1}`}
+                      aria-current={index === activeImage}
+                      className="shrink-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                    >
+                      <img
+                        src={src}
+                        alt=""
+                        className={`h-16 w-24 rounded-xl object-cover transition duration-300 ${
+                          index === activeImage
+                            ? 'ring-2 ring-amber-400'
+                            : 'opacity-50 hover:opacity-100'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <motion.div
                 variants={stagger(0.1, 0.25)}
