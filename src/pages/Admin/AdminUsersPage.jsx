@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Search } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 
 const ROLE_OPTIONS = ['all', 'user', 'admin'];
 
@@ -26,6 +28,39 @@ export default function AdminUsersPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user: me } = useAuth();
+  const { toast } = useToast();
+  const [updatingId, setUpdatingId] = useState('');
+
+  const changeRole = async (target, nextRole) => {
+    if (target.role === nextRole || updatingId) return;
+    if (
+      !window.confirm(
+        `Make ${target.fullName || target.username} ${
+          nextRole === 'admin' ? 'an admin' : 'a regular user'
+        }?`
+      )
+    ) {
+      return;
+    }
+    setUpdatingId(target._id);
+    try {
+      const res = await axios.patch(`/api/v1/admin/users/${target._id}/role`, {
+        role: nextRole,
+      });
+      const updated = res.data.data.user;
+      setUsers((current) =>
+        current.map((u) => (u._id === updated._id ? updated : u))
+      );
+      toast(res.data.message, { type: 'success' });
+    } catch (err) {
+      toast(err.response?.data?.message || 'Unable to change role.', {
+        type: 'error',
+      });
+    } finally {
+      setUpdatingId('');
+    }
+  };
 
   const loadUsers = useCallback(
     async (signal) => {
@@ -147,7 +182,7 @@ export default function AdminUsersPage() {
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[42rem] text-left text-sm">
+            <table className="w-full min-w-2xl text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-5 py-3 font-semibold">Name</th>
@@ -168,9 +203,23 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-5 py-4 text-slate-600">{user.email}</td>
                     <td className="px-5 py-4">
-                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold capitalize text-slate-700">
-                        {user.role}
-                      </span>
+                      <select
+                        aria-label={`Role for ${user.fullName || user.username}`}
+                        value={user.role}
+                        disabled={
+                          user._id === me?._id || updatingId === user._id
+                        }
+                        title={
+                          user._id === me?._id
+                            ? 'You cannot change your own role'
+                            : undefined
+                        }
+                        onChange={(e) => changeRole(user, e.target.value)}
+                        className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs capitalize text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                      </select>
                     </td>
                     <td className="px-5 py-4 text-slate-600">
                       {formatDate(user.createdAt)}

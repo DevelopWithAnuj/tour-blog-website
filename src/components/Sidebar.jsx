@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  BookOpen,
   ChevronsLeft,
   ChevronsRight,
   ClipboardList,
   Compass,
   Home,
   LayoutDashboard,
+  Plane,
   Users,
 } from 'lucide-react';
 
@@ -16,6 +18,8 @@ const ICONS = {
   '/tours': Compass,
   '/admin-dashboard': LayoutDashboard,
   '/admin-bookings': ClipboardList,
+  '/admin-tours': Plane,
+  '/admin-blog': BookOpen,
   '/admin-users': Users,
 };
 

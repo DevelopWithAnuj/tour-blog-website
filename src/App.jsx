@@ -25,6 +25,10 @@ import BlogPostPage from './pages/Blog/BlogPostPage.jsx';
 import UserDashboardPage from './pages/Dashboard/UserDashboardPage.jsx';
 import AdminDashboardPage from './pages/Admin/AdminDashboardPage.jsx';
 import AdminBookingsPage from './pages/Admin/AdminBookingsPage.jsx';
+import AdminToursPage from './pages/Admin/AdminToursPage.jsx';
+import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
+import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
+import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
 import { useState } from 'react';
 
@@ -102,6 +106,12 @@ export default function App() {
         >
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin-bookings" element={<AdminBookingsPage />} />
+          <Route path="/admin-tours" element={<AdminToursPage />} />
+          <Route path="/admin-tours/new" element={<AdminTourFormPage />} />
+          <Route path="/admin-tours/:id/edit" element={<AdminTourFormPage />} />
+          <Route path="/admin-blog" element={<AdminBlogPage />} />
+          <Route path="/admin-blog/new" element={<AdminBlogFormPage />} />
+          <Route path="/admin-blog/:id/edit" element={<AdminBlogFormPage />} />
           <Route path="/admin-users" element={<AdminUsersPage />} />
         </Route>
       </Routes>

@@ -9,6 +9,8 @@ const userLinks = [
 const adminLinks = [
   { to: '/admin-dashboard', label: 'Dashboard' },
   { to: '/admin-bookings', label: 'Bookings' },
+  { to: '/admin-tours', label: 'Tours' },
+  { to: '/admin-blog', label: 'Blog' },
   { to: '/admin-users', label: 'Users' },
 ];
 
