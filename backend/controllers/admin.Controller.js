@@ -59,6 +59,7 @@ const BLOG_WRITABLE = [
   'excerpt',
   'content',
   'coverImage',
+  'images',
   'status',
 ];
 

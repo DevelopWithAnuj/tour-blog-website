@@ -35,6 +35,7 @@ const blogPostSchema = new Schema(
     excerpt: { type: String, required: true, trim: true, maxlength: 400 },
     content: { type: String, required: true },
     coverImage: { type: String, default: '' },
+    images: { type: [String], default: [] },
     status: { type: String, enum: BLOG_STATUS, default: 'draft', index: true },
     publishedAt: { type: Date },
   },

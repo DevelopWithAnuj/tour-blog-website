@@ -210,6 +210,18 @@ const adminBlogValidator = () => [
     .matches(/^(\/|https?:\/\/)/)
     .withMessage('Cover image must be a /path or an http(s) URL')
     .isLength({ max: 500 }),
+  body('images')
+    .optional()
+    .isArray({ max: 12 })
+    .withMessage('Gallery can have at most 12 images'),
+  body('images.*')
+    .isString()
+    .trim()
+    .notEmpty()
+    .matches(/^(\/|https?:\/\/)/)
+    .withMessage('Each gallery image must be a /path or an http(s) URL')
+    .isLength({ max: 500 })
+    .withMessage('Gallery image URLs must be at most 500 characters'),
   body('status').optional().isIn(BLOG_STATUS).withMessage('Invalid status'),
 ];
 
