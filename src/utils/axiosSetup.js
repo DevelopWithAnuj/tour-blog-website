@@ -51,16 +51,10 @@ axios.interceptors.response.use(
       }
     }
 
-    // tis will remove after development
-    if (isHealthCheck && (noResponse || status >= 500)) {
+    const serverError = status >= 500;
+    if (noResponse || (isHealthCheck && serverError)) {
       window.dispatchEvent(new Event('server-unavailable'));
     }
-    
-    // this will turn on production
-    // const serverError = status >= 500;
-    // if (noResponse || (isHealthCheck && serverError)) {
-    //   window.dispatchEvent(new Event('server-unavailable'));
-    // }
 
     return Promise.reject(error);
   }

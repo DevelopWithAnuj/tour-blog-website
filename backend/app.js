@@ -8,10 +8,11 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import logger from './config/logger.js';
-import { Config } from './utils/constants.js';
 import passport from './config/passport.js';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
+import {
+  allowedOrigins,
+  verifyRequestOrigin,
+} from './middleware/csrf.Middleware.js';
 
 const app = express();
 app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
@@ -36,27 +37,9 @@ const sessionCheckLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(express.json({ limit: '32kb' }));
+app.use(express.json({ limit: '256kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60,
-      autoRemove: 'native',
-    }),
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 5 * 60 * 1000,
-    },
-  })
-);
 app.use(passport.initialize());
 
 // winston & morgan logger format
@@ -74,12 +57,13 @@ app.use(
 // cors configuration
 app.use(
   cors({
-    origin: Config.CORS_ORIGIN?.split(',') || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+app.use(verifyRequestOrigin);
 
 // import the routes
 import healthCheckRouter from './routes/healthCheck.route.js';

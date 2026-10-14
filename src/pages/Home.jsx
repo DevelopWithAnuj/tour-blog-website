@@ -139,7 +139,7 @@ function HomePage() {
   const imageY = useTransform(
     scrollYProgress,
     [0, 1],
-    prefersReducedMotion ? ['0%', '0%'] : ['0%', '18']
+    prefersReducedMotion ? ['0%', '0%'] : ['0%', '18%']
   );
 
   useEffect(() => {
@@ -277,10 +277,8 @@ function HomePage() {
           </Link>
         </motion.div>
 
-        {/* Loading */}
-
         <AnimatePresence mode="wait">
-          {loading ? (
+          {loading && (
             <motion.div
               key="loading"
               initial={{ opacity: 0 }}
@@ -288,15 +286,6 @@ function HomePage() {
               exit={{ opacity: 0 }}
             >
               <TourSkeletons />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-            >
-              {/* Existing tour results */}
             </motion.div>
           )}
         </AnimatePresence>
