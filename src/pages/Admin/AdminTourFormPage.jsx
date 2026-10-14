@@ -120,10 +120,11 @@ const toForm = (t) => ({
 });
 
 const apiMessage = (err) => {
-  const first = err.response?.data?.error?.[0];
+  const first = err.response?.data?.errors?.[0];
   return (
     (first && Object.values(first)[0]) ||
-    err.message?.data?.message ||
+    err.response?.data?.message ||
+    err.message ||
     'Something went wrong.'
   );
 };
@@ -190,7 +191,7 @@ export default function AdminTourFormPage() {
     setSaving(true);
     try {
       const payload = toPayload(form);
-      if (isEdit) await axios.put(`/api/v1/admin/ours/${id}`, payload);
+      if (isEdit) await axios.put(`/api/v1/admin/tours/${id}`, payload);
       else await axios.post('/api/v1/admin/tours', payload);
       toast(isEdit ? 'Tour updated.' : 'Tour created.', { type: 'success' });
       navigate('/admin-tours');

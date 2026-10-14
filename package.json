@@ -11,6 +11,7 @@
     "seed:blogs": "node backend/scripts/seedBlogs.js",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "node --test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -4,7 +4,7 @@
 
 Drimora is a travel discovery, booking, and experience-sharing website for travelers, bloggers, and admins. The platform helps users explore destinations, compare tours, book travel packages, read travel stories, and share their own travel experiences through blog-style content.
 
-The current project structure includes a React frontend under `src/pages`, legacy/static panels for booking, blog, admin, and tours, and a backend folder organized by routes, controllers, services, models, middleware, and page descriptors.
+The current project structure includes a React frontend under `src/pages` and an Express backend organized by routes, controllers, models, middleware, configuration, and utilities.
 
 ## 2. Product Goals
 
@@ -43,17 +43,17 @@ The current project structure includes a React frontend under `src/pages`, legac
 | Public Information & Support | Planned public pages: About, Contact, Contact Support, Help, Privacy, Terms, and Locations. | Company information, self-service help, legal information, destination discovery, and support contact. |
 | Dashboard | `src/pages/Dashboard/UserDashboardPage.jsx` | User bookings, saved trips, and profile summary. |
 | Auth | `src/pages/Auth/LoginPage.jsx` | Login and user session access. |
-| Admin | `src/pages/Admin/*` | Admin dashboard and booking management. |
+| Admin | `src/pages/Admin/AdminDashboardPage.jsx`, `src/pages/Admin/AdminBookingsPage.jsx`, `src/pages/Admin/AdminUsersPage.jsx`, `src/pages/Admin/AdminToursPage.jsx`, `src/pages/Admin/AdminTourFormPage.jsx`, `src/pages/Admin/AdminBlogPage.jsx`, `src/pages/Admin/AdminBlogFormPage.jsx` | Admin dashboard and management of bookings, users, tours, and blog posts. |
 
 ### Backend Modules
 
 | Product Area | Current Path | Purpose |
 | --- | --- | --- |
-| Tours | `backend/routes/tourRoutes.js`, `backend/controllers/tourController.js`, `backend/services/tourService.js`, `backend/models/Tour.js` | Tour listing, category, and details data. |
-| Bookings | `backend/routes/bookingRoutes.js`, `backend/controllers/bookingController.js`, `backend/services/bookingService.js`, `backend/models/Booking.js` | Create, list, detail, and confirm bookings. |
-| Blog | `backend/routes/blog.Routes.js`, `backend/controllers/blog.Controller.js`, `backend/models/Blog.models.js` | Blog listing, slug-based post detail, and categories. |
-| Auth | `backend/routes/authRoutes.js`, `backend/controllers/authController.js`, `backend/services/authService.js`, `backend/models/User.js` | Login, logout, session, and role support. |
-| Admin | `backend/routes/adminRoutes.js`, `backend/controllers/adminController.js` | Dashboard metrics, users, and booking management. |
+| Tours | `backend/routes/tour.Routes.js`, `backend/controllers/tour.Controller.js`, `backend/models/Tour.models.js` | Public tour listing, category, and detail data. |
+| Bookings | `backend/routes/booking.Routes.js`, `backend/controllers/booking.Controller.js`, `backend/models/Booking.models.js` | Authenticated booking creation, payment, cancellation, and confirmation. |
+| Blog | `backend/routes/blog.Routes.js`, `backend/controllers/blog.Controller.js`, `backend/models/Blog.models.js` | Public blog listing, slug-based post detail, categories, and admin-managed posts. |
+| Auth | `backend/routes/auth.Routes.js`, `backend/controllers/auth.Controller.js`, `backend/models/User.models.js`, `backend/middleware/auth.Middleware.js` | Password and OAuth authentication, JWT cookie handling, and role checks. OAuth uses stateless Passport authentication; Express sessions are not used. |
+| Admin | `backend/routes/admin.Routes.js`, `backend/controllers/admin.Controller.js`, `backend/validators/index.js` | Admin dashboard metrics and management of bookings, users, tours, and blog posts. |
 
 ## 5. MVP Scope
 
@@ -136,8 +136,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 - Support category or destination grouping.
 - Show destination name, location, price, duration, image, and short description.
 - Link each tour card to a detail page.
-- Use backend route `/api/tours` for listing data.
-- Use backend route `/api/tours/:id` for detail data.
+- Use backend routes `/api/v1/tours` and `/api/v1/tours/:id` for listing and detail data.
 
 ### Tour Details
 
@@ -148,7 +147,7 @@ The current project structure includes a React frontend under `src/pages`, legac
 ### Booking
 
 - Collect selected tour, user, date, guest count, contact details, and special requests.
-- Create bookings through `/api/bookings`.
+- Create bookings through `/api/v1/bookings`.
 - Default new bookings to `pending` unless confirmed.
 - Validate required fields before continuing to payment.
 
@@ -201,13 +200,13 @@ The current project structure includes a React frontend under `src/pages`, legac
 
 - Show total bookings, pending bookings, confirmed bookings, users, and blog stats.
 - Allow admin to view and update booking records.
-- Use `/api/admin/dashboard`, `/api/admin/bookings`, and `/api/admin/users`.
+- Use `/api/v1/admin/dashboard`, `/api/v1/admin/bookings`, and `/api/v1/admin/users`.
 - Restrict admin pages to users with the `admin` role.
 
 ### Authentication
 
-- Support login, logout, and session check.
-- Use `/api/auth/login`, `/api/auth/logout`, and `/api/auth/me`.
+- Support login, logout, and authenticated-user checks using access and refresh token cookies; OAuth uses stateless Passport authentication.
+- Use `/api/v1/auth/login`, `/api/v1/auth/logout`, and `/api/v1/auth/current-user`.
 - Support at least two roles: `user` and `admin`.
 
 ## 8. Data Model Requirements
@@ -276,26 +275,34 @@ The current project structure includes a React frontend under `src/pages`, legac
 | POST | `/api/v1/auth/resend-email-verification` | Resend verification link. |
 | POST | `/api/v1/auth/login` | Log user in. |
 | POST | `/api/v1/auth/logout` | Log user out. |
-| GET | `/api/v1/auth/current-user` | Get current session user. |
+| GET | `/api/v1/auth/current-user` | Get the authenticated user from the access-token cookie. |
 | POST | `/api/v1/auth/refresh-token` | Refresh access token. |
 | POST | `/api/v1/auth/forgot-password` | Request password reset. |
 | POST | `/api/v1/auth/reset-password/:resetToken` | Reset password. |
 | POST | `/api/v1/auth/change-password` | Change password. |
-| GET | `/api/v1/auth/google`, `/github` | OAuth sign-in. |
-
-| GET | `/api/v1/tours` | Tours. |
+| GET | `/api/v1/auth/google`, `/api/v1/auth/github` | Start OAuth sign-in. |
+| GET | `/api/v1/auth/google/callback`, `/api/v1/auth/github/callback` | Complete OAuth sign-in and issue authentication cookies. |
+| GET | `/api/v1/tours` | List public tours. |
 | GET | `/api/v1/tours/:id` | Get tour details. |
 | GET | `/api/v1/tours/categories` | List tour categories. |
-| POST | `/api/v1/bookings` | Create booking. |
-| GET | `/api/v1/bookings` | List bookings for user or admin. |
-| GET | `/api/v1/bookings/:id` | Get booking detail. |
-| PATCH | `/api/v1/bookings/:id/confirm` | Confirm booking. |
-| GET | `/api/v1/blogs` | List blog posts. |
-| GET | `/api/v1/blogs/:slug` | Get blog post detail by slug. |
-| GET | `/api/v1/blogs/categories` | List blog categories. |
-| GET | `/api/v1/admin/dashboard` | Get admin dashboard metrics. |
-| GET | `/api/v1/admin/bookings` | Get all bookings for admin. |
-| GET | `/api/v1/admin/users` | Get all users for admin. |
+| POST | `/api/v1/bookings` | Create a booking (authenticated). |
+| GET | `/api/v1/bookings` | List the authenticated user's bookings. |
+| GET | `/api/v1/bookings/:id` | Get a booking detail (authenticated). |
+| POST | `/api/v1/bookings/:id/pay` | Submit payment for a booking. |
+| PATCH | `/api/v1/bookings/:id/cancel` | Cancel a booking. |
+| PATCH | `/api/v1/bookings/:id/confirm` | Confirm a booking (admin only). |
+| GET | `/api/v1/blogs` | List published blog posts. |
+| GET | `/api/v1/blogs/categories` | List public blog categories. |
+| GET | `/api/v1/blogs/:slug` | Get a published blog post and related posts by slug. |
+| GET | `/api/v1/admin/dashboard` | Get admin dashboard metrics (admin only). |
+| GET, PATCH | `/api/v1/admin/bookings`, `/api/v1/admin/bookings/:id/status` | List bookings and update a booking status (admin only). |
+| GET, PATCH | `/api/v1/admin/users`, `/api/v1/admin/users/:id/role` | List users and update a user's role (admin only). |
+| GET, POST | `/api/v1/admin/tours` | List and create tours (admin only). |
+| GET, PUT | `/api/v1/admin/tours/:id` | Get and update a tour (admin only). |
+| PATCH | `/api/v1/admin/tours/:id/active` | Change a tour's active status (admin only). |
+| GET, POST | `/api/v1/admin/blogs` | List and create blog posts (admin only). |
+| GET, PUT, DELETE | `/api/v1/admin/blogs/:id` | Get, update, and delete a blog post (admin only). |
+| PATCH | `/api/v1/admin/blogs/:id/status` | Change a blog post's publication status (admin only). |
 
 ## 10. Non-Functional Requirements
 
