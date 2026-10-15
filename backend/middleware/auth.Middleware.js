@@ -40,6 +40,26 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   }
 });
 
+export const optionalAuth = asyncHandler(async (req, res) => {
+  const authHeader = req.header('Authorization');
+  const bearerToken = authHeader?.startsWith('Bearer')
+    ? authHeader.slice(7)
+    : null;
+
+  const token = req.cookies?.accessToken || bearerToken;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const user = await User.findById(decoded?._id);
+      if (user) req.user = user;
+    } catch (error) {
+      // Expired or invalid token: treat as a guest.
+    }
+  }
+  next();
+});
+
 export const requireRole = (requiredRole) =>
   asyncHandler(async (req, res, next) => {
     if (!req.user) {

@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  MapPin,
   Menu,
   X,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import { useToast } from '../context/ToastContext.jsx';
 const NAV_LINKS = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/tours', label: 'Tours', icon: Compass },
+  { to: '/locations', label: 'Locations', icon: MapPin },
   { to: '/blog', label: 'Blog', icon: BookOpen },
 ];
 

@@ -43,12 +43,15 @@ const getTours = asyncHandler(async (req, res) => {
     Tour.countDocuments(filter),
   ]);
 
-  res.status(HttpStatus.OK).json(
-  new ApiResponse(
-    HttpStatus.OK,
-    { tours, total, page, pages: Math.ceil(total / limit) },
-    'Tours fetched successfully'
-  ))
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { tours, total, page, pages: Math.ceil(total / limit) },
+        'Tours fetched successfully'
+      )
+    );
 });
 
 const getTourCategories = asyncHandler(async (req, res) => {
@@ -56,14 +59,15 @@ const getTourCategories = asyncHandler(async (req, res) => {
     { $match: { isActive: true } },
     { $group: { _id: '$category', count: { $sum: 1 } } },
   ]);
-  const countMap = Object.fromEntries(counts.map((c) => [c._id, c.count]))
+  const countMap = Object.fromEntries(counts.map((c) => [c._id, c.count]));
   const categories = TOUR_CATEGORIES.map((name) => ({
-    name, count : countMap[name] || 0,
-  }))
+    name,
+    count: countMap[name] || 0,
+  }));
 
   res
-  .status(HttpStatus.OK)
-  .json(new ApiResponse(HttpStatus.OK, {categories}, 'Categories fetched'))
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { categories }, 'Categories fetched'));
 });
 
 const getTourById = asyncHandler(async (req, res) => {
@@ -79,8 +83,35 @@ const getTourById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(HttpStatus.OK, { tour }, 'Tour fetched'));
 });
 
-export {
-  getTours,
-  getTourCategories,
-  getTourById
-}
+const getTourDestinations = asyncHandler(async (req, res) => {
+  const rows = await Tour.aggregate([
+    { $match: { isActive: true } },
+    { $sort: { createdAt: 1 } },
+    {
+      $group: {
+        _id: '$destination',
+        count: { $sum: 1 },
+        fromPrice: { $min: '$price' },
+        image: { $first: '$image' },
+        location: { $first: '$location' },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const destinations = rows.map((r) => ({
+    name: r._id,
+    count: r.count,
+    fromPrice: r.fromPrice,
+    image: r.image,
+    location: r.location,
+  }));
+
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(HttpStatus.OK, { destinations }, 'Destinations fetched')
+    );
+});
+
+export { getTours, getTourCategories, getTourDestinations, getTourById };

@@ -255,6 +255,17 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
               {booking.paymentStatus || 'unpaid'}
             </dd>
           </div>
+          <div>
+            <dt className="text-slate-600">Need help?</dt>
+            <dd>
+              <Link
+                to={`/contact-support?booking=${booking._id}`}
+                className="font-medium text-amber-800 hover:text-amber-950"
+              >
+                Contact support about this booking
+              </Link>
+            </dd>
+          </div>
           {booking.paymentStatus === 'paid' && status !== 'cancelled' && (
             <div>
               <dt className="text-slate-600">Free cancellation</dt>

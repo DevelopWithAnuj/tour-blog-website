@@ -61,6 +61,7 @@ export const ApiPath = {
   BOOKINGS: '/bookings',
   BLOGS: '/blogs',
   ADMIN: '/admin',
+  CONTACT: '/contact',
 };
 
 export const HttpStatus = {

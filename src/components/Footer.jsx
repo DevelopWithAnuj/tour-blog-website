@@ -4,12 +4,13 @@ import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import {
   ArrowRight,
   BookOpen,
+  Headset,
   Check,
   Compass,
   Home,
   LayoutDashboard,
   LogIn,
-  UserPlus,
+  UserPlus, Info, LifeBuoy, Mail, MapPin
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -19,7 +20,9 @@ const LINK_GROUPS = [
     links: [
       { to: '/', label: 'Home', icon: Home },
       { to: '/tours', label: 'Tours', icon: Compass },
+      { to: '/locations', label: 'Locations', icon: MapPin },
       { to: '/blog', label: 'Travel blog', icon: BookOpen },
+      { to: '/about', label: 'About', icon: Info },
     ],
   },
   {
@@ -28,6 +31,14 @@ const LINK_GROUPS = [
       { to: '/login', label: 'Sign in', icon: LogIn },
       { to: '/register', label: 'Create account', icon: UserPlus },
       { to: '/dashboard', label: 'My trips', icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: 'Support',
+    links: [
+      { to: '/help', label: 'Help centre', icon: LifeBuoy },
+      { to: '/contact', label: 'Contact us', icon: Mail },
+      { to: '/contact-support', label: 'Contact support', icon: Headset },
     ],
   },
 ];
@@ -72,7 +83,7 @@ export default function Footer() {
     <footer className="mt-auto border-t border-white/10 bg-slate-950">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
         <motion.div
-          className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]"
+          className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.4fr]"
           variants={footerVariants}
           initial="hidden"
           whileInView="visible"
@@ -169,11 +180,19 @@ export default function Footer() {
           </motion.div>
         </motion.div>
 
-        <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-white/40 sm:flex-row sm:justify-between">
+        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
           <p>
             &copy; {new Date().getFullYear()} Drimora Travel. All rights
             reserved.
           </p>
+          <nav aria-label="Legal" className="flex gap-5">
+            <Link to="/privacy" className="transition hover:text-amber-300">
+              Privacy
+            </Link>
+            <Link to="/terms" className="transition hover:text-amber-300">
+              Terms
+            </Link>
+          </nav>
           <p>Made for people who would rather be somewhere else.</p>
         </div>
       </div>

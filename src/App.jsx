@@ -30,6 +30,13 @@ import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
 import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
 import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
+import AboutPage from './pages/Info/AboutPage.jsx';
+import ContactPage from './pages/Info/ContactPage.jsx';
+import ContactSupportPage from './pages/Info/ContactSupportPage.jsx';
+import HelpPage from './pages/Info/HelpPage.jsx';
+import PrivacyPage from './pages/Info/PrivacyPage.jsx';
+import TermsPage from './pages/Info/TermsPage.jsx';
+import LocationsPage from './pages/Info/LocationsPage.jsx';
 import { useState } from 'react';
 
 export default function App() {
@@ -60,6 +67,13 @@ export default function App() {
         {/* Public pages share Header + Footer */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/contact-support" element={<ContactSupportPage />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/locations" element={<LocationsPage />} />
           <Route path="/tours" element={<TourListingPage />} />
           <Route path="/tours/:id" element={<TourDetailsPage />} />
           <Route path="/blog" element={<BlogPage />} />

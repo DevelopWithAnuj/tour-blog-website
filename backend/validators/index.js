@@ -2,6 +2,7 @@ import { body } from 'express-validator';
 import { TOUR_CATEGORIES } from '../models/Tour.models.js';
 import { BLOG_CATEGORIES, BLOG_STATUS } from '../models/Blog.models.js';
 import { UserRolesEnum } from '../utils/constants.js';
+import { INQUIRY_TYPES } from '../models/Inquiry.models.js';
 
 const passwordValidationChain = (
   fieldName,
@@ -233,6 +234,41 @@ const adminUserRoleValidator = () => [
   body('role').isIn(Object.values(UserRolesEnum)).withMessage('Invalid role'),
 ];
 
+const inquiryValidator = () => [
+  body('name')
+    .isString()
+    .withMessage('Name is required')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be 2-100 characters'),
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('A valid email is required')
+    .normalizeEmail({ gmail_remove_dots: false }),
+  body('subject')
+    .isString()
+    .withMessage('Subject is required')
+    .trim()
+    .isLength({ min: 3, max: 150 })
+    .withMessage('Subject must be 3-150 characters'),
+  body('message')
+    .isString()
+    .withMessage('Message is required')
+    .trim()
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Message must be 10-2000 characters'),
+  body('type')
+    .optional()
+    .isIn(INQUIRY_TYPES)
+    .withMessage('Invalid inquiry type'),
+  body('bookingId')
+    .optional({ values: 'falsy' })
+    .isMongoId()
+    .withMessage('Invalid booking'),
+  body('website').optional().isString().isLength({ max: 200 }), // honeypot
+];
+
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -246,4 +282,5 @@ export {
   adminBlogValidator,
   adminBlogStatusValidator,
   adminUserRoleValidator,
+  inquiryValidator
 };
