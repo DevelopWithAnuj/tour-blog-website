@@ -5,7 +5,7 @@ import logger from '../utils/logger.js';
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, componentStack: '' };
   }
 
   static getDerivedStateFromError(error) {
@@ -13,8 +13,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Logs to console (and wherever your logger is wired) so you can
-    // still see the real stack trace during development.
+    this.setState({ componentStack: errorInfo?.componentStack || '' });
     logger.error('Uncaught render error', {
       message: error?.message,
       stack: error?.stack,
@@ -23,7 +22,7 @@ export default class ErrorBoundary extends Component {
   }
 
   handleReload = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, componentStack: '' });
     window.location.reload();
   };
 
@@ -45,9 +44,16 @@ export default class ErrorBoundary extends Component {
             </p>
 
             {import.meta.env.DEV && this.state.error && (
-              <pre className="mt-4 max-h-40 overflow-auto rounded-lg bg-black/40 p-3 text-left text-xs text-rose-300">
-                {this.state.error.message}
-              </pre>
+              <details className="mt-5 rounded-lg border border-rose-400/20 bg-black/40 text-left">
+                <summary className="cursor-pointer px-3 py-2 text-xs font-semibold text-rose-200">
+                  Developer details
+                </summary>
+                <pre className="max-h-64 overflow-auto whitespace-pre-wrap wrap-break-word px-3 pb-3 text-xs text-rose-200">
+                  {this.state.error.stack || this.state.error.message}
+                  {this.state.componentStack &&
+                    `\n\nComponent stack:${this.state.componentStack}`}
+                </pre>
+              </details>
             )}
 
             <button

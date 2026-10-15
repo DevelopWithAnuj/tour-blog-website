@@ -14,7 +14,6 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
-    const noResponse = !error.response;
     const status = error.response?.status;
     const url = original?.url || '';
     const isAuthEndpoint = [
@@ -23,7 +22,6 @@ axios.interceptors.response.use(
       '/auth/refresh-token',
       '/auth/logout',
     ].some((p) => url.includes(p));
-    const isHealthCheck = url.includes('/healthcheck');
 
     // refresh once for expired access tokens
     if (status === 401 && original && !original._retry && !isAuthEndpoint) {
@@ -44,16 +42,11 @@ axios.interceptors.response.use(
         return axios(original);
       } catch (refreshError) {
         flushQueue(refreshError);
-        window.dispatchEvent(new Event('auth-expired'))
+        window.dispatchEvent(new Event('auth-expired'));
         return Promise.reject(error);
       } finally {
         isRefreshing = false;
       }
-    }
-
-    const serverError = status >= 500;
-    if (noResponse || (isHealthCheck && serverError)) {
-      window.dispatchEvent(new Event('server-unavailable'));
     }
 
     return Promise.reject(error);

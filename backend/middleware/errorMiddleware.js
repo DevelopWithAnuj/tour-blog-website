@@ -1,33 +1,33 @@
+import { randomUUID } from 'node:crypto';
 import { ApiError } from '../utils/api-error.js';
 import { HttpStatus } from '../utils/constants.js';
+import logger from '../config/logger.js';
 
 export function notFoundHandler(req, res, next) {
   next(
-    new ApiError(HttpStatus.NOT_FOUND, `Route not found: ${req.originalUrl}`)
+    new ApiError(HttpStatus.NOT_FOUND, 'The requested API route was not found.')
   );
 }
 
 export function errorHandler(err, req, res, next) {
-  if (!(err instanceof ApiError)) {
-    console.error('Unhandled error:', err);
-  }
-
   let statusCode =
     err?.statusCode ||
     err?.status ||
     (err?.name === 'CastError' ? HttpStatus.BAD_REQUEST : undefined);
-  let message = err?.message || 'Internal server error';
+  let message = 'The request could not be processed.';
   let errors = Array.isArray(err?.errors) ? err.errors : [];
 
   if (err && err.code === 11000) {
     statusCode = HttpStatus.CONFLICT;
-    message = err.message || 'User with same email or username already exists';
+    message = 'An account with these details already exists.';
     errors = [];
+  } else if (err instanceof ApiError) {
+    message = err.message;
   }
 
   if (err && err.name === 'ValidationError' && err.errors) {
     statusCode = HttpStatus.BAD_REQUEST;
-    message = err.message || 'Validation failed';
+    message = 'Please check the submitted information.';
     errors = Object.entries(err.errors).map(([key, value]) => ({
       [key]: value.message,
     }));
@@ -39,22 +39,52 @@ export function errorHandler(err, req, res, next) {
     errors = [{ path: err.path, msg: 'Invalid resource ID' }];
   }
 
-  if (statusCode && statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+  if (!Number.isInteger(statusCode) || statusCode < 400 || statusCode > 599) {
     statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-    message = 'Internal server error';
   }
 
-  const error =
-    err instanceof ApiError
-      ? err
-      : new ApiError(statusCode, message, errors);
+  if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+    statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    message = 'We ran into a problem. Please try again shortly.';
+    errors = [];
+  } else if (
+    !(err instanceof ApiError) &&
+    statusCode === HttpStatus.NOT_FOUND
+  ) {
+    message = 'The requested resource was not found.';
+  } else if (
+    !(err instanceof ApiError) &&
+    statusCode === HttpStatus.TOO_MANY_REQUESTS
+  ) {
+    message = 'Too many requests. Please try again shortly.';
+  }
 
-  res.status(error.statusCode).json({
+  const requestId = req.id || randomUUID();
+  const error = new ApiError(statusCode, message, errors);
+  error.stack = err?.stack || error.stack;
+
+  logger.error('Request failed', {
+    requestId,
+    method: req.method,
+    path: req.path,
+    statusCode: error.statusCode,
+    errorName: err?.name || 'Error',
+    errorMessage: err?.message || 'Unknown error',
+    stack: err?.stack,
+  });
+
+  const response = {
     statusCode: error.statusCode,
     data: error.data,
     success: error.success,
     message: error.message,
     errors: error.errors,
-    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-  });
+    requestId,
+  };
+
+  if (process.env.NODE_ENV === 'development') {
+    response.stack = error.stack;
+  }
+
+  res.status(error.statusCode).json(response);
 }

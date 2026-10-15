@@ -3,6 +3,7 @@ import { useServerStatus } from './context/ServerStatusContext.jsx';
 import ServerUnavailablePage from './pages/ServerUnavailablePage.jsx';
 
 import PublicLayout from './layouts/PublicLayout.jsx';
+import AuthLayout from './layouts/AuthLayout.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -30,6 +31,7 @@ import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
 import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
 import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 import AboutPage from './pages/Info/AboutPage.jsx';
 import ContactPage from './pages/Info/ContactPage.jsx';
 import ContactSupportPage from './pages/Info/ContactSupportPage.jsx';
@@ -37,6 +39,7 @@ import HelpPage from './pages/Info/HelpPage.jsx';
 import PrivacyPage from './pages/Info/PrivacyPage.jsx';
 import TermsPage from './pages/Info/TermsPage.jsx';
 import LocationsPage from './pages/Info/LocationsPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 import { useState } from 'react';
 
 export default function App() {
@@ -49,20 +52,35 @@ export default function App() {
     setRetrying(false);
   };
 
-  if (status === 'checking' && !retrying) {
+  if (status === 'checking') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white/70 text-sm">
-        Connecting to Drimora…
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-5 text-center text-white/70"
+      >
+        <span
+          aria-hidden="true"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-white/15 border-t-amber-400"
+        />
+        <p className="mt-5 text-base font-medium text-white">
+          Connecting to Drimora…
+        </p>
+        <p className="mt-2 max-w-sm text-sm">
+          We’ll keep checking this connection for up to 15 seconds. Please wait
+          while the server responds.
+        </p>
       </div>
     );
   }
 
-  if (status === 'down' || (status === 'checking' && retrying)) {
+  if (status === 'down') {
     return <ServerUnavailablePage onRetry={handleRetry} retrying={retrying} />;
   }
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public pages share Header + Footer */}
         <Route element={<PublicLayout />}>
@@ -78,6 +96,9 @@ export default function App() {
           <Route path="/tours/:id" element={<TourDetailsPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
+        </Route>
+
+        <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -128,6 +149,8 @@ export default function App() {
           <Route path="/admin-blog/:id/edit" element={<AdminBlogFormPage />} />
           <Route path="/admin-users" element={<AdminUsersPage />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

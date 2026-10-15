@@ -3,34 +3,39 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import axios from 'axios';
 
 const ServerStatusContext = createContext(null);
+const HEALTH_CHECK_TIMEOUT_MS = 15_000;
 
 export function ServerStatusProvider({ children }) {
   const [status, setStatus] = useState('checking'); // 'checking' | 'up' | 'down'
+  const healthCheckRequest = useRef(null);
 
   const checkServerHealth = useCallback(async () => {
-    setStatus('checking');
-    try {
-      await axios.get('/api/v1/healthcheck');
-      setStatus('up');
-    } catch {
-      setStatus('down');
+    if (healthCheckRequest.current) {
+      return healthCheckRequest.current;
     }
+
+    setStatus('checking');
+
+    healthCheckRequest.current = axios
+      .get('/api/v1/healthcheck', { timeout: HEALTH_CHECK_TIMEOUT_MS })
+      .then(() => setStatus('up'))
+      .catch(() => setStatus('down'))
+      .finally(() => {
+        healthCheckRequest.current = null;
+      });
+
+    return healthCheckRequest.current;
   }, []);
 
   useEffect(() => {
     checkServerHealth();
   }, [checkServerHealth]);
-
-  useEffect(() => {
-    const handleDown = () => setStatus('down');
-    window.addEventListener('server-unavailable', handleDown);
-    return () => window.removeEventListener('server-unavailable', handleDown);
-  }, []);
 
   return (
     <ServerStatusContext.Provider value={{ status, retry: checkServerHealth }}>

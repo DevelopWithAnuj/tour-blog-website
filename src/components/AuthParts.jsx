@@ -28,7 +28,7 @@ export function GoogleIcon(props) {
   );
 }
 
-/** Form on the left, photo on the right. Pulled up under the transparent header. */
+/** Form on the left, photo on the right. */
 export function AuthShell({
   children,
   image = '/img/login-hero.png',
@@ -36,8 +36,8 @@ export function AuthShell({
   subtitle = 'Curated tours, real experiences, no guesswork.',
 }) {
   return (
-    <div className="-mt-22 grid min-h-screen grid-cols-1 lg:grid-cols-2">
-      <div className="flex items-center justify-center px-6 pb-12 pt-32 md:px-12">
+    <div className="grid min-h-[calc(100vh-120px)] flex-1 grid-cols-1 lg:grid-cols-2">
+      <div className="flex items-center justify-center px-6 py-12 md:px-12">
         <div className="w-full max-w-sm animate-fade-up">{children}</div>
       </div>
 
