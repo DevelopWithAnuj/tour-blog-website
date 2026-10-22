@@ -5,7 +5,9 @@ import PageTransition from '../components/PageTransition.jsx';
 const userLinks = [
   { to: '/dashboard', label: 'Overview' },
   { to: '/tours', label: 'Browse Tours' },
+  { to: '/my-posts', label: 'My Stories' },
 ];
+
 const adminLinks = [
   { to: '/admin-dashboard', label: 'Dashboard' },
   { to: '/admin-bookings', label: 'Bookings' },

@@ -73,7 +73,7 @@ function CoverImage({ src }) {
         src={src}
         alt=""
         style={{ y, scale: 1.2 }}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover "
       />
     </motion.div>
   );

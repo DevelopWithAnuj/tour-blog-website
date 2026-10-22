@@ -8,6 +8,7 @@ import {
   Compass,
   Home,
   LayoutDashboard,
+  PenLine,
   Plane,
   Users,
 } from 'lucide-react';
@@ -20,6 +21,7 @@ const ICONS = {
   '/admin-bookings': ClipboardList,
   '/admin-tours': Plane,
   '/admin-blog': BookOpen,
+  '/my-posts': PenLine,
   '/admin-users': Users,
 };
 

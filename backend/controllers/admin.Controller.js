@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
-import { BlogPost, BLOG_CATEGORIES } from '../models/Blog.models.js';
+import {
+  BlogPost,
+  BLOG_CATEGORIES,
+  BLOG_STATUS,
+} from '../models/Blog.models.js';
 import { Booking, BOOKING_STATUS } from '../models/Booking.models.js';
 import { Tour } from '../models/Tour.models.js';
 import { User } from '../models/User.models.js';
@@ -11,6 +15,33 @@ import { HttpStatus, UserRolesEnum } from '../utils/constants.js';
 const TOUR_FIELDS = 'title destination location image';
 const USER_FIELDS = 'fullName username email role createdAt';
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Admins review everything except other people's private drafts.
+const visibleToAdmin = (adminId) => ({
+  $nor: [{ status: 'draft', author: { $ne: adminId } }],
+});
+
+const isOwnPost = (post, user) => String(post.author) === String(user._id);
+
+const findManageablePost = async (req) => {
+  assertObjectId(req.params.id, 'Post');
+  const post = await BlogPost.findOne({
+    _id: req.params.id,
+    ...visibleToAdmin(req.user._id),
+  });
+  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+  return post;
+};
+
+const MOVE_TO_DRAFT_ERROR =
+  'Only the author can move their story to drafts. Reject it with a note instead.';
+
+const STATUS_MESSAGES = {
+  published: 'Post published',
+  pending: 'Post moved back to review',
+  rejected: 'Post rejected',
+  draft: 'Post moved to drafts',
+};
 
 const getPagination = (query) => {
   const page = Math.max(Number.parseInt(query.page, 10) || 1, 1);
@@ -342,9 +373,9 @@ const setTourActive = asyncHandler(async (req, res) => {
 const getAdminBlogPosts = asyncHandler(async (req, res) => {
   const { status, q } = req.query;
   const { page, limit, skip } = getPagination(req.query);
-  const filter = {};
+ const filter = { ...visibleToAdmin(req.user._id) };
 
-  if (status === 'draft' || status === 'published') filter.status = status;
+ if (BLOG_STATUS.includes(String(status))) filter.status = String(status);
 
   if (q && String(q).trim()) {
     const rx = searchRegex(q);
@@ -373,9 +404,7 @@ const getAdminBlogPosts = asyncHandler(async (req, res) => {
 });
 
 const getAdminBlogPostById = asyncHandler(async (req, res) => {
-  assertObjectId(req.params.id, 'Post');
-  const post = await BlogPost.findById(req.params.id);
-  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
+  const post = await findManageablePost(req);
   res
     .status(HttpStatus.OK)
     .json(new ApiResponse(HttpStatus.OK, { post }, 'Post fetched'));
@@ -391,46 +420,36 @@ const createBlogPost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(HttpStatus.CREATED, { post }, 'Post created'));
 });
 
-// Slug is generated once and never changes, so shared links keep working.
 const updateBlogPost = asyncHandler(async (req, res) => {
-  assertObjectId(req.params.id, 'Post');
-  const post = await BlogPost.findById(req.params.id);
-  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
-
+  const post = await findManageablePost(req);
+  if (req.body.status === 'draft' && !isOwnPost(post, req.user)) {
+    throw new ApiError(HttpStatus.CONFLICT, MOVE_TO_DRAFT_ERROR);
+  }
   post.set(pick(req.body, BLOG_WRITABLE));
-  await post.save(); // the pre-validate hook sets publishedAt on first publish
-
+  await post.save();
   res
     .status(HttpStatus.OK)
     .json(new ApiResponse(HttpStatus.OK, { post }, 'Post updated'));
 });
 
 const setBlogPostStatus = asyncHandler(async (req, res) => {
-  assertObjectId(req.params.id, 'Post');
-  const post = await BlogPost.findById(req.params.id);
-  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
-
-  post.status = req.body.status;
+  const post = await findManageablePost(req);
+  const { status, reviewNote } = req.body;
+  if (status === 'draft' && !isOwnPost(post, req.user)) {
+    throw new ApiError(HttpStatus.CONFLICT, MOVE_TO_DRAFT_ERROR);
+  }
+  post.status = status;
+  if (status === 'rejected') post.reviewNote = reviewNote || '';
   await post.save();
-
   res
     .status(HttpStatus.OK)
-    .json(
-      new ApiResponse(
-        HttpStatus.OK,
-        { post },
-        post.status === 'published' ? 'Post published' : 'Post moved to drafts'
-      )
-    );
+    .json(new ApiResponse(HttpStatus.OK, { post }, STATUS_MESSAGES[status]));
 });
 
 const deleteBlogPost = asyncHandler(async (req, res) => {
-  assertObjectId(req.params.id, 'Post');
-  const post = await BlogPost.findByIdAndDelete(req.params.id);
-  if (!post) throw new ApiError(HttpStatus.NOT_FOUND, 'Post not found');
-  res
-    .status(HttpStatus.OK)
-    .json(new ApiResponse(HttpStatus.OK, {}, 'Post deleted'));
+  const post = await findManageablePost(req);
+  await post.deleteOne();
+  res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, {}, 'Post deleted'));
 });
 
 /* ---------- Users ---------- */

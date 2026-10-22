@@ -228,6 +228,11 @@ const adminBlogValidator = () => [
 
 const adminBlogStatusValidator = () => [
   body('status').isIn(BLOG_STATUS).withMessage('Invalid status'),
+  body('reviewNote')
+    .optional({ values: 'falsy' })
+    .isString()
+    .trim()
+    .isLength({ max: 500 }),
 ];
 
 const adminUserRoleValidator = () => [
@@ -269,6 +274,41 @@ const inquiryValidator = () => [
   body('website').optional().isString().isLength({ max: 200 }), // honeypot
 ];
 
+const httpsUrl = /^https:\/\//;
+
+const userBlogValidator = () => [
+  text('title', 150),
+  body('category').isIn(BLOG_CATEGORIES).withMessage('Invalid category'),
+  text('destination', 80, { required: false }),
+  text('excerpt', 400),
+  text('content', 30000),
+  body('content')
+    .if(body('status').not().equals('draft'))
+    .isLength({ min: 100 })
+    .withMessage('Write at least 100 characters before submitting for review'),
+  body('coverImage')
+    .optional({ values: 'falsy' })
+    .isString()
+    .trim()
+    .matches(httpsUrl)
+    .withMessage('Cover image must be an https:// URL')
+    .isLength({ max: 500 }),
+  body('images')
+    .optional()
+    .isArray({ max: 6 })
+    .withMessage('You can add at most 6 gallery images'),
+  body('images.*')
+    .isString()
+    .trim()
+    .matches(httpsUrl)
+    .withMessage('Each gallery image must be an https:// URL')
+    .isLength({ max: 500 }),
+  body('status')
+    .optional()
+    .isIn(['draft', 'pending'])
+    .withMessage('Status must be draft or pending'),
+];
+
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -282,5 +322,6 @@ export {
   adminBlogValidator,
   adminBlogStatusValidator,
   adminUserRoleValidator,
-  inquiryValidator
+  inquiryValidator,
+  userBlogValidator,
 };

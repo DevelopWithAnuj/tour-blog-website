@@ -10,7 +10,7 @@ export const BLOG_CATEGORIES = [
   'personal-experience',
 ];
 
-export const BLOG_STATUS = ['draft', 'published'];
+export const BLOG_STATUS = ['draft', 'pending', 'published', 'rejected'];
 
 const slugify = (s) =>
   s
@@ -37,6 +37,8 @@ const blogPostSchema = new Schema(
     coverImage: { type: String, default: '' },
     images: { type: [String], default: [] },
     status: { type: String, enum: BLOG_STATUS, default: 'draft', index: true },
+    reviewNote: { type: String, trim: true, maxlength: 500, default: '' },
+    submittedAt: { type: Date },
     publishedAt: { type: Date },
   },
   { timestamps: true }
@@ -50,8 +52,14 @@ blogPostSchema.pre('validate', function () {
   if (this.status === 'published' && !this.publishedAt) {
     this.publishedAt = new Date();
   }
+  if (this.isModified('status') && this.status === 'pending') {
+    this.submittedAt = new Date();
+  }
+  if (this.status === 'published' || this.status === 'pending') {
+    this.reviewNote = '';
+  }
 });
 
-blogPostSchema.index({ status: 1, publishedAt: -1 });
+blogPostSchema.index({ status: 1, publishedAt: -1, author: 1, updatedAt: -1 });
 
 export const BlogPost = mongoose.model('BlogPost', blogPostSchema);

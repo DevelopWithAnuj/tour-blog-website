@@ -31,6 +31,8 @@ import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
 import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
 import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
+import MyPostsPage from './pages/Dashboard/MyPostsPage.jsx';
+import MyPostFormPage from './pages/Dashboard/MyPostFormPage.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import AboutPage from './pages/Info/AboutPage.jsx';
 import ContactPage from './pages/Info/ContactPage.jsx';
@@ -129,6 +131,9 @@ export default function App() {
           }
         >
           <Route path="/dashboard" element={<UserDashboardPage />} />
+          <Route path="/my-posts" element={<MyPostsPage />} />
+          <Route path="/my-posts/new" element={<MyPostFormPage />} />
+          <Route path="/my-posts/:id/edit" element={<MyPostFormPage />} />
         </Route>
 
         {/* Admin pages use Sidebar with admin links */}

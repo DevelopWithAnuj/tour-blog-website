@@ -79,7 +79,7 @@ export function Field({ label, htmlFor, hint, children }) {
         {label}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="text-xs mt-1 text-slate-50">{hint}</p>}
+      {hint && <p className="text-xs mt-1 text-slate-500">{hint}</p>}
     </motion.div>
   );
 }

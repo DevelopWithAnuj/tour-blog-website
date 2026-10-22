@@ -241,6 +241,12 @@ export default function BlogPage() {
           <motion.p variants={fadeUp} className="mt-3 max-w-xl text-white/60">
             Guides, itineraries and honest trip notes from the road.
           </motion.p>
+          <Link
+            to="/my-posts/new"
+            className="mt-6 inline-flex rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium transition hover:border-amber-400/70 hover:text-amber-300"
+          >
+            Share your own story
+          </Link>
         </motion.header>
 
         <motion.form

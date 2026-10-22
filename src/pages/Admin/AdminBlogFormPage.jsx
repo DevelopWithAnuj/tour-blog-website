@@ -4,6 +4,7 @@ import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 import {
   Alert,
   EASE,
@@ -15,7 +16,7 @@ import {
   stagger,
 } from '../../components/AdminParts.jsx';
 
-function useTourCategories() {
+function useBlogCategories() {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState('');
@@ -24,7 +25,7 @@ function useTourCategories() {
     const controller = new AbortController();
 
     axios
-      .get('/api/v1/tours/categories', { signal: controller.signal })
+      .get('/api/v1/blogs/categories', { signal: controller.signal })
       .then((response) => {
         const data = response.data?.data?.categories;
         if (!Array.isArray(data)) {
@@ -36,7 +37,7 @@ function useTourCategories() {
         if (!controller.signal.aborted) {
           setCategoriesError(
             error.response?.data?.message ||
-              'We could not load tour categories. Check your connection and try again.'
+              'We could not load blog categories. Check your connection and try again.'
           );
         }
       })
@@ -107,13 +108,15 @@ export default function AdminBlogFormPage() {
   const isEdit = Boolean(id);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [form, setForm] = useState(EMPTY);
+  const [isOwnPost, setIsOwnPost] = useState(!isEdit);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(''); 
   const [error, setError] = useState('');
   const { categories, categoriesLoading, categoriesError } =
-    useTourCategories();
+    useBlogCategories();
 
   useEffect(() => {
     if (!isEdit) return;
@@ -122,6 +125,8 @@ export default function AdminBlogFormPage() {
       .get(`/api/v1/admin/blogs/${id}`, { signal: controller.signal })
       .then((res) => {
         const p = res.data.data.post;
+        const authorId = p.author?._id ?? p.author;
+        setIsOwnPost(String(authorId) === String(user?._id));
         setForm({
           title: p.title || '',
           category: p.category || 'travel-guide',
@@ -140,7 +145,7 @@ export default function AdminBlogFormPage() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [id, isEdit]);
+  }, [id, isEdit, user?._id]);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -344,21 +349,23 @@ export default function AdminBlogFormPage() {
                       ? 'Save & keep published'
                       : 'Publish'}
                 </PressButton>
-                <PressButton
-                  type="button"
-                  disabled={busy}
-                  onClick={() => save('draft')}
-                  className={secondary}
-                >
-                  {saving === 'draft' && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  )}
-                  {saving === 'draft'
-                    ? 'Saving…'
-                    : form.status === 'published'
-                      ? 'Move to drafts'
-                      : 'Save draft'}
-                </PressButton>
+                {isOwnPost && (
+                  <PressButton
+                    type="button"
+                    disabled={busy}
+                    onClick={() => save('draft')}
+                    className={secondary}
+                  >
+                    {saving === 'draft' && (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    )}
+                    {saving === 'draft'
+                      ? 'Saving…'
+                      : form.status === 'published'
+                        ? 'Move to drafts'
+                        : 'Save draft'}
+                  </PressButton>
+                )}
                 <PressLink to="/admin-blog" className={secondary}>
                   Cancel
                 </PressLink>

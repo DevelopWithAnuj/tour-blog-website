@@ -3,6 +3,8 @@ import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { Plus, Search } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { StatusBadge } from '../../components/PostStatus.jsx';
 import {
   Alert,
   EASE,
@@ -10,16 +12,16 @@ import {
   PressButton,
   PressLink,
   SkeletonRows,
-  StatusPill,
   fadeUp,
   formatDate,
   rowVariants,
   stagger,
 } from '../../components/AdminParts.jsx';
 
-const STATUS_OPTIONS = ['all', 'draft', 'published'];
+const STATUS_OPTIONS = ['all', 'pending', 'draft', 'published', 'rejected'];
 
 export default function AdminBlogPage() {
+    const { user: me } = useAuth();
     const { toast } = useToast();
     const [posts, setPosts] = useState([]);
     const [status, setStatus] = useState('all');
@@ -70,6 +72,15 @@ export default function AdminBlogPage() {
       ) {
         return;
       }
+
+      let reviewNote;
+      if (action === 'rejected') {
+        reviewNote = window.prompt(
+          'Why is this being rejected? The author will see this note.'
+        );
+        if (reviewNote === null) return;
+      }
+
       setBusyId(post._id);
       try {
         const res =
@@ -77,6 +88,7 @@ export default function AdminBlogPage() {
             ? await axios.delete(`/api/v1/admin/blogs/${post._id}`)
             : await axios.patch(`/api/v1/admin/blogs/${post._id}/status`, {
                 status: action,
+                reviewNote,
               });
         toast(res.data.message, { type: 'success' });
         await load(new AbortController().signal, { silent: true });
@@ -238,9 +250,18 @@ export default function AdminBlogPage() {
                               className="transition-colors hover:bg-slate-50/70"
                             >
                               <td className="px-5 py-4">
-                                <PressLink to={`/blog/`} className="font-medium text-slate-900">
-                                  {p.title}
-                                </PressLink>
+                                {published ? (
+                                  <PressLink
+                                    to={`/blog/${p.slug}`}
+                                    className="font-medium text-slate-900"
+                                  >
+                                    {p.title}
+                                  </PressLink>
+                                ) : (
+                                  <span className="font-medium text-slate-900">
+                                    {p.title}
+                                  </span>
+                                )}
                                 <p className="text-xs text-slate-500">
                                   {p.destination || '—'}
                                 </p>
@@ -263,11 +284,7 @@ export default function AdminBlogPage() {
                                 {published ? formatDate(p.publishedAt) : '—'}
                               </td>
                               <td className="px-5 py-4">
-                                <StatusPill
-                                  on={published}
-                                  onLabel="Published"
-                                  offLabel="Draft"
-                                />
+                                <StatusBadge status={p.status} />
                               </td>
                               <td className="px-5 py-4">
                                 <div className="flex flex-wrap items-center gap-2">
@@ -275,18 +292,47 @@ export default function AdminBlogPage() {
                                     to={`/admin-blog/${p._id}/edit`}
                                     className={small}
                                   >
-                                    Edit
+                                    {p.status === 'pending' ? 'Review' : 'Edit'}
                                   </PressLink>
-                                  <PressButton
-                                    type="button"
-                                    disabled={busyId === p._id}
-                                    onClick={() =>
-                                      run(p, published ? 'draft' : 'published')
-                                    }
-                                    className={small}
-                                  >
-                                    {published ? 'Unpublish' : 'Publish'}
-                                  </PressButton>
+                                  {p.status !== 'published' && (
+                                    <PressButton
+                                      type="button"
+                                      disabled={busyId === p._id}
+                                      onClick={() => run(p, 'published')}
+                                      className={small}
+                                    >
+                                      {p.status === 'pending'
+                                        ? 'Approve'
+                                        : 'Publish'}
+                                    </PressButton>
+                                  )}
+                                  {p.status === 'pending' && (
+                                    <PressButton
+                                      type="button"
+                                      disabled={busyId === p._id}
+                                      onClick={() => run(p, 'rejected')}
+                                      className={small}
+                                    >
+                                      Reject
+                                    </PressButton>
+                                  )}
+                                  {published && (
+                                    <PressButton
+                                      type="button"
+                                      disabled={busyId === p._id}
+                                      onClick={() =>
+                                        run(
+                                          p,
+                                          p.author?._id === me?._id
+                                            ? 'draft'
+                                            : 'pending'
+                                        )
+                                      }
+                                      className={small}
+                                    >
+                                      Unpublish
+                                    </PressButton>
+                                  )}
                                   <PressButton
                                     type="button"
                                     disabled={busyId === p._id}

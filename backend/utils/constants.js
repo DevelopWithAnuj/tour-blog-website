@@ -60,6 +60,7 @@ export const ApiPath = {
   TOURS: '/tours',
   BOOKINGS: '/bookings',
   BLOGS: '/blogs',
+  MY_POSTS: '/my-posts',
   ADMIN: '/admin',
   CONTACT: '/contact',
 };
