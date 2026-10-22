@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://developwithanuj.github.io/tour-blog-website/">🌐 Live Demo</a> •
+  <a href="#local-setup">🛠️ Run locally</a> •
   <a href="https://github.com/DevelopWithAnuj/tour-blog-website">⭐ Repository</a>
 </p>
 
@@ -213,4 +213,3 @@ Anuj Prajapati
 ## Project Status
 
 Active full-stack travel website with modern UI, booking flow, and admin content management.
-
