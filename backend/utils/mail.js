@@ -1,7 +1,6 @@
 import Mailgen from 'mailgen';
 import nodemailer from 'nodemailer';
 import { Config } from './constants.js';
-import { unsubscribe } from 'diagnostics_channel';
 
 const getProductLink = () => {
   if (process.env.CLIENT_URL) return process.env.CLIENT_URL;
@@ -48,7 +47,7 @@ const sendEmail = async ({ email, subject, mailgenContent, headers }) => {
     subject,
     text: emailTextual,
     html: emailHTML,
-    ...Config(headers ? {headers} : {}),
+    ...(headers ? { headers } : {}),
   };
 
   return await transporter.sendMail(mail);

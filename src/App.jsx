@@ -31,14 +31,8 @@ import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
 import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
 import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
-<<<<<<< Updated upstream
-=======
 import AdminNewsletterPage from './pages/Admin/AdminNewsletterPage.jsx';
 
-import MyPostsPage from './pages/Dashboard/MyPostsPage.jsx';
-import MyPostFormPage from './pages/Dashboard/MyPostFormPage.jsx';
-
->>>>>>> Stashed changes
 import ScrollToTop from './components/ScrollToTop.jsx';
 
 import AboutPage from './pages/Info/AboutPage.jsx';

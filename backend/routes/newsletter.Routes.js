@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { validate } from '../middleware/validator.Middleware.js';
 import { newsletterValidator } from '../validators/index.js';
-import { subscribe, unsubscribe, } from '../controllers/newsletter.Controller.js';
+import { subscribe, unsubscribe } from '../controllers/newsletter.Controller.js';
 
 const router = Router();
 
@@ -22,5 +22,5 @@ router
   .route('/')
   .post(newsletterLimiter, newsletterValidator(), validate, subscribe);
 
-  router.post('/unsubscribe/:token', newsletterLimiter, unsubscribe)
+router.post('/unsubscribe/:token', newsletterLimiter, unsubscribe);
 export default router;

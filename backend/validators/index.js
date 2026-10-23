@@ -269,8 +269,6 @@ const inquiryValidator = () => [
   body('website').optional().isString().isLength({ max: 200 }), // honeypot
 ];
 
-<<<<<<< Updated upstream
-=======
 const newsletterValidator = () => [
   body('email')
     .trim()
@@ -321,7 +319,6 @@ const userBlogValidator = () => [
     .withMessage('Status must be draft or pending'),
 ];
 
->>>>>>> Stashed changes
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -335,12 +332,8 @@ export {
   adminBlogValidator,
   adminBlogStatusValidator,
   adminUserRoleValidator,
-<<<<<<< Updated upstream
-  inquiryValidator
-=======
   inquiryValidator,
   newsletterValidator,
   adminNewsletterValidator,
   userBlogValidator,
->>>>>>> Stashed changes
 };

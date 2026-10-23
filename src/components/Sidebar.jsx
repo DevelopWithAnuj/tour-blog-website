@@ -8,11 +8,7 @@ import {
   Compass,
   Home,
   LayoutDashboard,
-<<<<<<< Updated upstream
-=======
   Mail,
-  PenLine,
->>>>>>> Stashed changes
   Plane,
   Users,
 } from 'lucide-react';
