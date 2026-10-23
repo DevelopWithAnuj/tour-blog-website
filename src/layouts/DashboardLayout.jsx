@@ -14,6 +14,7 @@ const adminLinks = [
   { to: '/admin-tours', label: 'Tours' },
   { to: '/admin-blog', label: 'Blog' },
   { to: '/admin-users', label: 'Users' },
+  { to: '/admin-newsletter', label: 'Newsletter' },
 ];
 
 export default function DashboardLayout({ role = 'user' }) {

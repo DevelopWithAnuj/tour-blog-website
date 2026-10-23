@@ -274,6 +274,21 @@ const inquiryValidator = () => [
   body('website').optional().isString().isLength({ max: 200 }), // honeypot
 ];
 
+const newsletterValidator = () => [
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('A valid email is required')
+    .isLength({ max: 254 })
+    .normalizeEmail({ gmail_remove_dots: false }),
+];
+
+const adminNewsletterValidator = () => [
+  text('subject', 150),
+  text('message', 10000),
+  body('message').isLength({ min: 20 }).withMessage('Write at least 20 characters'),
+];
+
 const httpsUrl = /^https:\/\//;
 
 const userBlogValidator = () => [
@@ -323,5 +338,7 @@ export {
   adminBlogStatusValidator,
   adminUserRoleValidator,
   inquiryValidator,
+  newsletterValidator,
+  adminNewsletterValidator,
   userBlogValidator,
 };

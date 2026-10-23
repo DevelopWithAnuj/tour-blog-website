@@ -63,6 +63,7 @@ export const ApiPath = {
   MY_POSTS: '/my-posts',
   ADMIN: '/admin',
   CONTACT: '/contact',
+  NEWSLETTER: '/newsletter',
 };
 
 export const HttpStatus = {

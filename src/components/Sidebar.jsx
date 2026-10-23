@@ -9,6 +9,7 @@ import {
   Home,
   LayoutDashboard,
   PenLine,
+  Mail,
   Plane,
   Users,
 } from 'lucide-react';
@@ -23,6 +24,7 @@ const ICONS = {
   '/admin-blog': BookOpen,
   '/my-posts': PenLine,
   '/admin-users': Users,
+  '/admin-newsletter': Mail,
 };
 
 const STORAGE_KEY = 'drimora-sidebar-collapsed';

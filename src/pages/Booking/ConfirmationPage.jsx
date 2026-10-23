@@ -74,7 +74,7 @@ export default function ConfirmationPage() {
           style={{ animationDelay: '120ms' }}
           className="mt-3 animate-fade-up text-white/60"
         >
-          A confirmation has been sent to{' '}
+          A confirmation is on its way to{' '}
           <span className="text-white">{booking.travelerEmail}</span>.
         </p>
       </div>

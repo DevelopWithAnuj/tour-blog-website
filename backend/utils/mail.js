@@ -23,7 +23,7 @@ const createTransporter = () => {
   });
 };
 
-const sendEmail = async ({ email, subject, mailgenContent }) => {
+const sendEmail = async ({ email, subject, mailgenContent, headers }) => {
   if (!email || !subject || !mailgenContent) {
     throw new Error('email, subject and mailgenContent are required');
   }
@@ -47,10 +47,21 @@ const sendEmail = async ({ email, subject, mailgenContent }) => {
     subject,
     text: emailTextual,
     html: emailHTML,
+    ...(headers ? { headers } : {}),
   };
 
   return await transporter.sendMail(mail);
 };
+
+const newsletterMailgenContent = (message, unsubscribeUrl) => ({
+  body: {
+    intro: message
+      .split(/\n{2,}/)
+      .map((p) => p.trim())
+      .filter(Boolean),
+    outro: `You are receiving this because you joined the Drimora trip-ideas list. Unsubscribe any time: ${unsubscribeUrl}`,
+  },
+});
 
 const emailVerificationMailgenContent = (username, verificationUrl) => ({
   body: {
@@ -88,8 +99,38 @@ const forgotPasswordMailgenContent = (username, passwordResetUrl) => ({
   },
 });
 
+const bookingConfirmationMailgenContent = (booking, tourTitle, bookingRef) => ({
+  body: {
+    name: booking.travelerName,
+    intro: `Your booking for ${tourTitle} is confirmed. Thank you for choosing Drimora Travel.`,
+    table: {
+      data: [
+        { item: 'Booking ID', details: bookingRef },
+        { item: 'Tour', details: tourTitle },
+        {
+          item: 'Travel date',
+          details: booking.date.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+        },
+        { item: 'Travellers', details: String(booking.guestCount) },
+        {
+          item: 'Total paid',
+          details: `₹${booking.totalAmount.toLocaleString('en-IN')}`,
+        },
+      ],
+    },
+    outro:
+      'You can view or cancel this booking from your dashboard. Need help? Just reply to this email.',
+  },
+});
+
 export {
+  bookingConfirmationMailgenContent,
   emailVerificationMailgenContent,
   forgotPasswordMailgenContent,
+  newsletterMailgenContent,
   sendEmail,
 };
