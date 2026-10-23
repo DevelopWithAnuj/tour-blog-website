@@ -173,7 +173,7 @@ export function Pager({ page, pages, onChange }) {
         Previous
       </PressButton>
       <span className="text-sm text-slate-600">
-        page
+        page{' '}
         <motion.span
           key={page}
           initial={{ opacity: 0, y: -6 }}
@@ -182,7 +182,7 @@ export function Pager({ page, pages, onChange }) {
           className="inline-block"
         >
           {page}
-        </motion.span>
+        </motion.span>{' '}
         of {pages}
       </span>
       <PressButton
