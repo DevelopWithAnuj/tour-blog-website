@@ -40,7 +40,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   }
 });
 
-export const optionalAuth = asyncHandler(async (req, res) => {
+export const optionalAuth = asyncHandler(async (req, res, next) => {
   const authHeader = req.header('Authorization');
   const bearerToken = authHeader?.startsWith('Bearer')
     ? authHeader.slice(7)

@@ -138,7 +138,7 @@ export default function AdminUsersPage() {
               className="inline-block"
             >
               {total}
-            </motion.span>
+            </motion.span>{' '}
             {total === 1 ? 'user' : 'users'}
           </motion.p>
         </motion.div>
