@@ -10,9 +10,14 @@ import {
   Home,
   LayoutDashboard,
   LogIn,
-  UserPlus, Info, LifeBuoy, Mail, MapPin
+  UserPlus,
+  Info,
+  LifeBuoy,
+  Mail,
+  MapPin,
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import axios from 'axios';
 
 const LINK_GROUPS = [
   {
@@ -70,13 +75,28 @@ const footerItemVariants = {
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    // TODO: send to your newsletter endpoint
+    if (!email.trim() || sending) return;
     setSubscribed(true);
-    setEmail('');
+    setError('');
+    try {
+      await axios.post('/api/v1/newsletter', { email: email.trim() });
+      setSubscribed(true);
+      setError('');
+    } catch (err) {
+      const first = err.response?.data?.errors?.[0];
+      setError(
+        (first && Object.values(first)[0]) ||
+          err.response?.data?.message ||
+          'Could not subscribe. Please try again.'
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -144,7 +164,8 @@ export default function Footer() {
               Trip ideas in your inbox
             </h3>
             <p className="mt-4 text-white/55">
-              One short email a month. Unsubscribe any time.
+              One short email a month. Unsubscribe any time with the link in
+              every email.
             </p>
 
             {subscribed ? (
@@ -153,29 +174,37 @@ export default function Footer() {
                 You are on the list.
               </p>
             ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="mt-5 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1.5 pl-4 focus-within:border-amber-400"
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  aria-label="Email address"
-                  required
-                  className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
-                  type="submit"
-                  className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
+              <>
+                <form
+                  onSubmit={handleSubmit}
+                  className="mt-5 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 p-1.5 pl-4 focus-within:border-amber-400"
                 >
-                  Join
-                  <ArrowRight className="h-4 w-4" />
-                </motion.button>
-              </form>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    aria-label="Email address"
+                    required
+                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.96 }}
+                    type="submit"
+                    disabled={sending}
+                    className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
+                  >
+                    {sending ? 'Joining…' : 'Join'}
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.button>
+                </form>
+                {error && (
+                  <p role="alert" className="mt-2 text-sm text-rose-300">
+                    {error}
+                  </p>
+                )}
+              </>
             )}
           </motion.div>
         </motion.div>

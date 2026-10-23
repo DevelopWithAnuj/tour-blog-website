@@ -75,6 +75,11 @@ import bookingRouter from './routes/booking.Routes.js';
 import blogRouter from './routes/blog.Routes.js';
 import adminRouter from './routes/admin.Routes.js';
 import contactRouter from './routes/contact.Routes.js';
+<<<<<<< Updated upstream
+=======
+import newsletterRouter from './routes/newsletter.Routes.js';
+import myPostRouter from './routes/myPost.Routes.js';
+>>>>>>> Stashed changes
 
 app.use(`${ApiPath.BASE}${ApiPath.HEALTHCHECK}`, healthCheckRouter);
 app.use(`${ApiPath.BASE}${ApiPath.AUTH}/current-user`, sessionCheckLimiter);
@@ -87,6 +92,7 @@ app.use(`${ApiPath.BASE}${ApiPath.BOOKINGS}`, bookingRouter);
 app.use(`${ApiPath.BASE}${ApiPath.BLOGS}`, blogRouter);
 app.use(`${ApiPath.BASE}${ApiPath.ADMIN}`, adminRouter);
 app.use(`${ApiPath.BASE}${ApiPath.CONTACT}`, contactRouter);
+app.use(`${ApiPath.BASE}${ApiPath.NEWSLETTER}`, newsletterRouter);
 
 app.use(`${ApiPath.BASE}`, notFoundHandler);
 

@@ -4,6 +4,8 @@ import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { CancellationPolicy, HttpStatus } from '../utils/constants.js';
 import { Booking } from '../models/Booking.models.js';
+import logger from '../config/logger.js';
+import { bookingConfirmationMailgenContent, sendEmail } from '../utils/mail.js';
 import { Tour } from '../models/Tour.models.js';
 
 const TOUR_FIELDS = 'title destination location image duration';
@@ -116,6 +118,16 @@ const payBooking = asyncHandler(async (req, res) => {
   booking.paidAt = new Date();
   booking.status = 'confirmed';
   await booking.save();
+
+  // Don't fail or delay a successful payment because of email trouble.
+  sendEmail({
+    email: booking.travelerEmail,
+    subject:'Your Drimora booking is confirmed.',
+    mailgenContent: bookingConfirmationMailgenContent(
+      booking, booking.tour?.title || 'your tour',
+      `DRM-${String(booking._id).slice(-8).toUpperCase()}`
+    ),
+  }).catch((err) => logger.error(`Confirmation email failed for booking ${booking._id}: ${err.message}`));
   res
     .status(HttpStatus.OK)
     .json(new ApiResponse(HttpStatus.OK, { booking }, 'Payment successfull'));

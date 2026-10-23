@@ -17,6 +17,7 @@ import {
   setBlogPostStatus,
   deleteBlogPost,
 } from '../controllers/admin.Controller.js';
+import { getNewsletterStats, sendNewsletter } from '../controllers/newsletter.Controller.js'
 import { requireRole, verifyJWT } from '../middleware/auth.Middleware.js';
 import { validate } from '../middleware/validator.Middleware.js';
 import { UserRolesEnum } from '../utils/constants.js';
@@ -26,6 +27,7 @@ import {
   adminBlogValidator,
   adminBlogStatusValidator,
   adminUserRoleValidator,
+  adminNewsletterValidator,
 } from '../validators/index.js';
 
 const router = Router();
@@ -75,5 +77,8 @@ router.patch(
   validate,
   setBlogPostStatus
 );
+
+router.get('/newsletter', getNewsletterStats)
+router.post('/newsletter/send', adminNewsletterValidator(), validate, sendNewsletter)
 
 export default router;

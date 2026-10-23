@@ -62,6 +62,7 @@ export const ApiPath = {
   BLOGS: '/blogs',
   ADMIN: '/admin',
   CONTACT: '/contact',
+  NEWSLETTER: '/newsletter',
 };
 
 export const HttpStatus = {

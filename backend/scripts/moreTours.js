@@ -1,8 +1,3 @@
-// Extra tours for the seed script. Covers every category in TOUR_CATEGORIES.
-// Tours marked PLACEHOLDER use a temporary image: drop your own photos into
-// public/img/tours/<Country>/ and update the paths.
-const PLACEHOLDER = '/img/login-hero.png';
-
 export const moreTours = [
   {
     title: 'Bali Beach & Temple Escape',
@@ -13,8 +8,8 @@ export const moreTours = [
     price: 98000,
     duration: '6 days / 5 nights',
     category: 'beach',
-    image: PLACEHOLDER,
-    images: [PLACEHOLDER],
+    image: '/img/tours/Bali/beach-side.avif',
+    images: ['/img/tours/Bali/beach-side.avif'],
     itinerary: [
       {
         day: 1,
@@ -61,8 +56,8 @@ export const moreTours = [
     price: 295000,
     duration: '5 days / 4 nights',
     category: 'luxury',
-    image: PLACEHOLDER,
-    images: [PLACEHOLDER],
+    image: '/img/tours/Maldives/ocean-bg.avif',
+    images: ['/img/tours/Maldives/ocean-bg.avif'],
     itinerary: [
       {
         day: 1,
@@ -104,8 +99,8 @@ export const moreTours = [
     price: 210000,
     duration: '7 days / 6 nights',
     category: 'adventure',
-    image: PLACEHOLDER,
-    images: [PLACEHOLDER],
+    image: '/img/tours/Generic/mountain.avif',
+    images: ['/img/tours/Generic/mountain.avif'],
     itinerary: [
       {
         day: 1,
@@ -151,8 +146,8 @@ export const moreTours = [
     price: 135000,
     duration: '5 days / 4 nights',
     category: 'culture',
-    image: '/img/tours/Japan/rome.jpg',
-    images: ['/img/tours/Japan/rome.jpg'],
+    image: '/img/tours/Italy/rome.jpg',
+    images: ['/img/tours/Italy/rome.jpg'],
     itinerary: [
       {
         day: 1,
@@ -199,8 +194,8 @@ export const moreTours = [
     price: 125000,
     duration: '6 days / 5 nights',
     category: 'city',
-    image: '/img/tours/Japan/turkey.jpg',
-    images: ['/img/tours/Japan/turkey.jpg'],
+    image: '/img/tours/Turkey/turkey.jpg',
+    images: ['/img/tours/Turkey/turkey.jpg'],
     itinerary: [
       {
         day: 1,
@@ -251,8 +246,8 @@ export const moreTours = [
     price: 89000,
     duration: '7 days / 6 nights',
     category: 'nature',
-    image: '/img/tours/Japan/thland-bg.avif',
-    images: ['/img/tours/Japan/thland-bg.avif'],
+    image: '/img/tours/Thailand/thland-bg.avif',
+    images: ['/img/tours/Thailand/thland-bg.avif'],
     itinerary: [
       {
         day: 1,

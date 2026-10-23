@@ -12,10 +12,10 @@ const tours = [
     price: 145000,
     duration: '6 days / 5 nights',
     category: 'nature',
-    image: '/img/tours/Norway/images 6.jfif',
+    image: '/img/tours/Norway/images-6.jpg',
     images: [
-      '/img/tours/Norway/images 10.jfif',
-      '/img/tours/Norway/images 15.jfif',
+      '/img/tours/Norway/images-10.jpg',
+      '/img/tours/Norway/images-15.jpg',
     ],
     itinerary: [
       {
@@ -63,10 +63,10 @@ const tours = [
     price: 185000,
     duration: '5 days / 4 nights',
     category: 'city',
-    image: '/img/tours/New-York/images18.jfif',
+    image: '/img/tours/New-York/images18.jpg',
     images: [
-      '/img/tours/New-York/images14.jfif',
-      '/img/tours/New-York/images6.jfif',
+      '/img/tours/New-York/images14.jpg',
+      '/img/tours/New-York/images6.jpg',
     ],
     itinerary: [
       {
@@ -103,8 +103,8 @@ const tours = [
     price: 165000,
     duration: '7 days / 6 nights',
     category: 'culture',
-    image: '/img/tours/Japan/turkey.jpg',
-    images: ['/img/tours/Japan/thland-bg.avif', '/img/tours/Japan/rome.jpg'],
+    image: '/img/tours/Generic/mountain.avif',
+    images: ['/img/tours/Generic/mountain.avif'],
     itinerary: [
       {
         day: 1,

@@ -8,6 +8,11 @@ import {
   Compass,
   Home,
   LayoutDashboard,
+<<<<<<< Updated upstream
+=======
+  Mail,
+  PenLine,
+>>>>>>> Stashed changes
   Plane,
   Users,
 } from 'lucide-react';
@@ -21,6 +26,7 @@ const ICONS = {
   '/admin-tours': Plane,
   '/admin-blog': BookOpen,
   '/admin-users': Users,
+  '/admin-newsletter': Mail,
 };
 
 const STORAGE_KEY = 'drimora-sidebar-collapsed';

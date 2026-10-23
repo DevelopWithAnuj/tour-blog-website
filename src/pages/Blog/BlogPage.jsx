@@ -11,11 +11,11 @@ export const categoryLabel = (name) =>
     .replace(/-/g, ' ') || 'General';
 
 const destinationCovers = {
-  norway: '/img/tours/Norway/images%206.jfif',
-  japan: '/img/tours/Japan/thland-bg.avif',
-  turkey: '/img/tours/Japan/turkey.jpg',
-  italy: '/img/tours/Japan/rome.jpg',
-  bali: mountainCover,
+  norway: '/img/tours/Norway/images-6.jpg',
+  japan: '/img/tours/Generic/mountain.avif',
+  turkey: '/img/tours/Turkey/turkey.jpg',
+  italy: '/img/tours/Italy/rome.jpg',
+  bali: '/img/tours/Bali/beach-side.avif',
 };
 
 export const postCoverImage = (post) => {

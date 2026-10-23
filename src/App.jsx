@@ -31,7 +31,16 @@ import AdminTourFormPage from './pages/Admin/AdminTourFormPage.jsx';
 import AdminBlogPage from './pages/Admin/AdminBlogPage.jsx';
 import AdminBlogFormPage from './pages/Admin/AdminBlogFormPage.jsx';
 import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
+<<<<<<< Updated upstream
+=======
+import AdminNewsletterPage from './pages/Admin/AdminNewsletterPage.jsx';
+
+import MyPostsPage from './pages/Dashboard/MyPostsPage.jsx';
+import MyPostFormPage from './pages/Dashboard/MyPostFormPage.jsx';
+
+>>>>>>> Stashed changes
 import ScrollToTop from './components/ScrollToTop.jsx';
+
 import AboutPage from './pages/Info/AboutPage.jsx';
 import ContactPage from './pages/Info/ContactPage.jsx';
 import ContactSupportPage from './pages/Info/ContactSupportPage.jsx';
@@ -39,6 +48,8 @@ import HelpPage from './pages/Info/HelpPage.jsx';
 import PrivacyPage from './pages/Info/PrivacyPage.jsx';
 import TermsPage from './pages/Info/TermsPage.jsx';
 import LocationsPage from './pages/Info/LocationsPage.jsx';
+import UnsubscribePage from './pages/Info/UnsubscribePage.jsx';
+
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import { useState } from 'react';
 
@@ -91,6 +102,7 @@ export default function App() {
           <Route path="/help" element={<HelpPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
           <Route path="/locations" element={<LocationsPage />} />
           <Route path="/tours" element={<TourListingPage />} />
           <Route path="/tours/:id" element={<TourDetailsPage />} />
@@ -148,6 +160,7 @@ export default function App() {
           <Route path="/admin-blog/new" element={<AdminBlogFormPage />} />
           <Route path="/admin-blog/:id/edit" element={<AdminBlogFormPage />} />
           <Route path="/admin-users" element={<AdminUsersPage />} />
+          <Route path="/admin-newsletter" element={<AdminNewsletterPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
