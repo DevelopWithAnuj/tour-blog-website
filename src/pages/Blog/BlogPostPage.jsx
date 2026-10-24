@@ -10,6 +10,7 @@ import {
   useTransform,
 } from 'motion/react';
 import { ArrowLeft, Clock, MapPin } from 'lucide-react';
+import LoadError from '../../components/LoadError.jsx';
 import {
   PostCard,
   categoryLabel,
@@ -100,12 +101,15 @@ export default function BlogPostPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     const controller = new AbortController();
     setLoading(true);
     setNotFound(false);
+    setLoadError('');
     setActiveImage(0);
     axios
       .get(`/api/v1/blogs/${slug}`, { signal: controller.signal })
@@ -114,13 +118,16 @@ export default function BlogPostPage() {
         setRelated(res.data.data.related || []);
       })
       .catch((err) => {
-        if (!axios.isCancel(err)) setNotFound(true);
+        if (!axios.isCancel(err)) {
+          if (err.response?.status === 404) setNotFound(true);
+          else setLoadError(err.response?.data?.message || 'Unable to load this story.');
+        }
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [slug]);
+  }, [slug, attempt]);
 
   const isMissing = notFound || !post;
   const paragraphs =
@@ -162,7 +169,20 @@ export default function BlogPostPage() {
           </motion.div>
         )}
 
-        {!loading && isMissing && (
+        {!loading && loadError && (
+          <motion.div
+            key="load-error"
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="mx-auto max-w-lg px-6 py-32"
+          >
+            <LoadError message={loadError} onRetry={() => setAttempt((n) => n + 1)} />
+          </motion.div>
+        )}
+
+        {!loading && !loadError && isMissing && (
           <motion.div
             key="not-found"
             initial={{ opacity: 0, scale: 0.94 }}
@@ -186,7 +206,7 @@ export default function BlogPostPage() {
           </motion.div>
         )}
 
-        {!loading && !isMissing && (
+        {!loading && !loadError && !isMissing && (
           <motion.div
             key={post._id}
             exit={{ opacity: 0 }}

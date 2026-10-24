@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Link,
   Navigate,
@@ -14,6 +14,7 @@ import {
   formatPrice,
 } from '../../components/BookingParts.jsx';
 import axios from 'axios';
+import LoadError from '../../components/LoadError.jsx';
 
 const METHODS = [
   { id: 'upi', label: 'UPI', hint: 'Pay with any UPI app', icon: Smartphone },
@@ -26,6 +27,12 @@ const METHODS = [
   },
 ];
 
+const formatCard = (value) =>
+  value
+    .replace(/\D/g, '')
+    .slice(0, 16)
+    .replace(/(\d{4})(?=\d)/g, '$1 ');
+
 export default function PaymentPage() {
   const location = useLocation();
   const [params, setParams] = useSearchParams();
@@ -35,32 +42,38 @@ export default function PaymentPage() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState('');
+  const [cardTouched, setCardTouched] = useState(false);
   const [method, setMethod] = useState('upi');
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState('');
   const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
+  const methodButtons = useRef([]);
 
   useEffect(() => {
     if (!id) {
       setLoading(false);
       return;
     }
+    setLoading(true);
+    setLoadError('');
     axios
       .get(`/api/v1/bookings/${id}`)
       .then((res) => setBooking(res.data.data.booking))
       .catch((err) => setLoadError(apiMessage(err)))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, attempt]);
 
   if (loading) {
     return <p className="p-10 text-center text-white/60">Loading...</p>;
   }
   if (loadError) {
     return (
-      <div className="p-10 text-center">
-        <p role="alert" className="text-rose-300">
-          {loadError}
-        </p>
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <LoadError
+          message={loadError}
+          onRetry={() => setAttempt((n) => n + 1)}
+        />
         <Link to="/dashboard" className="mt-4 inline-block text-amber-300">
           View my trips
         </Link>
@@ -95,7 +108,17 @@ export default function PaymentPage() {
     ? booking.totalAmount
     : currentTour.price * currentDetails.guests;
 
+  const cardDigits = cardNumber.replace(/\s/g, '');
+  const cardError =
+    method === 'card' && cardTouched && cardDigits.length !== 16
+      ? 'Enter all 16 digits of the card number.'
+      : '';
+
   const handlePay = async () => {
+    if (method === 'card' && cardDigits.length !== 16) {
+      setCardTouched(true);
+      return;
+    }
     setPaying(true);
     setError('');
     try {
@@ -117,7 +140,7 @@ export default function PaymentPage() {
 
       await axios.post(`/api/v1/bookings/${currentBooking._id}/pay`, {
         method,
-        cardNumber: method === 'card' ? cardNumber : undefined,
+        cardNumber: method === 'card' ? cardDigits : undefined,
       });
       navigate(`/booking/confirmation?id=${currentBooking._id}`, {
         replace: true,
@@ -143,7 +166,7 @@ export default function PaymentPage() {
             aria-label="Payment method"
             className="space-y-3"
           >
-            {METHODS.map(({ id, label, hint, icon: Icon }) => {
+            {METHODS.map(({ id, label, hint, icon: Icon }, index) => {
               const selected = method === id;
               return (
                 <button
@@ -151,7 +174,24 @@ export default function PaymentPage() {
                   type="button"
                   role="radio"
                   aria-checked={selected}
+                  tabIndex={selected ? 0 : -1}
+                  ref={(element) => (methodButtons.current[index] = element)}
                   onClick={() => setMethod(id)}
+                  onKeyDown={(event) => {
+                    const directions = {
+                      ArrowRight: 1,
+                      ArrowDown: 1,
+                      ArrowLeft: -1,
+                      ArrowUp: -1,
+                    };
+                    const direction = directions[event.key];
+                    if (!direction) return;
+                    event.preventDefault();
+                    const nextIndex =
+                      (index + direction + METHODS.length) % METHODS.length;
+                    setMethod(METHODS[nextIndex].id);
+                    methodButtons.current[nextIndex]?.focus();
+                  }}
                   disabled={paying}
                   className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
                     selected
@@ -193,11 +233,25 @@ export default function PaymentPage() {
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
+                maxLength={19}
                 value={cardNumber}
-                onChange={(event) => setCardNumber(event.target.value)}
+                onChange={(event) =>
+                  setCardNumber(formatCard(event.target.value))
+                }
+                onBlur={() => setCardTouched(true)}
+                aria-invalid={Boolean(cardError)}
+                aria-describedby={cardError ? 'card-error' : undefined}
                 placeholder="1234 5678 9012 3456"
-                className="mt-1.5 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                className="mt-1.5 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 aria-invalid:border-rose-400"
               />
+              {cardError && (
+                <span
+                  id="card-error"
+                  className="mt-1.5 block text-xs text-rose-300"
+                >
+                  {cardError}
+                </span>
+              )}
             </label>
           )}
 
@@ -206,9 +260,13 @@ export default function PaymentPage() {
               {error}
             </p>
           )}
-          <p className="flex items-center gap-2 text-sm text-white/45">
-            <Lock className="h-4 w-4" />
-            This is a demo checkout. No real payment is taken.
+          <p className="flex items-start gap-2 text-sm text-white/45">
+            <Lock className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              This is a demo checkout. No real payment is taken.
+              {method === 'card' &&
+                ' To see a decline, use a card number ending in 0000. Any other 16 digits will succeed.'}
+            </span>
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">

@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
+import LoadError from '../../components/LoadError.jsx';
 
 const shimmer =
   'animate-shimmer bg-[linear-gradient(90deg,#0f172a_25%,#1e293b_50%,#0f172a_75%)] bg-size-[200%_100%]';
@@ -37,6 +38,25 @@ function DetailsSkeleton() {
   );
 }
 
+function BookButton({ tour, toast, className = '' }) {
+  const bookingState = {
+    tour: { _id: tour._id, title: tour.title, price: tour.price },
+  };
+
+  return (
+    <Link
+      to="/booking"
+      onClick={() =>
+        toast(`${tour.title} selected for booking.`, { type: 'info' })
+      }
+      state={bookingState}
+      className={`inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-center text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97] ${className}`}
+    >
+      Book this tour
+      <ArrowRight className="h-4 w-4" />
+    </Link>
+  );
+}
 export default function TourDetailsPage() {
   const { id } = useParams();
   const { toast } = useToast();
@@ -44,27 +64,47 @@ export default function TourDetailsPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setNotFound(false);
+    setLoadError('');
     setActiveImg(0);
 
     axios
       .get(`/api/v1/tours/${id}`, { signal: controller.signal })
       .then((res) => setTour(res.data.data.tour))
       .catch((err) => {
-        if (!axios.isCancel(err)) setNotFound(true);
+        if (!axios.isCancel(err)) {
+          if (err.response?.status === 404) setNotFound(true);
+          else
+            setLoadError(
+              err.response?.data?.message || 'Unable to load this tour.'
+            );
+        }
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
 
     return () => controller.abort();
-  }, [id]);
+  }, [id, attempt]);
 
   if (loading) return <DetailsSkeleton />;
+
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16">
+        <LoadError
+          message={loadError}
+          onRetry={() => setAttempt((n) => n + 1)}
+        />
+      </div>
+    );
+  }
 
   if (notFound || !tour) {
     return (
@@ -88,24 +128,6 @@ export default function TourDetailsPage() {
     : tour.image
       ? [tour.image]
       : [];
-
-  const bookingState = {
-    tour: { _id: tour._id, title: tour.title, price: tour.price },
-  };
-
-  const BookButton = ({ className = '' }) => (
-    <Link
-      to="/booking"
-      onClick={() =>
-        toast(`${tour.title} selected for booking.`, { type: 'info' })
-      }
-      state={bookingState}
-      className={`inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-center text-sm font-semibold text-slate-950 transition hover:bg-amber-400 active:scale-[0.97] ${className}`}
-    >
-      Book this tour
-      <ArrowRight className="h-4 w-4" />
-    </Link>
-  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-32 pt-8 md:px-8 lg:pb-24">
@@ -233,7 +255,7 @@ export default function TourDetailsPage() {
           )}
 
           {tour.faq?.length > 0 && (
-            <Section title="Questions travellers ask">
+            <Section title="Questions travelers ask">
               <div className="divide-y divide-white/10 rounded-2xl border border-white/10 bg-slate-900">
                 {tour.faq.map((item, i) => (
                   <details key={`${item.question}-${i}`} className="group p-5">
@@ -279,7 +301,7 @@ export default function TourDetailsPage() {
               </div>
             </dl>
 
-            <BookButton className="mt-6" />
+            <BookButton tour={tour} toast={toast} className="mt-6" />
             <p className="mt-3 text-center text-xs text-white/45">
               You will confirm details before paying.
             </p>
@@ -295,7 +317,7 @@ export default function TourDetailsPage() {
             {formatPrice(tour.price)}
           </p>
         </div>
-        <BookButton className="px-8" />
+        <BookButton tour={tour} toast={toast} className="px-8" />
       </div>
     </div>
   );
