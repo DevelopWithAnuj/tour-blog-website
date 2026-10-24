@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardHeader from '../components/DashboardHeader';
 import PageTransition from '../components/PageTransition.jsx';
@@ -19,13 +20,18 @@ const adminLinks = [
 
 export default function DashboardLayout({ role = 'user' }) {
   const links = role === 'admin' ? adminLinks : userLinks;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="dashboard-shell">
-      <Sidebar links={links} />
+      <Sidebar
+        links={links}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardHeader role={role} />
-        <main className="dashboard-content bg-yellow-200/70">
+        <DashboardHeader role={role} onMenuClick={() => setSidebarOpen(true)} />
+        <main className="dashboard-content bg-yellow-300/40">
           <PageTransition />
         </main>
       </div>

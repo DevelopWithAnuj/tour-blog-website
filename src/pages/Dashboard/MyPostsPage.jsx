@@ -9,6 +9,7 @@ import {
   formatDate,
 } from '../../components/AdminParts.jsx';
 import { STATUS_META, StatusBadge } from '../../components/PostStatus.jsx';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 
 const btn =
   'inline-flex min-h-9 items-center rounded-lg border border-slate-300 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50';
@@ -19,6 +20,7 @@ export default function MyPostsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState('');
+  const { requestConfirmation, dialog } = useActionDialog();
 
   const load = useCallback(async (signal, { silent = false } = {}) => {
     if (!silent) setLoading(true);
@@ -43,8 +45,15 @@ export default function MyPostsPage() {
 
   const run = async (post, action) => {
     if (busyId) return;
-    if (action === 'delete' && !window.confirm(`Delete "${post.title}"?`))
-      return;
+    if (action === 'delete') {
+      const confirmed = await requestConfirmation({
+        title: 'Delete this story?',
+        message: `Delete "${post.title}"?`,
+        confirmLabel: 'Delete story',
+        danger: true,
+      });
+      if (!confirmed) return;
+    }
     setBusyId(post._id);
     try {
       const res =
@@ -82,7 +91,18 @@ export default function MyPostsPage() {
         </Link>
       </div>
 
-      <Alert>{error}</Alert>
+      {error && (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Alert>{error}</Alert>
+          <button
+            type="button"
+            onClick={() => load(new AbortController().signal)}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 space-y-3">
         {loading ? (
@@ -94,8 +114,8 @@ export default function MyPostsPage() {
             </span>
             <p className="mt-5 font-display text-2xl">No stories yet</p>
             <p className="mt-2 max-w-sm text-slate-600">
-              Tell other travellers about a trip. We review every story before
-              it goes live.
+              Tell other travelers about a trip. We review every story before it
+              goes live.
             </p>
           </div>
         ) : (
@@ -169,6 +189,7 @@ export default function MyPostsPage() {
           })
         )}
       </div>
+      {dialog}
     </section>
   );
 }

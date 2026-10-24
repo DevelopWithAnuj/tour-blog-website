@@ -3,6 +3,7 @@ import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { Plus, Search } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 import {
   Alert,
   EASE,
@@ -21,6 +22,7 @@ const STATUS_OPTIONS = ['all', 'active', 'inactive'];
 
 export default function AdminToursPage() {
   const { toast } = useToast();
+  const { requestConfirmation, dialog } = useActionDialog();
   const [tours, setTours] = useState([]);
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
@@ -65,13 +67,14 @@ export default function AdminToursPage() {
 
   const toggleActive = async (tour) => {
     if (busyId) return;
-    if (
-      tour.isActive &&
-      !window.confirm(
-        `Hide "${tour.title}" from the public site? Existing bookings are kept.`
-      )
-    ) {
-      return;
+    if (tour.isActive) {
+      const confirmed = await requestConfirmation({
+        title: 'Hide this tour?',
+        message: `Hide "${tour.title}" from the public site? Existing bookings are kept.`,
+        confirmLabel: 'Hide tour',
+        danger: true,
+      });
+      if (!confirmed) return;
     }
     setBusyId(tour._id);
     try {
@@ -285,6 +288,7 @@ export default function AdminToursPage() {
         </motion.div>
 
         {!loading && <Pager page={page} pages={pages} onChange={setPage} />}
+        {dialog}
       </section>
     </MotionConfig>
   );

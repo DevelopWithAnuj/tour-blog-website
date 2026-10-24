@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
 import { Alert, inputCls } from '../../components/AdminParts.jsx';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 
 export default function AdminNewsletterPage() {
   const { toast } = useToast();
@@ -10,6 +11,7 @@ export default function AdminNewsletterPage() {
   const [form, setForm] = useState({ subject: '', message: '' });
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const { requestConfirmation, dialog } = useActionDialog();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -24,12 +26,13 @@ export default function AdminNewsletterPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (
-      !window.confirm(
-        `Send this to ${count ?? 'all'} subscribers? This cannot be undone.`
-      )
-    )
-      return;
+    const confirmed = await requestConfirmation({
+      title: 'Send newsletter?',
+      message: `Send this to ${count ?? 'all'} subscribers? This cannot be undone.`,
+      confirmLabel: 'Send newsletter',
+      danger: true,
+    });
+    if (!confirmed) return;
     setError('');
     setSending(true);
     try {
@@ -110,6 +113,7 @@ export default function AdminNewsletterPage() {
           {sending ? 'Starting…' : 'Send to subscribers'}
         </button>
       </form>
+      {dialog}
     </section>
   );
 }
