@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import {
   ArrowRight,
   BookOpen,
@@ -46,13 +45,6 @@ const LINK_GROUPS = [
       { to: '/contact-support', label: 'Contact support', icon: Headset },
     ],
   },
-];
-
-const SOCIALS = [
-  { href: 'https://facebook.com', label: 'Facebook', icon: FaFacebook },
-  { href: 'https://instagram.com', label: 'Instagram', icon: FaInstagram },
-  { href: 'https://twitter.com', label: 'Twitter', icon: FaTwitter },
-  { href: 'https://linkedin.com', label: 'LinkedIn', icon: FaLinkedin },
 ];
 
 const footerVariants = {
@@ -115,23 +107,6 @@ export default function Footer() {
               Hand-built tours with the stays, guides and transfers already
               sorted.
             </p>
-            <div className="mt-6 flex gap-2">
-              {SOCIALS.map(({ href, label, icon: Icon }) => (
-                <motion.a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  whileHover={{ y: -4, rotate: -5, scale: 1.08 }}
-                  whileTap={{ scale: 0.94 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 12 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition hover:border-amber-400/60 hover:text-amber-300"
-                >
-                  <Icon />
-                </motion.a>
-              ))}
-            </div>
           </motion.div>
 
           {LINK_GROUPS.map((group) => (

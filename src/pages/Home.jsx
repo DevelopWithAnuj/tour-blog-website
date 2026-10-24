@@ -255,12 +255,7 @@ function HomePage() {
       </section>
       {/* Tours */}
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <motion.div
-          whileHover={{ y: -5 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-          className="mb-10 flex flex-wrap items-end justify-between gap-4"
-        >
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-3xl sm:text-4xl">
               Trips people are booking now
@@ -275,7 +270,7 @@ function HomePage() {
           >
             See all tours
           </Link>
-        </motion.div>
+        </div>
 
         <AnimatePresence mode="wait">
           {loading && (

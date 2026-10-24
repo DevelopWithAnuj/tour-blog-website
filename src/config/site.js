@@ -1,7 +1,6 @@
 export const SITE = {
   name: 'Drimora',
   legalName: 'Drimora Travel',
-  supportEmail: 'support@drimora.com', // TODO: replace with  real address
 };
 
 // Keep in sync with CancellationPolicy in backend/utils/constants.js

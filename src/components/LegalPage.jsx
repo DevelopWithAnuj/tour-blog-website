@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LEGAL_UPDATED, SITE } from '../config/site.js';
+import { LEGAL_UPDATED } from '../config/site.js';
 import { PageHero } from './InfoParts.jsx';
 
 const formatted = (iso) =>
@@ -41,7 +41,9 @@ export default function LegalPage({ title, intro, sections }) {
           <div className="max-w-3xl space-y-12">
             {sections.map((s) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
-                <h2 className="font-display text-2xl text-white">{s.heading}</h2>
+                <h2 className="font-display text-2xl text-white">
+                  {s.heading}
+                </h2>
                 <div className="mt-4 space-y-4 leading-relaxed text-white/70">
                   {s.paragraphs?.map((p) => (
                     <p key={p}>{p}</p>
@@ -60,15 +62,11 @@ export default function LegalPage({ title, intro, sections }) {
             <section className="rounded-2xl border border-white/10 bg-slate-900 p-6">
               <h2 className="font-display text-xl text-white">Questions?</h2>
               <p className="mt-2 text-white/65">
-                Email{' '}
-                <a
-                  href={`mailto:${SITE.supportEmail}`}
+                Use our{' '}
+                <Link
+                  to="/contact"
                   className="text-amber-400 hover:text-amber-300"
                 >
-                  {SITE.supportEmail}
-                </a>{' '}
-                or use our{' '}
-                <Link to="/contact" className="text-amber-400 hover:text-amber-300">
                   contact page
                 </Link>
                 .

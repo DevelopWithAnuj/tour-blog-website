@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
                         <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                           <tr>
                             <th className="px-5 py-3 font-semibold">
-                              Traveller
+                              Traveler
                             </th>
                             <th className="px-5 py-3 font-semibold">Tour</th>
                             <th className="px-5 py-3 font-semibold">
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                             >
                               <td className="px-5 py-3">
                                 <p className="font-medium text-slate-900">
-                                  {booking.travelerName || 'Traveller'}
+                                  {booking.travelerName || 'Traveler'}
                                 </p>
                                 <p className="text-xs text-slate-500">
                                   {booking.travelerEmail}

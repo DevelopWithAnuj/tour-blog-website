@@ -8,7 +8,7 @@ import {
   fieldClass,
 } from '../../components/BookingParts.jsx';
 
-const MAX_GUESTS = 10;
+const MAX_GUESTS = 20;
 
 const tomorrow = () => {
   const d = new Date();
@@ -73,7 +73,7 @@ export default function BookingPage() {
 
   const validate = () => {
     const next = {};
-    if (!form.name.trim()) next.name = 'Enter the lead traveller’s name.';
+    if (!form.name.trim()) next.name = 'Enter the lead traveler’s name.';
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = 'Enter a valid email.';
     if (form.phone.replace(/\D/g, '').length < 10)
       next.phone = 'Enter a phone number with at least 10 digits.';
@@ -107,7 +107,7 @@ export default function BookingPage() {
       <BookingSteps current={1} />
 
       <h1 className="mt-8 animate-fade-up font-display text-4xl sm:text-5xl">
-        Who is travelling?
+        Who is traveling?
       </h1>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_22rem]">
@@ -161,11 +161,11 @@ export default function BookingPage() {
               />
             </Field>
 
-            <Field label="Travellers">
+            <Field label="Travelers">
               <div className="mt-1.5 flex items-center justify-between rounded-xl border border-white/15 bg-white/5 p-1.5">
                 <button
                   type="button"
-                  aria-label="Fewer travellers"
+                  aria-label="Fewer travelers"
                   onClick={() => setGuests(form.guests - 1)}
                   disabled={form.guests <= 1}
                   className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition hover:bg-white/10 active:scale-[0.95] disabled:opacity-30"
@@ -177,7 +177,7 @@ export default function BookingPage() {
                 </span>
                 <button
                   type="button"
-                  aria-label="More travellers"
+                  aria-label="More travelers"
                   onClick={() => setGuests(form.guests + 1)}
                   disabled={form.guests >= MAX_GUESTS}
                   className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition hover:bg-white/10 active:scale-[0.95] disabled:opacity-30"

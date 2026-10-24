@@ -19,11 +19,12 @@ const destinationCovers = {
 };
 
 export const postCoverImage = (post) => {
-  const coverImage =
-    post?.coverImage?.trim() || post?.images?.[0]?.trim();
+  const coverImage = post?.coverImage?.trim() || post?.images?.[0]?.trim();
   if (coverImage && !coverImage.endsWith('/login-hero.png')) return coverImage;
 
-  return destinationCovers[post?.destination?.trim().toLowerCase()] || mountainCover;
+  return (
+    destinationCovers[post?.destination?.trim().toLowerCase()] || mountainCover
+  );
 };
 
 export const formatPostDate = (value) => {
@@ -135,6 +136,8 @@ function Chip({ active, onClick, children }) {
   return (
     <motion.button
       variants={fadeUp}
+      type="button"
+      aria-pressed={active}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
@@ -197,7 +200,11 @@ export default function BlogPage() {
     setError('');
     axios
       .get('/api/v1/blogs', {
-        params: { category: category || undefined, q: query || undefined, page },
+        params: {
+          category: category || undefined,
+          q: query || undefined,
+          page,
+        },
         signal: controller.signal,
       })
       .then((res) => {
@@ -205,7 +212,8 @@ export default function BlogPage() {
         setTotalPages(res.data.data.pages || 1);
       })
       .catch((err) => {
-        if (!axios.isCancel(err)) setError('We could not load stories. Try again.');
+        if (!axios.isCancel(err))
+          setError('We could not load stories. Try again.');
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
