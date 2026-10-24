@@ -50,17 +50,23 @@ passport.use(
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: '/api/v1/auth/github/callback',
+      allRawEmails: true,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ githubId: profile.id });
 
         if (!user) {
-          const email =
-            profile.emails?.[0]?.value ||
-            `${profile.username}@github-placeholder.com`;
+          const verifiedEmail = profile.emails
+            ?.find((email) => email.verified)
+            ?.value?.trim()
+            .toLowerCase();
 
-          user = await User.findOne({ email });
+          if (!verifiedEmail) {
+            return done(null, false, { code: 'GITHUB_EMAIL_NOT_VERIFIED' });
+          }
+
+          user = await User.findOne({ email: verifiedEmail });
 
           if (user) {
             user.githubId = profile.id;
@@ -69,9 +75,11 @@ passport.use(
           } else {
             user = await User.create({
               githubId: profile.id,
-              email,
-              username: profile.username + '_' + Date.now(),
-              fullName: profile.displayName || profile.username,
+              email: verifiedEmail,
+              username:
+                (profile.username || 'github_' + profile.id) + '_' + Date.now(),
+              fullName:
+                profile.displayName || profile.username || 'GitHub traveler',
               authProvider: 'github',
               isEmailVerified: true,
               role: UserRolesEnum.USER,

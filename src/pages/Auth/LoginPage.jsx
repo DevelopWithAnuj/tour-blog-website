@@ -35,7 +35,16 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => {
+    const authError = searchParams.get('authError');
+    if (authError === 'github_email_not_verified') {
+      return 'Add and verify an email address in GitHub, then try again.';
+    }
+    if (authError === 'github_failed') {
+      return 'GitHub sign in failed. Please try again.';
+    }
+    return '';
+  });
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resend, setResend] = useState('idle'); // idle | sending | sent
   const [submitting, setSubmitting] = useState(false);
@@ -73,7 +82,7 @@ export default function LoginPage() {
       const message =
         err.response?.data?.message || 'Login failed. Please try again.';
       setError(message);
-      setNeedsVerification(/verify your email/i.test(message));
+      setNeedsVerification(err.response?.data?.code === 'EMAIL_NOT_VERIFIED');
     } finally {
       setSubmitting(false);
     }

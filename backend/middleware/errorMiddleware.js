@@ -60,7 +60,13 @@ export function errorHandler(err, req, res, next) {
   }
 
   const requestId = req.id || randomUUID();
-  const error = new ApiError(statusCode, message, errors);
+  const error = new ApiError(
+    statusCode,
+    message,
+    errors,
+    '',
+    err instanceof ApiError ? err.code : undefined
+  );
   error.stack = err?.stack || error.stack;
 
   logger.error('Request failed', {
@@ -79,6 +85,7 @@ export function errorHandler(err, req, res, next) {
     success: error.success,
     message: error.message,
     errors: error.errors,
+    ...(error.code ? { code: error.code } : {}),
     requestId,
   };
 

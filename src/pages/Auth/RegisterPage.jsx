@@ -42,7 +42,7 @@ export default function RegisterPage() {
     if (!USERNAME_PATTERN.test(username)) {
       return 'Username must be 4 to 20 characters: lowercase letters, numbers or underscores.';
     }
-    if (password.length < 6) return 'Password must be at least 6 characters.';
+    if (password.length < 8) return 'Password must be at least 8 characters.';
     if (password !== confirmPassword) return 'Passwords do not match.';
     return '';
   };
@@ -120,7 +120,7 @@ export default function RegisterPage() {
             id="fullName"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Jane Traveller"
+            placeholder="Jane Traveler"
             autoComplete="name"
             className={inputClass}
           />
@@ -165,7 +165,7 @@ export default function RegisterPage() {
           label="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="At least 6 characters"
+          placeholder="At least 8 characters"
           autoComplete="new-password"
           showStrength
           visible={showPassword}

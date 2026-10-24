@@ -100,7 +100,7 @@ router
     validate,
     resetForgotPassword
   );
-  router.route('/logout').post(logoutUser);
+router.route('/logout').post(logoutUser);
 
 // secure routes
 router.route('/current-user').get(verifyJWT, getCurrentUser);
@@ -143,13 +143,23 @@ router.get(
   '/github',
   passport.authenticate('github', { scope: ['user:email'], session: false })
 );
-router.get(
-  '/github/callback',
-  passport.authenticate('github', {
-    session: false,
-    failureRedirect: '/login',
-  }),
-  oauthCallback
-);
+router.get('/github/callback', (req, res, next) => {
+  passport.authenticate('github', { session: false }, (err, user, info) => {
+    if (err) return next(err);
+    const clientUrl =
+      process.env.CLIENT_URL ||
+      process.env.CORS_ORIGIN?.split(',')[0] ||
+      'http://localhost:5173';
+    if (!user) {
+      const error =
+        info?.code === 'GITHUB_EMAIL_NOT_VERIFIED'
+          ? 'github_email_not_verified'
+          : 'github_failed';
+      return res.redirect(clientUrl + '/login?authError=' + error);
+    }
+    req.user = user;
+    return oauthCallback(req, res, next);
+  })(req, res, next);
+});
 
 export default router;

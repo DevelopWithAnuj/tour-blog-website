@@ -43,7 +43,7 @@ const userRegisterValidator = () => {
       .withMessage(
         'Username must be 4-20 characters and contain only lowercase letters, numbers, or underscores!'
       ),
-    passwordValidationChain('password', { minLength: 6, maxLength: 72 }),
+    passwordValidationChain('password', { minLength: 8, maxLength: 72 }),
     body('fullName').optional().trim().isLength({ max: 100 }),
     body('fullname').optional().trim().isLength({ max: 100 }),
   ];
@@ -58,14 +58,14 @@ const userLoginValidator = () => {
       .withMessage('Email is required!')
       .isEmail()
       .withMessage('Email is invalid!'),
-    passwordValidationChain('password', { minLength: 6, maxLength: 72 }),
+    passwordValidationChain('password', { maxLength: 72 }),
   ];
 };
 
 const userChangeCurrentPasswordValidator = () => {
   return [
     body('oldPassword').notEmpty().withMessage('Old password is required!'),
-    passwordValidationChain('newPassword', { minLength: 6, maxLength: 72 }),
+    passwordValidationChain('newPassword', { minLength: 8, maxLength: 72 }),
   ];
 };
 
@@ -83,7 +83,7 @@ const userForgotPasswordValidator = () => {
 
 const userResetForgotPasswordValidator = () => {
   return [
-    passwordValidationChain('newPassword', { minLength: 6, maxLength: 72 }),
+    passwordValidationChain('newPassword', { minLength: 8, maxLength: 72 }),
   ];
 };
 
@@ -286,7 +286,9 @@ const newsletterValidator = () => [
 const adminNewsletterValidator = () => [
   text('subject', 150),
   text('message', 10000),
-  body('message').isLength({ min: 20 }).withMessage('Write at least 20 characters'),
+  body('message')
+    .isLength({ min: 20 })
+    .withMessage('Write at least 20 characters'),
 ];
 
 const httpsUrl = /^https:\/\//;
