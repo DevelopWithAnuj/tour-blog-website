@@ -9,6 +9,7 @@ import {
   apiMessage,
 } from '../../components/BookingParts.jsx';
 import { formatBookingId } from '@/utils/formatBookingId.js';
+import LoadError from '../../components/LoadError.jsx';
 
 export default function ConfirmationPage() {
   const [params] = useSearchParams();
@@ -16,18 +17,21 @@ export default function ConfirmationPage() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!id) {
       setLoading(false);
       return;
     }
+    setLoading(true);
+    setLoadError('');
     axios
       .get(`/api/v1/bookings/${id}`)
       .then((res) => setBooking(res.data.data.booking))
       .catch((err) => setLoadError(apiMessage(err)))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, attempt]);
 
   if (loading) {
     return <p className="p-10 text-center text-white/60">Loading...</p>;
@@ -37,9 +41,12 @@ export default function ConfirmationPage() {
   }
   if (loadError) {
     return (
-      <p role="alert" className="p-10 text-center text-rose-300">
-        {loadError}
-      </p>
+      <div className="mx-auto max-w-lg px-4 py-16">
+        <LoadError
+          message={loadError}
+          onRetry={() => setAttempt((n) => n + 1)}
+        />
+      </div>
     );
   }
 
@@ -54,7 +61,7 @@ export default function ConfirmationPage() {
     ['Booking ID', formatBookingId(booking._id)],
     ['Tour', booking.tour?.title],
     ['Travel date', formatDate(booking.date)],
-    ['Travellers', booking.guestCount],
+    ['Travelers', booking.guestCount],
     ['Paid with', methodLabel],
     ['Total paid', formatPrice(booking.totalAmount)],
   ];

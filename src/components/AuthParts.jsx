@@ -145,7 +145,7 @@ export function PasswordInput({
   const toggle = onToggle ?? (() => setLocalVisible((v) => !v));
   const score = passwordScore(value);
   const strength =
-    value.length < 6 ? STRENGTH[0] : STRENGTH[Math.max(score, 1)];
+    value.length < 8 ? STRENGTH[0] : STRENGTH[Math.max(score, 1)];
 
   return (
     <div>
@@ -187,7 +187,7 @@ export function PasswordInput({
               <span
                 key={n}
                 className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                  value.length >= 6 && score >= n ? strength.bar : 'bg-white/10'
+                  value.length >= 8 && score >= n ? strength.bar : 'bg-white/10'
                 }`}
               />
             ))}

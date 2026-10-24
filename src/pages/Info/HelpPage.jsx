@@ -13,12 +13,12 @@ const FAQS = [
   {
     cat: 'Booking',
     q: 'How do I book a tour?',
-    a: 'Open a tour and choose Book this tour. Enter traveller details and a travel date, then pay. You will land on a confirmation page with your booking ID.',
+    a: 'Open a tour and choose Book this tour. Enter traveler details and a travel date, then pay. You will land on a confirmation page with your booking ID.',
   },
   {
     cat: 'Booking',
-    q: 'How many travellers can I add?',
-    a: 'Up to 10 travellers per online booking. For a larger group, contact us.',
+    q: 'How many travelers can I add?',
+    a: 'Up to 20 travelers per online booking. For a larger group, contact us.',
   },
   {
     cat: 'Booking',

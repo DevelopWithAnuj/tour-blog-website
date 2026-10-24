@@ -2,10 +2,9 @@ import { Link } from 'react-router-dom';
 import { Headset, LifeBuoy, Mail } from 'lucide-react';
 import { PageHero } from '../../components/InfoParts.jsx';
 import InquiryForm from '../../components/InquiryForm.jsx';
-import { SITE } from '../../config/site.js';
 
 const cardCls =
-  'flex gap-4 rounded-2xl border border-white/10 bg-slate-900 p-5 transition hover:border-amber-400/40';
+  'flex gap-4 rounded-2xl border border-white/10 bg-slate-900 p-5';
 const iconCls =
   'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-400';
 
@@ -23,15 +22,19 @@ export default function ContactPage() {
         </div>
 
         <aside className="space-y-4">
-          <a href={`mailto:${SITE.supportEmail}`} className={cardCls}>
+          <div className={cardCls}>
             <span className={iconCls}>
               <Mail className="h-5 w-5" />
             </span>
             <span>
-              <span className="block font-semibold text-white">Email us</span>
-              <span className="text-sm text-white/60">{SITE.supportEmail}</span>
+              <span className="block font-semibold text-white">
+                Send us a message
+              </span>
+              <span className="text-sm text-white/60">
+                Use the contact form and we will reply to your email.
+              </span>
             </span>
-          </a>
+          </div>
 
           <Link to="/help" className={cardCls}>
             <span className={iconCls}>

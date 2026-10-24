@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Search } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 import {
   Alert,
   EASE,
@@ -48,6 +49,7 @@ export default function AdminBookingsPage() {
   const [updatingId, setUpdatingId] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const { requestConfirmation, dialog } = useActionDialog();
 
   const loadBookings = useCallback(
     async (signal) => {
@@ -88,15 +90,17 @@ export default function AdminBookingsPage() {
 
   const updateStatus = async (booking, nextStatus) => {
     if (booking.status === nextStatus || updatingId) return;
-    if (
-      nextStatus === 'cancelled' &&
-      !window.confirm(
-        booking.paymentStatus === 'paid'
-          ? 'Cancel this paid booking? Its payment will be marked as refunded.'
-          : 'Cancel this booking?'
-      )
-    ) {
-      return;
+    if (nextStatus === 'cancelled') {
+      const confirmed = await requestConfirmation({
+        title: 'Cancel this booking?',
+        message:
+          booking.paymentStatus === 'paid'
+            ? 'Its payment will be marked as refunded.'
+            : 'The booking will be cancelled.',
+        confirmLabel: 'Cancel booking',
+        danger: true,
+      });
+      if (!confirmed) return;
     }
 
     setUpdatingId(booking._id);
@@ -138,7 +142,7 @@ export default function AdminBookingsPage() {
               Booking management
             </h1>
             <p className="mt-2 text-sm text-slate-600">
-              Search travellers and manage booking statuses.
+              Search travelers and manage booking statuses.
             </p>
           </motion.div>
           <motion.p
@@ -174,7 +178,7 @@ export default function AdminBookingsPage() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search traveller, email, or tour"
+              placeholder="Search traveler, email, or tour"
               aria-label="Search bookings"
               className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
             />
@@ -237,7 +241,7 @@ export default function AdminBookingsPage() {
                 <table className="w-full min-w-[65rem] text-left text-sm">
                   <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                     <tr>
-                      <th className="px-5 py-3 font-semibold">Traveller</th>
+                      <th className="px-5 py-3 font-semibold">Traveler</th>
                       <th className="px-5 py-3 font-semibold">Tour</th>
                       <th className="px-5 py-3 font-semibold">Travel date</th>
                       <th className="px-5 py-3 font-semibold">Guests</th>
@@ -267,7 +271,7 @@ export default function AdminBookingsPage() {
                         >
                           <td className="px-5 py-4">
                             <p className="font-medium text-slate-900">
-                              {booking.travelerName || 'Traveller'}
+                              {booking.travelerName || 'Traveler'}
                             </p>
                             <p className="text-xs text-slate-500">
                               {booking.travelerEmail}
@@ -345,6 +349,7 @@ export default function AdminBookingsPage() {
         </motion.div>
 
         {!loading && <Pager page={page} pages={pages} onChange={setPage} />}
+        {dialog}
       </section>
     </MotionConfig>
   );

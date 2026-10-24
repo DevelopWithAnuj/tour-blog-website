@@ -15,11 +15,14 @@ export const formatDate = (value) => {
 export const fieldClass =
   'mt-1.5 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20';
 
-const STEPS = ['Traveller details', 'Payment', 'Confirmation'];
+const STEPS = ['Traveler details', 'Payment', 'Confirmation'];
 
 export function BookingSteps({ current }) {
   return (
-    <ol className="flex items-center gap-3 text-sm" aria-label="Booking progress">
+    <ol
+      className="flex items-center gap-3 text-sm"
+      aria-label="Booking progress"
+    >
       {STEPS.map((label, i) => {
         const step = i + 1;
         const done = step < current;
@@ -66,11 +69,13 @@ export function OrderSummary({ tour, details, children }) {
         {details?.date && (
           <div className="flex justify-between gap-4">
             <dt className="text-white/55">Date</dt>
-            <dd className="text-right text-white">{formatDate(details.date)}</dd>
+            <dd className="text-right text-white">
+              {formatDate(details.date)}
+            </dd>
           </div>
         )}
         <div className="flex justify-between gap-4">
-          <dt className="text-white/55">Travellers</dt>
+          <dt className="text-white/55">Travelers</dt>
           <dd className="text-white">{guests}</dd>
         </div>
         <div className="flex justify-between gap-4">
@@ -94,6 +99,9 @@ export function OrderSummary({ tour, details, children }) {
 }
 
 export const apiMessage = (err) => {
+  if (!err.response) {
+    return 'We could not reach the server. Check your connection and try again.';
+  }
   const first = err.response?.data?.errors?.[0];
   return (
     (first && Object.values(first)[0]) ||

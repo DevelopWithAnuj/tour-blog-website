@@ -13,6 +13,8 @@ import { formatBookingId } from '../../utils/formatBookingId.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import beachSide from '../../assets/beach-side.avif';
+import LoadError from '../../components/LoadError.jsx';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 
 const STATUS_STYLES = {
   confirmed: 'bg-emerald-100 text-emerald-700',
@@ -88,7 +90,7 @@ function StatCard({
   return (
     <div
       style={{ animationDelay: `${index * 80}ms` }}
-      className="animate-fade-up rounded-lg border border-slate-200 bg-amber-300/90 p-5 shadow-sm"
+      className="animate-fade-up rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -121,7 +123,7 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
   return (
     <li
       style={{ animationDelay: `${index * 70}ms` }}
-      className="animate-fade-up rounded-lg border border-slate-200 bg-amber-100/70 p-4 shadow-sm transition hover:border-amber-300"
+      className="animate-fade-up rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
@@ -166,7 +168,7 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
               <>
                 <Link
                   to={`/booking/payment?id=${booking._id}`}
-                  className="inline-flex min-h-9 items-center rounded-lg bg-amber-700/90 px-3 text-sm font-semibold text-white transition-colors hover:bg-amber-400"
+                  className="inline-flex min-h-9 items-center rounded-lg bg-amber-700/90 px-3 text-sm font-semibold text-white transition-colors hover:bg-amber-800"
                 >
                   Pay now
                 </Link>
@@ -176,18 +178,7 @@ function BookingCard({ booking, tour, index, onCancel, isCancelling }) {
               <button
                 type="button"
                 disabled={isCancelling}
-                onClick={() => {
-                  const paid = booking.paymentStatus === 'paid';
-                  if (
-                    window.confirm(
-                      paid
-                        ? 'Cancel this paid booking? Your payment will be refunded.'
-                        : 'Are you sure you want to cancel this booking?'
-                    )
-                  ) {
-                    onCancel(booking._id);
-                  }
-                }}
+                onClick={() => onCancel(booking)}
                 className="inline-flex min-h-9 items-center rounded-lg border border-rose-300 px-3 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-100 disabled:cursor-wait disabled:opacity-60"
               >
                 {isCancelling ? 'Cancelling…' : 'Cancel'}
@@ -312,30 +303,45 @@ export default function UserDashboardPage() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
-  const [loadError, setLoadError] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
   const [cancellingBookingId, setCancellingBookingId] = useState(null);
+  const { requestConfirmation, dialog } = useActionDialog();
 
   useEffect(() => {
     const controller = new AbortController();
+    setLoading(true);
+    setLoadError('');
 
     axios
       .get('/api/v1/bookings', { signal: controller.signal })
       .then((res) => setBookings(res.data.data.bookings))
       .catch((error) => {
         if (axios.isCancel(error)) return;
-        setLoadError(true);
-        toast(error.response?.data?.message || 'Unable to load bookings.', {
-          type: 'error',
-        });
+        setLoadError(
+          error.response?.data?.message ||
+            'We could not load your bookings. Check your connection and try again.'
+        );
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
 
     return () => controller.abort();
-  }, [toast]);
+  }, [attempt]);
 
-  const handleCancelBooking = async (bookingId) => {
+  const handleCancelBooking = async (booking) => {
+    const paid = booking.paymentStatus === 'paid';
+    const confirmed = await requestConfirmation({
+      title: 'Cancel this booking?',
+      message: paid
+        ? 'Your paid booking will be cancelled and refunded.'
+        : 'Are you sure you want to cancel this booking?',
+      confirmLabel: 'Cancel booking',
+      danger: true,
+    });
+    if (!confirmed) return;
+    const bookingId = booking._id;
     setCancellingBookingId(bookingId);
     try {
       const res = await axios.patch(`/api/v1/bookings/${bookingId}/cancel`);
@@ -492,9 +498,15 @@ export default function UserDashboardPage() {
           </div>
         </div>
         {loading ? (
-          <p className="text-slate-400">Loading…</p>
+          <p className="text-slate-700">Loading your trips…</p>
         ) : loadError ? (
-          <p className="text-rose-400">Unable to load bookings.</p>
+          <div className="mt-6">
+            <LoadError
+              tone="light"
+              message={loadError}
+              onRetry={() => setAttempt((n) => n + 1)}
+            />
+          </div>
         ) : enrichedBookings.length === 0 ? (
           <div className="mt-6 flex animate-scale-in flex-col items-center rounded-lg border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-800">
@@ -513,7 +525,7 @@ export default function UserDashboardPage() {
             {bookings.length === 0 && (
               <Link
                 to="/tours"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-amber-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-700"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-amber-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-800"
               >
                 Browse tours <ArrowRight className="h-4 w-4" />
               </Link>
@@ -534,6 +546,7 @@ export default function UserDashboardPage() {
           </ul>
         )}
       </section>
+      {dialog}
     </div>
   );
 }

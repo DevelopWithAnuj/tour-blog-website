@@ -53,7 +53,9 @@ function TourCard({ tour, index }) {
         <p className="mt-1 flex items-center gap-1.5 text-sm text-white/55">
           <MapPin className="h-4 w-4 shrink-0" />
           <span>
-            {tour.destination ? `${tour.destination}, ${tour.location}` : tour.location}
+            {tour.destination
+              ? `${tour.destination}, ${tour.location}`
+              : tour.location}
           </span>
         </p>
 
@@ -177,7 +179,9 @@ export default function TourListingPage() {
       })
       .catch((err) => {
         if (!axios.isCancel(err)) {
-          setError('We could not load tours. Check your connection and try again.');
+          setError(
+            'We could not load tours. Check your connection and try again.'
+          );
         }
       })
       .finally(() => {
@@ -214,7 +218,9 @@ export default function TourListingPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 md:px-8">
       <header className="animate-fade-up">
-        <h1 className="font-display text-4xl sm:text-5xl">Find your next trip</h1>
+        <h1 className="font-display text-4xl sm:text-5xl">
+          Find your next trip
+        </h1>
         <p className="mt-3 max-w-xl text-white/60">
           Filter by style, search by place, and sort by price. Every tour lists
           what is included.
@@ -260,7 +266,9 @@ export default function TourListingPage() {
           <ListFilter className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
           <select
             value={sort}
-            onChange={(e) => update({ category, q: query, sort: e.target.value })}
+            onChange={(e) =>
+              update({ category, q: query, sort: e.target.value })
+            }
             aria-label="Sort tours"
             className="rounded-full border border-white/15 bg-slate-900 py-3 pl-10 pr-5 text-sm text-white outline-none focus:border-amber-400"
           >
@@ -276,6 +284,8 @@ export default function TourListingPage() {
       {/* Categories */}
       <div className="mt-5 flex flex-wrap gap-2">
         <button
+          type="button"
+          aria-pressed={!category}
           className={chip(!category)}
           onClick={() => update({ q: query, sort })}
         >
@@ -284,6 +294,8 @@ export default function TourListingPage() {
         {categories.map((c) => (
           <button
             key={c.name}
+            type="button"
+            aria-pressed={category === c.name}
             className={chip(category === c.name)}
             onClick={() => update({ category: c.name, q: query, sort })}
           >
@@ -333,7 +345,9 @@ export default function TourListingPage() {
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
             <SearchX className="h-7 w-7" />
           </span>
-          <p className="mt-5 font-display text-2xl">No tours match these filters</p>
+          <p className="mt-5 font-display text-2xl">
+            No tours match these filters
+          </p>
           <p className="mt-2 max-w-sm text-white/60">
             Try a different spelling, pick another category, or start over.
           </p>
@@ -360,7 +374,11 @@ export default function TourListingPage() {
           </div>
 
           {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onChange={goToPage} />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onChange={goToPage}
+            />
           )}
         </>
       )}

@@ -14,7 +14,6 @@ import {
   Users,
 } from 'lucide-react';
 
-// Maps a route path to an icon. Extend this as you add more sidebar links.
 const ICONS = {
   '/dashboard': LayoutDashboard,
   '/tours': Compass,
@@ -26,7 +25,6 @@ const ICONS = {
   '/admin-users': Users,
   '/admin-newsletter': Mail,
 };
-
 const STORAGE_KEY = 'drimora-sidebar-collapsed';
 
 function readInitialCollapsed() {
@@ -48,10 +46,11 @@ function Tooltip({ show, children }) {
   );
 }
 
-function SidebarLink({ to, label, icon: Icon, active, collapsed }) {
+function SidebarLink({ to, label, icon: Icon, active, collapsed, onClick }) {
   return (
     <Link
       to={to}
+      onClick={onClick}
       aria-current={active ? 'page' : undefined}
       aria-label={collapsed ? label : undefined}
       className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-amber-300/70 ${
@@ -59,13 +58,11 @@ function SidebarLink({ to, label, icon: Icon, active, collapsed }) {
       } ${
         active
           ? 'bg-amber-300 text-amber-950 shadow-sm'
-          : 'text-amber-50/70 hover:bg-white/10 hover:text-white'
+          : 'text-white/70 hover:bg-white/10 hover:text-white'
       }`}
     >
       <span
-        className={`absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-amber-300 transition-opacity duration-300 ${
-          active ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-amber-300 transition-opacity duration-300 ${active ? 'opacity-100' : 'opacity-0'}`}
       />
       <Icon className="h-5 w-5 shrink-0" />
       {!collapsed && <span className="animate-fade-in">{label}</span>}
@@ -74,10 +71,10 @@ function SidebarLink({ to, label, icon: Icon, active, collapsed }) {
   );
 }
 
-export default function Sidebar({ links }) {
+export default function Sidebar({ links, open = false, onClose = () => {} }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
   const { pathname } = useLocation();
-
+  const compact = collapsed && !open;
   const toggle = () => {
     const next = !collapsed;
     setCollapsed(next);
@@ -89,67 +86,74 @@ export default function Sidebar({ links }) {
   };
 
   return (
-    <aside
-      className={`sticky top-0 z-30 flex h-screen shrink-0 flex-col border-r border-amber-900 bg-amber-950 transition-[width] duration-300 ease-out ${
-        collapsed ? 'w-20' : 'w-64'
-      }`}
-    >
-      <div
-        className={`flex h-20 items-center px-6 ${
-          collapsed ? 'justify-center px-0' : ''
-        }`}
-      >
-        <Link
-          to="/"
-          aria-label="Drimora home"
-          className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight text-white"
-        >
-          <Compass className="h-6 w-6 shrink-0 text-amber-300" />
-          {!collapsed && <span>Drimora</span>}
-        </Link>
-      </div>
-
-      <nav
-        aria-label="Dashboard"
-        className="flex flex-1 flex-col gap-1 px-3 pt-2"
-      >
-        {links.map((link) => (
-          <SidebarLink
-            key={link.to}
-            to={link.to}
-            label={link.label}
-            icon={ICONS[link.to] || Compass}
-            active={pathname === link.to || pathname.startsWith(`${link.to}/`)}
-            collapsed={collapsed}
-          />
-        ))}
-      </nav>
-
-      <div className="space-y-1 border-t border-white/10 p-3">
-        <SidebarLink
-          to="/"
-          label="Back to site"
-          icon={Home}
-          active={false}
-          collapsed={collapsed}
-        />
+    <>
+      {open && (
         <button
-          onClick={toggle}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-expanded={!collapsed}
-          className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-amber-50/60 outline-none transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-300/70 ${
-            collapsed ? 'justify-center' : ''
-          }`}
+          type="button"
+          aria-label="Close dashboard navigation"
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-slate-950/70 lg:hidden"
+        />
+      )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen shrink-0 flex-col border-r border-white/10 bg-slate-900 transition-[width,transform] duration-300 ease-out lg:sticky lg:z-30 lg:translate-x-0 ${open ? 'w-72 translate-x-0' : `${collapsed ? 'w-20' : 'w-64'} -translate-x-full lg:translate-x-0`}`}
+      >
+        <div
+          className={`flex h-20 items-center px-6 ${compact ? 'justify-center px-0' : ''}`}
         >
-          {collapsed ? (
-            <ChevronsRight className="h-5 w-5 shrink-0" />
-          ) : (
-            <ChevronsLeft className="h-5 w-5 shrink-0" />
-          )}
-          {!collapsed && <span className="animate-fade-in">Collapse</span>}
-          <Tooltip show={collapsed}>Expand</Tooltip>
-        </button>
-      </div>
-    </aside>
+          <Link
+            to="/"
+            aria-label="Drimora home"
+            onClick={onClose}
+            className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight text-white"
+          >
+            <Compass className="h-6 w-6 shrink-0 text-amber-300" />
+            {!compact && <span>Drimora</span>}
+          </Link>
+        </div>
+        <nav
+          aria-label="Dashboard"
+          className="flex flex-1 flex-col gap-1 px-3 pt-2"
+        >
+          {links.map((link) => (
+            <SidebarLink
+              key={link.to}
+              to={link.to}
+              label={link.label}
+              icon={ICONS[link.to] || Compass}
+              active={
+                pathname === link.to || pathname.startsWith(`${link.to}/`)
+              }
+              collapsed={compact}
+              onClick={onClose}
+            />
+          ))}
+        </nav>
+        <div className="space-y-1 border-t border-white/10 p-3">
+          <SidebarLink
+            to="/"
+            label="Back to site"
+            icon={Home}
+            active={false}
+            collapsed={compact}
+            onClick={onClose}
+          />
+          <button
+            onClick={toggle}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!collapsed}
+            className={`group relative hidden w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/60 outline-none transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-300/70 lg:flex ${collapsed ? 'justify-center' : ''}`}
+          >
+            {collapsed ? (
+              <ChevronsRight className="h-5 w-5 shrink-0" />
+            ) : (
+              <ChevronsLeft className="h-5 w-5 shrink-0" />
+            )}
+            {!collapsed && <span className="animate-fade-in">Collapse</span>}
+            <Tooltip show={collapsed}>Expand</Tooltip>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

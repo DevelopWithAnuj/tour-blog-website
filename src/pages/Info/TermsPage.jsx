@@ -23,14 +23,14 @@ const sections = [
     heading: 'Tours and bookings',
     paragraphs: [
       'Each tour page lists the itinerary, what is included and what is not. Please read it before you book.',
-      'A booking is created when you submit traveller details and continue to payment, and it is confirmed when payment succeeds. Travel dates must be in the future, and one online booking can include up to 10 travellers.',
+      'A booking is created when you press Pay after entering traveler details. It is confirmed when payment succeeds. Travel dates must be in the future, and one online booking can include up to 20 travelers.',
     ],
   },
   {
     id: 'prices',
     heading: 'Prices and payment',
     paragraphs: [
-      'Prices are shown in Indian rupees (₹) per person. The total is the price multiplied by the number of travellers.',
+      'Prices are shown in Indian rupees (₹) per person. The total is the price multiplied by the number of travelers.',
       'Checkout is currently a demonstration, so no real payment is taken.',
     ],
   },

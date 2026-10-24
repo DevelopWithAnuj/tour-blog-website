@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { useServerStatus } from './context/ServerStatusContext.jsx';
-import ServerUnavailablePage from './pages/ServerUnavailablePage.jsx';
+import { MotionConfig } from 'motion/react';
 
 import PublicLayout from './layouts/PublicLayout.jsx';
 import AuthLayout from './layouts/AuthLayout.jsx';
@@ -47,123 +46,100 @@ import LocationsPage from './pages/Info/LocationsPage.jsx';
 import UnsubscribePage from './pages/Info/UnsubscribePage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
-import { useState } from 'react';
+import ServerBanner from './components/ServerBanner.jsx';
 
 export default function App() {
-  const { status, retry } = useServerStatus();
-  const [retrying, setRetrying] = useState(false);
-
-  const handleRetry = async () => {
-    setRetrying(true);
-    await retry();
-    setRetrying(false);
-  };
-
-  if (status === 'checking') {
-    return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-5 text-center text-white/70"
-      >
-        <span
-          aria-hidden="true"
-          className="h-10 w-10 animate-spin rounded-full border-2 border-white/15 border-t-amber-400"
-        />
-        <p className="mt-5 text-base font-medium text-white">
-          Connecting to Drimora…
-        </p>
-        <p className="mt-2 max-w-sm text-sm">
-          We’ll keep checking this connection for up to 15 seconds. Please wait
-          while the server responds.
-        </p>
-      </div>
-    );
-  }
-
-  if (status === 'down') {
-    return <ServerUnavailablePage onRetry={handleRetry} retrying={retrying} />;
-  }
-
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        {/* Public pages share Header + Footer */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/contact-support" element={<ContactSupportPage />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
-          <Route path="/locations" element={<LocationsPage />} />
-          <Route path="/tours" element={<TourListingPage />} />
-          <Route path="/tours/:id" element={<TourDetailsPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
-        </Route>
+      <MotionConfig reducedMotion="user">
+        <ServerBanner />
+        <ScrollToTop />
+        <Routes>
+          {/* Public pages share Header + Footer */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/contact-support" element={<ContactSupportPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
+            <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/tours" element={<TourListingPage />} />
+            <Route path="/tours/:id" element={<TourDetailsPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+          </Route>
 
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="/reset-password/:resetToken"
+              element={<ResetPasswordPage />}
+            />
+          </Route>
+
           <Route
-            path="/reset-password/:resetToken"
-            element={<ResetPasswordPage />}
-          />
-        </Route>
+            element={
+              <ProtectedRoute>
+                <PublicLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/booking/payment" element={<PaymentPage />} />
+            <Route
+              path="/booking/confirmation"
+              element={<ConfirmationPage />}
+            />
+          </Route>
 
-        <Route
-          element={
-            <ProtectedRoute>
-              <PublicLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/booking" element={<BookingPage />} />
-          <Route path="/booking/payment" element={<PaymentPage />} />
-          <Route path="/booking/confirmation" element={<ConfirmationPage />} />
-        </Route>
+          {/* User dashboard uses Sidebar */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <DashboardLayout role="user" />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<UserDashboardPage />} />
+            <Route path="/my-posts" element={<MyPostsPage />} />
+            <Route path="/my-posts/new" element={<MyPostFormPage />} />
+            <Route path="/my-posts/:id/edit" element={<MyPostFormPage />} />
+          </Route>
 
-        {/* User dashboard uses Sidebar */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <DashboardLayout role="user" />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/dashboard" element={<UserDashboardPage />} />
-          <Route path="/my-posts" element={<MyPostsPage />} />
-          <Route path="/my-posts/new" element={<MyPostFormPage />} />
-          <Route path="/my-posts/:id/edit" element={<MyPostFormPage />} />
-        </Route>
+          {/* Admin pages use Sidebar with admin links */}
+          <Route
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <DashboardLayout role="admin" />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin-bookings" element={<AdminBookingsPage />} />
+            <Route path="/admin-tours" element={<AdminToursPage />} />
+            <Route path="/admin-tours/new" element={<AdminTourFormPage />} />
+            <Route
+              path="/admin-tours/:id/edit"
+              element={<AdminTourFormPage />}
+            />
+            <Route path="/admin-blog" element={<AdminBlogPage />} />
+            <Route path="/admin-blog/new" element={<AdminBlogFormPage />} />
+            <Route
+              path="/admin-blog/:id/edit"
+              element={<AdminBlogFormPage />}
+            />
+            <Route path="/admin-users" element={<AdminUsersPage />} />
+            <Route path="/admin-newsletter" element={<AdminNewsletterPage />} />
+          </Route>
 
-        {/* Admin pages use Sidebar with admin links */}
-        <Route
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <DashboardLayout role="admin" />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin-bookings" element={<AdminBookingsPage />} />
-          <Route path="/admin-tours" element={<AdminToursPage />} />
-          <Route path="/admin-tours/new" element={<AdminTourFormPage />} />
-          <Route path="/admin-tours/:id/edit" element={<AdminTourFormPage />} />
-          <Route path="/admin-blog" element={<AdminBlogPage />} />
-          <Route path="/admin-blog/new" element={<AdminBlogFormPage />} />
-          <Route path="/admin-blog/:id/edit" element={<AdminBlogFormPage />} />
-          <Route path="/admin-users" element={<AdminUsersPage />} />
-          <Route path="/admin-newsletter" element={<AdminNewsletterPage />} />
-        </Route>
-
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </MotionConfig>
     </BrowserRouter>
   );
 }

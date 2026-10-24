@@ -159,7 +159,10 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!user.isEmailVerified) {
     throw new ApiError(
       HttpStatus.UNAUTHORIZED,
-      'Please verify your email before logging in'
+      'Please verify your email before logging in',
+      [],
+      '',
+      'EMAIL_NOT_VERIFIED'
     );
   }
 

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Search } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useActionDialog } from '../../components/ActionDialog.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import {
   Alert,
@@ -42,18 +43,16 @@ export default function AdminUsersPage() {
   const { user: me } = useAuth();
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState('');
+  const { requestConfirmation, dialog } = useActionDialog();
 
   const changeRole = async (target, nextRole) => {
     if (target.role === nextRole || updatingId) return;
-    if (
-      !window.confirm(
-        `Make ${target.fullName || target.username} ${
-          nextRole === 'admin' ? 'an admin' : 'a regular user'
-        }?`
-      )
-    ) {
-      return;
-    }
+    const confirmed = await requestConfirmation({
+      title: 'Change account role?',
+      message: `Make ${target.fullName || target.username} ${nextRole === 'admin' ? 'an admin' : 'a regular user'}?`,
+      confirmLabel: 'Change role',
+    });
+    if (!confirmed) return;
     setUpdatingId(target._id);
     try {
       const res = await axios.patch(`/api/v1/admin/users/${target._id}/role`, {
@@ -288,6 +287,7 @@ export default function AdminUsersPage() {
         </motion.div>
 
         {!loading && <Pager page={page} pages={pages} onChange={setPage} />}
+        {dialog}
       </section>
     </MotionConfig>
   );

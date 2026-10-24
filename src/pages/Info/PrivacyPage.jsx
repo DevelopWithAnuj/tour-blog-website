@@ -15,7 +15,7 @@ const sections = [
     items: [
       'Account details: your name, username, email address and password. Passwords are stored only as a one-way hash.',
       'Sign-in with Google or GitHub: your name, email address and the provider account ID, which we receive from the provider.',
-      'Booking details: traveller name, email, phone number, travel date, number of travellers and any special requests.',
+      'Booking details: traveler name, email, phone number, travel date, number of travelers and any special requests.',
       'Messages: what you send through our contact and support forms, plus the booking you attach, if any.',
       'Newsletter: your email address if you join the trip-ideas list in the footer. Every email has an unsubscribe link, and we keep your address, marked as unsubscribed, so we do not email you again.',
       'Basic request logs, such as the page requested, response status and timing, used for security and debugging.',

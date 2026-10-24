@@ -6,8 +6,11 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false)
 
   const fetchCurrentUser = async () => {
+    setLoading(true)
+    setAuthError(false)
     try {
       const res = await axios.get('/api/v1/auth/current-user', {
         withCredentials: true,
@@ -15,6 +18,8 @@ export function AuthProvider({ children }) {
       setUser(res.data.data);
     } catch (error) {
       setUser(null);
+      const status = error.response?.status;
+      setAuthError(!status || status >= 500)
     } finally {
       setLoading(false);
     }
@@ -94,6 +99,7 @@ export function AuthProvider({ children }) {
         user,
         loading,
         login,
+        authError,
         register,
         resendVerificationEmail,
         forgotPassword,
