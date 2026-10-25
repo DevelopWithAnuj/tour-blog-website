@@ -5,6 +5,7 @@ import {
   BLOG_STATUS,
 } from '../models/Blog.models.js';
 import { Booking, BOOKING_STATUS } from '../models/Booking.models.js';
+import { Inquiry, INQUIRY_STATUS } from '../models/Inquiry.models.js';
 import { Tour } from '../models/Tour.models.js';
 import { User } from '../models/User.models.js';
 import { ApiError } from '../utils/api-error.js';
@@ -103,6 +104,7 @@ const getDashboard = asyncHandler(async (req, res) => {
     totalUsers,
     totalBlogs,
     publishedBlogs,
+    draftBlogs,
     recentBookings,
   ] = await Promise.all([
     Booking.countDocuments(),
@@ -112,6 +114,7 @@ const getDashboard = asyncHandler(async (req, res) => {
     User.countDocuments(),
     BlogPost.countDocuments(),
     BlogPost.countDocuments({ status: 'published' }),
+    BlogPost.countDocuments({ status: 'draft' }),
     Booking.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -131,6 +134,7 @@ const getDashboard = asyncHandler(async (req, res) => {
           totalUsers,
           totalBlogs,
           publishedBlogs,
+          draftBlogs,
         },
         recentBookings,
       },
@@ -193,6 +197,70 @@ const getBookings = asyncHandler(async (req, res) => {
         'Admin bookings fetched'
       )
     );
+});
+
+const getInquiries = asyncHandler(async (req, res) => {
+  const { status, type, q } = req.query;
+  const { page, limit, skip } = getPagination(req.query);
+  const filter = {};
+
+  if (status && status !== 'all') {
+    if (!INQUIRY_STATUS.includes(String(status))) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Invalid inquiry status');
+    }
+    filter.status = String(status);
+  }
+
+  if (type && type !== 'all') {
+    if (!['general', 'support'].includes(String(type))) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Invalid inquiry type');
+    }
+    filter.type = String(type);
+  }
+
+  if (q && String(q).trim()) {
+    const term = searchRegex(q);
+    filter.$or = [
+      { name: term },
+      { email: term },
+      { subject: term },
+      { message: term },
+    ];
+  }
+
+  const [inquiries, total] = await Promise.all([
+    Inquiry.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Inquiry.countDocuments(filter),
+  ]);
+
+  res.status(HttpStatus.OK).json(
+    new ApiResponse(
+      HttpStatus.OK,
+      { inquiries, total, page, pages: Math.ceil(total / limit) },
+      'Admin inquiries fetched'
+    )
+  );
+});
+
+const updateInquiryStatus = asyncHandler(async (req, res) => {
+  assertObjectId(req.params.id, 'Inquiry');
+  const { status } = req.body;
+
+  if (!INQUIRY_STATUS.includes(status)) {
+    throw new ApiError(HttpStatus.BAD_REQUEST, 'Invalid inquiry status');
+  }
+
+  const inquiry = await Inquiry.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { returnDocument: 'after', runValidators: true }
+  );
+
+  if (!inquiry) throw new ApiError(HttpStatus.NOT_FOUND, 'Inquiry not found');
+
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, { inquiry }, 'Inquiry status updated'));
 });
 
 const updateBookingStatus = asyncHandler(async (req, res) => {
@@ -480,6 +548,8 @@ const updateUserRole = asyncHandler(async (req, res) => {
 export {
   getDashboard,
   getBookings,
+  getInquiries,
+  updateInquiryStatus,
   updateBookingStatus,
   getUsers,
   updateUserRole,

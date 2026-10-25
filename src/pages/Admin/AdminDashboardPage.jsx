@@ -288,11 +288,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center justify-between gap-4">
                       <dt className="text-sm text-slate-600">Drafts</dt>
                       <dd className="font-semibold text-slate-900">
-                        {Math.max(
-                          0,
-                          (data?.stats?.totalBlogs ?? 0) -
-                            (data?.stats?.publishedBlogs ?? 0)
-                        )}
+                        {data?.stats?.draftBlogs ?? 0}
                       </dd>
                     </div>
                     <div className="flex items-center justify-between gap-4">

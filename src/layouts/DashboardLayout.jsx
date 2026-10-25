@@ -14,6 +14,7 @@ const adminLinks = [
   { to: '/admin-bookings', label: 'Bookings' },
   { to: '/admin-tours', label: 'Tours' },
   { to: '/admin-blog', label: 'Blog' },
+  { to: '/admin-inquiries', label: 'Inquiries' },
   { to: '/admin-users', label: 'Users' },
   { to: '/admin-newsletter', label: 'Newsletter' },
 ];

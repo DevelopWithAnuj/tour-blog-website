@@ -33,6 +33,7 @@ import AdminUsersPage from './pages/Admin/AdminUsersPage.jsx';
 import MyPostsPage from './pages/Dashboard/MyPostsPage.jsx';
 import MyPostFormPage from './pages/Dashboard/MyPostFormPage.jsx';
 import AdminNewsletterPage from './pages/Admin/AdminNewsletterPage.jsx';
+import AdminInquiriesPage from './pages/Admin/AdminInquiriesPage.jsx';
 
 import ScrollToTop from './components/ScrollToTop.jsx';
 
@@ -133,6 +134,7 @@ export default function App() {
               path="/admin-blog/:id/edit"
               element={<AdminBlogFormPage />}
             />
+            <Route path="/admin-inquiries" element={<AdminInquiriesPage />} />
             <Route path="/admin-users" element={<AdminUsersPage />} />
             <Route path="/admin-newsletter" element={<AdminNewsletterPage />} />
           </Route>

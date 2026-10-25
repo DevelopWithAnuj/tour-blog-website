@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import {
   getBookings,
+  getInquiries,
   getDashboard,
   getUsers,
   updateBookingStatus,
+  updateInquiryStatus,
   updateUserRole,
   getAdminTours,
   getAdminTourById,
@@ -38,6 +40,9 @@ router.get('/dashboard', getDashboard);
 
 router.get('/bookings', getBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
+
+router.get('/inquiries', getInquiries);
+router.patch('/inquiries/:id/status', updateInquiryStatus);
 
 router.get('/users', getUsers);
 router.patch(
