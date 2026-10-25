@@ -38,6 +38,14 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    savedDestinations: {
+      type: [{ type: String, trim: true, maxlength: 80 }],
+      default: [],
+      validate: {
+        validator: (destinations) => destinations.length <= 30,
+        message: 'You can save at most 30 destinations.',
+      },
+    },
     role: {
       type: String,
       enum: AvailableUserRoles,

@@ -10,6 +10,13 @@ import { Tour } from '../models/Tour.models.js';
 
 const TOUR_FIELDS = 'title destination location image duration';
 
+const dateKey = (value) => {
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime())
+    ? null
+    : parsed.toISOString().slice(0, 10);
+};
+
 const findAccessibleBooking = async (req) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'Booking not found');
@@ -46,6 +53,18 @@ const createBooking = asyncHandler(async (req, res) => {
 
   const tour = await Tour.findOne({ _id: tourId, isActive: true });
   if (!tour) throw new ApiError(HttpStatus.NOT_FOUND, 'Tour not found.');
+
+  if (
+    tour.availableDates?.length &&
+    !tour.availableDates.some(
+      (availableDate) => dateKey(availableDate) === dateKey(date)
+    )
+  ) {
+    throw new ApiError(
+      HttpStatus.CONFLICT,
+      'This tour is not available on the selected date.'
+    );
+  }
 
   const guests = Number(guestCount);
   const booking = await Booking.create({

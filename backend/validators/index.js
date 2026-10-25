@@ -190,6 +190,19 @@ const adminTourValidator = () => [
     .notEmpty()
     .isLength({ max: 1000 })
     .withMessage('Each FAQ needs an answer'),
+  body('availableDates')
+    .optional()
+    .isArray({ max: 100 })
+    .withMessage('A tour can have at most 100 available dates'),
+  body('availableDates.*')
+    .isString()
+    .withMessage('Each available date must be text')
+    .bail()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('Each available date must use YYYY-MM-DD')
+    .isISO8601({ strict: true, strictSeparator: true })
+    .withMessage('Each available date must be a valid calendar date')
+    .toDate(),
 ];
 
 const adminToggleActiveValidator = () => [
@@ -291,6 +304,15 @@ const adminNewsletterValidator = () => [
     .withMessage('Write at least 20 characters'),
 ];
 
+const savedDestinationValidator = () => [
+  body('destination')
+    .isString()
+    .withMessage('Destination is required')
+    .trim()
+    .isLength({ min: 1, max: 80 })
+    .withMessage('Destination must be 1-80 characters'),
+];
+
 const httpsUrl = /^https:\/\//;
 
 const userBlogValidator = () => [
@@ -342,5 +364,6 @@ export {
   inquiryValidator,
   newsletterValidator,
   adminNewsletterValidator,
+  savedDestinationValidator,
   userBlogValidator,
 };

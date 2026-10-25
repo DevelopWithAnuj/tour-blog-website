@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { toast, useToast } from '../../context/ToastContext.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 import {
   Alert,
   EASE,
@@ -64,6 +64,7 @@ const EMPTY = {
   exclusions: '',
   itinerary: '',
   faq: '',
+  availableDates: '',
 };
 
 const lines = (s) =>
@@ -99,6 +100,7 @@ const toPayload = (f) => ({
     const [question, answer] = splitPair(l);
     return { question, answer };
   }),
+  availableDates: lines(f.availableDates),
 });
 
 const toForm = (t) => ({
@@ -117,6 +119,9 @@ const toForm = (t) => ({
     .map((d) => `${d.title} | ${d.description || ''}`)
     .join('\n'),
   faq: (t.faq || []).map((q) => `${q.question} | ${q.answer}`).join('\n'),
+  availableDates: (t.availableDates || [])
+    .map((date) => new Date(date).toISOString().slice(0, 10))
+    .join('\n'),
 });
 
 const apiMessage = (err) => {
@@ -159,7 +164,7 @@ export default function AdminTourFormPage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast: notify } = useToast();
   const { categories, categoriesLoading, categoriesError } =
     useTourCategories();
 
@@ -193,7 +198,7 @@ export default function AdminTourFormPage() {
       const payload = toPayload(form);
       if (isEdit) await axios.put(`/api/v1/admin/tours/${id}`, payload);
       else await axios.post('/api/v1/admin/tours', payload);
-      toast(isEdit ? 'Tour updated.' : 'Tour created.', { type: 'success' });
+      notify(isEdit ? 'Tour updated.' : 'Tour created.', { type: 'success' });
       navigate('/admin-tours');
     } catch (err) {
       setError(apiMessage(err));
@@ -349,6 +354,21 @@ export default function AdminTourFormPage() {
                   </select>
                 </Field>
               </div>
+
+              <Field
+                label="Available dates"
+                htmlFor="available-dates"
+                hint="One YYYY-MM-DD date per line. Leave empty to allow any future date."
+              >
+                <textarea
+                  id="available-dates"
+                  rows={4}
+                  value={form.availableDates}
+                  onChange={set('availableDates')}
+                  placeholder={'2026-12-15\n2027-01-10'}
+                  className={inputCls}
+                />
+              </Field>
 
               <Field
                 label="Gallery images"

@@ -40,7 +40,12 @@ function DetailsSkeleton() {
 
 function BookButton({ tour, toast, className = '' }) {
   const bookingState = {
-    tour: { _id: tour._id, title: tour.title, price: tour.price },
+    tour: {
+      _id: tour._id,
+      title: tour.title,
+      price: tour.price,
+      availableDates: tour.availableDates || [],
+    },
   };
 
   return (

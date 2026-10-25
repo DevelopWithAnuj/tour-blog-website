@@ -35,6 +35,11 @@ function Field({ id, label, error, children }) {
   );
 }
 
+function dateInputValue(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+}
+
 export default function BookingPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -66,6 +71,11 @@ export default function BookingPage() {
       </div>
     );
   }
+
+  const configuredDates = Array.isArray(tour.availableDates)
+    ? tour.availableDates.map(dateInputValue).filter(Boolean).sort()
+    : [];
+  const availableDates = configuredDates.filter((date) => date >= tomorrow());
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
   const setGuests = (n) =>
@@ -151,14 +161,42 @@ export default function BookingPage() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <Field id="travel-date" label="Travel date" error={errors.date}>
-              <input
-                id="travel-date"
-                type="date"
-                min={tomorrow()}
-                value={form.date}
-                onChange={set('date')}
-                className={`${fieldClass} scheme-dark`}
-              />
+              {configuredDates.length ? (
+                <select
+                  id="travel-date"
+                  value={form.date}
+                  onChange={set('date')}
+                  disabled={availableDates.length === 0}
+                  className={fieldClass}
+                >
+                  <option value="">
+                    {availableDates.length
+                      ? 'Choose an available date'
+                      : 'No upcoming dates available'}
+                  </option>
+                  {availableDates.map((date) => (
+                    <option key={date} value={date}>
+                      {new Date(`${date}T00:00:00`).toLocaleDateString(
+                        undefined,
+                        {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        }
+                      )}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id="travel-date"
+                  type="date"
+                  min={tomorrow()}
+                  value={form.date}
+                  onChange={set('date')}
+                  className={`${fieldClass} scheme-dark`}
+                />
+              )}
             </Field>
 
             <Field label="Travelers">

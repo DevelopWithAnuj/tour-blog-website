@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   ArrowUpRight,
+  Bookmark,
   CalendarDays,
   Compass,
   Luggage,
@@ -306,6 +307,12 @@ export default function UserDashboardPage() {
   const [loadError, setLoadError] = useState('');
   const [attempt, setAttempt] = useState(0);
   const [cancellingBookingId, setCancellingBookingId] = useState(null);
+  const [savedDestinations, setSavedDestinations] = useState([]);
+  const [savedDestinationsLoading, setSavedDestinationsLoading] =
+    useState(true);
+  const [savedDestinationsError, setSavedDestinationsError] = useState('');
+  const [savedDestinationsAttempt, setSavedDestinationsAttempt] = useState(0);
+  const [removingDestination, setRemovingDestination] = useState('');
   const { requestConfirmation, dialog } = useActionDialog();
 
   useEffect(() => {
@@ -329,6 +336,53 @@ export default function UserDashboardPage() {
 
     return () => controller.abort();
   }, [attempt]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setSavedDestinationsLoading(true);
+    setSavedDestinationsError('');
+
+    axios
+      .get('/api/v1/auth/saved-destinations', { signal: controller.signal })
+      .then((res) =>
+        setSavedDestinations(res.data.data.savedDestinations || [])
+      )
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          setSavedDestinationsError(
+            error.response?.data?.message ||
+              'We could not load your saved destinations.'
+          );
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setSavedDestinationsLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [savedDestinationsAttempt]);
+
+  const removeSavedDestination = async (destination) => {
+    if (removingDestination) return;
+    setRemovingDestination(destination);
+    setSavedDestinationsError('');
+    try {
+      const response = await axios.delete('/api/v1/auth/saved-destinations', {
+        data: { destination },
+      });
+      setSavedDestinations(response.data.data.savedDestinations || []);
+      toast(`${destination} removed from saved destinations.`, {
+        type: 'success',
+      });
+    } catch (error) {
+      setSavedDestinationsError(
+        error.response?.data?.message ||
+          'Unable to remove this saved destination.'
+      );
+    } finally {
+      setRemovingDestination('');
+    }
+  };
 
   const handleCancelBooking = async (booking) => {
     const paid = booking.paymentStatus === 'paid';
@@ -467,6 +521,86 @@ export default function UserDashboardPage() {
           tone="bg-orange-100 text-orange-700"
         />
       </div>
+
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-800">
+              Your shortlist
+            </p>
+            <h2 className="mt-1 font-display text-2xl text-slate-950">
+              Saved destinations
+            </h2>
+          </div>
+          <Link
+            to="/locations"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-800 hover:text-amber-950"
+          >
+            Explore destinations <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {savedDestinationsError && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+            <p role="alert">{savedDestinationsError}</p>
+            <button
+              type="button"
+              onClick={() =>
+                setSavedDestinationsAttempt((current) => current + 1)
+              }
+              className="font-semibold underline underline-offset-2"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {savedDestinationsLoading ? (
+          <p className="mt-5 text-sm text-slate-500">
+            Loading saved destinations…
+          </p>
+        ) : savedDestinations.length === 0 ? (
+          <div className="mt-5 rounded-lg border border-dashed border-slate-300 px-5 py-7 text-center">
+            <Bookmark className="mx-auto h-6 w-6 text-amber-800" />
+            <p className="mt-2 text-sm text-slate-600">
+              Save destinations you want to explore later.
+            </p>
+            <Link
+              to="/locations"
+              className="mt-3 inline-block text-sm font-semibold text-amber-800 hover:text-amber-950"
+            >
+              Browse destinations
+            </Link>
+          </div>
+        ) : (
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {savedDestinations.map((destination) => (
+              <li
+                key={destination}
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3"
+              >
+                <Link
+                  to={`/tours?q=${encodeURIComponent(destination)}`}
+                  className="min-w-0 truncate font-medium text-slate-900 hover:text-amber-800"
+                >
+                  {destination}
+                </Link>
+                <button
+                  type="button"
+                  disabled={Boolean(removingDestination)}
+                  onClick={() => removeSavedDestination(destination)}
+                  aria-label={`Remove ${destination} from saved destinations`}
+                  className="shrink-0 rounded-md px-2 py-1 text-sm font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-60"
+                >
+                  {removingDestination === destination ? 'Removing…' : 'Remove'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+
 
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4">

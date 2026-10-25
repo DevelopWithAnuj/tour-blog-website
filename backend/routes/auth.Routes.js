@@ -18,12 +18,18 @@ import {
   userChangeCurrentPasswordValidator,
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
+  savedDestinationValidator,
 } from '../validators/index.js';
 import { validate } from '../middleware/validator.Middleware.js';
 import { verifyJWT } from '../middleware/auth.Middleware.js';
 
 import passport from '../config/passport.js';
 import { oauthCallback } from '../controllers/auth.Controller.js';
+import {
+  getSavedDestinations,
+  removeSavedDestination,
+  saveDestination,
+} from '../controllers/savedDestination.Controller.js';
 
 const router = Router();
 
@@ -104,6 +110,16 @@ router.route('/logout').post(logoutUser);
 
 // secure routes
 router.route('/current-user').get(verifyJWT, getCurrentUser);
+router
+  .route('/saved-destinations')
+  .get(verifyJWT, getSavedDestinations)
+  .post(verifyJWT, savedDestinationValidator(), validate, saveDestination)
+  .delete(
+    verifyJWT,
+    savedDestinationValidator(),
+    validate,
+    removeSavedDestination
+  );
 router
   .route('/change-password')
   .post(

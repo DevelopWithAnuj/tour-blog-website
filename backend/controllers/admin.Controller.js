@@ -83,6 +83,7 @@ const TOUR_WRITABLE = [
   'inclusions',
   'exclusions',
   'faq',
+  'availableDates',
 ];
 const BLOG_WRITABLE = [
   'title',
