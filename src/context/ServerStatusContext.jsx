@@ -14,15 +14,15 @@ const RECHECK_WHEN_DOWN_MS = 20_000;
 
 export function ServerStatusProvider({ children }) {
   const [status, setStatus] = useState('checking'); // 'checking' | 'up' | 'down'
-  const [retrying, setRetrying] = useState(false)
+  const [retrying, setRetrying] = useState(false);
   const inFlight = useRef(null);
 
-  const checkServerHealth = useCallback( () => {
+  const checkServerHealth = useCallback(() => {
     if (inFlight.current) {
       return inFlight.current;
     }
 
-    setRetrying(true)
+    setRetrying(true);
 
     inFlight.current = axios
       .get('/api/v1/healthcheck', { timeout: HEALTH_CHECK_TIMEOUT_MS })
@@ -30,7 +30,7 @@ export function ServerStatusProvider({ children }) {
       .catch(() => setStatus('down'))
       .finally(() => {
         inFlight.current = null;
-        setRetrying(false)
+        setRetrying(false);
       });
 
     return inFlight.current;
@@ -42,13 +42,15 @@ export function ServerStatusProvider({ children }) {
 
   //while down
   useEffect(() => {
-    if(status !== 'down') return
-    const id = setInterval(checkServerHealth, RECHECK_WHEN_DOWN_MS)
-    return () => clearInterval(id)
-  }, [status, checkServerHealth])
+    if (status !== 'down') return;
+    const id = setInterval(checkServerHealth, RECHECK_WHEN_DOWN_MS);
+    return () => clearInterval(id);
+  }, [status, checkServerHealth]);
 
   return (
-    <ServerStatusContext.Provider value={{ status, retry: checkServerHealth }}>
+    <ServerStatusContext.Provider
+      value={{ status, retrying, retry: checkServerHealth }}
+    >
       {children}
     </ServerStatusContext.Provider>
   );

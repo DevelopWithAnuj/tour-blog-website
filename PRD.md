@@ -13,7 +13,8 @@ The current project structure includes a React frontend under `src/pages` and an
 - Provide a blog and travel experience-sharing area for travelers and bloggers.
 - Provide clear company information, destination information, and customer support resources.
 - Give users a dashboard to track bookings and personal activity.
-- Give admins tools to manage tours, bookings, users, and blog content.
+- Let users save destinations for later.
+- Give admins tools to manage tours, bookings, users, inquiries, newsletter sends, and blog content.
 - Keep the application responsive, easy to navigate, and friendly for first-time travel planners.
 
 ## 3. Target Users
@@ -24,7 +25,7 @@ The current project structure includes a React frontend under `src/pages` and an
 | Traveler         | A visitor looking for destinations, tour packages, and booking options.                                | Search, compare, book, pay, view confirmation.                      |
 | Travel Blogger   | A traveler or creator who shares experiences, tips, itineraries, and guides.                           | Publish posts, organize by category, build credibility.             |
 | Registered User  | A logged-in traveler who wants saved history and booking management.                                   | Dashboard, booking status, profile access.                          |
-| Admin            | Site operator managing platform content and operations.                                                | Manage tours, bookings, users, and blog posts.                      |
+| Admin            | Site operator managing platform content and operations.                                                | Manage tours, bookings, users, inquiries, newsletters, and blog posts. |
 
 ## 4. Current Structure Alignment
 
@@ -43,7 +44,7 @@ The current project structure includes a React frontend under `src/pages` and an
 | Public Information & Support | Planned public pages: About, Contact, Contact Support, Help, Privacy, Terms, and Locations.                                                                                                                                                                                          | Company information, self-service help, legal information, destination discovery, and support contact. |
 | Dashboard                    | `src/pages/Dashboard/UserDashboardPage.jsx`                                                                                                                                                                                                                                          | User bookings, saved trips, and profile summary.                                                       |
 | Auth                         | `src/pages/Auth/LoginPage.jsx`                                                                                                                                                                                                                                                       | Login and user session access.                                                                         |
-| Admin                        | `src/pages/Admin/AdminDashboardPage.jsx`, `src/pages/Admin/AdminBookingsPage.jsx`, `src/pages/Admin/AdminUsersPage.jsx`, `src/pages/Admin/AdminToursPage.jsx`, `src/pages/Admin/AdminTourFormPage.jsx`, `src/pages/Admin/AdminBlogPage.jsx`, `src/pages/Admin/AdminBlogFormPage.jsx` | Admin dashboard and management of bookings, users, tours, and blog posts.                              |
+| Admin                        | `src/pages/Admin/AdminDashboardPage.jsx`, `src/pages/Admin/AdminBookingsPage.jsx`, `src/pages/Admin/AdminUsersPage.jsx`, `src/pages/Admin/AdminToursPage.jsx`, `src/pages/Admin/AdminTourFormPage.jsx`, `src/pages/Admin/AdminBlogPage.jsx`, `src/pages/Admin/AdminBlogFormPage.jsx`, `src/pages/Admin/AdminInquiriesPage.jsx`, `src/pages/Admin/AdminNewsletterPage.jsx` | Admin dashboard and management of bookings, users, tours, inquiries, newsletters, and blog posts. |
 
 ### Backend Modules
 
@@ -154,6 +155,7 @@ The current project structure includes a React frontend under `src/pages` and an
 
 - Collect selected tour, user, date, guest count, contact details, and special requests.
 - Create bookings through `/api/v1/bookings`.
+- When a tour has configured `availableDates`, accept bookings only for those dates. Tours without configured dates may be booked for any future date.
 - Default new bookings to `pending` unless confirmed.
 - Validate required fields before continuing to payment.
 
@@ -189,6 +191,12 @@ The current project structure includes a React frontend under `src/pages` and an
 - Provide a Locations page to browse supported destinations and link to relevant tours.
 - Keep these informational and support pages publicly accessible and usable on mobile and desktop.
 
+### Newsletter
+
+- Let visitors subscribe from the site footer using a validated email address.
+- Include a unique unsubscribe link in each newsletter email.
+- Give admins a page to view the active subscriber count and send a newsletter.
+
 ### Planned Travel Help Chatbot (Post-MVP)
 
 - Make a compact help-chat launcher available on traveler-facing public, authentication, booking, and user-dashboard pages; do not show it in admin tools or full-screen error/unavailable states.
@@ -203,7 +211,7 @@ The current project structure includes a React frontend under `src/pages` and an
 
 - Guests may browse public tours, locations, blog posts, About, Help, Privacy, and Terms pages without an account.
 - Guests may submit general contact/support inquiries without signing in, subject to validation and abuse controls.
-- Email guests a private, one-year inquiry tracking link; if delivery fails, report that clearly rather than claiming the link was sent.
+- After a guest submits an inquiry, email a private tracking link that expires after one year; if email delivery fails, confirm receipt without claiming the link was sent.
 - Require authentication for booking, viewing personal booking/account data, and submitting or managing travel content.
 - Preserve private user, booking, and unpublished content data from unauthenticated access.
 
@@ -211,21 +219,25 @@ The current project structure includes a React frontend under `src/pages` and an
 
 - Show upcoming bookings, past bookings, booking statuses, and user profile summary.
 - Allow the user to view booking details.
-- Let signed-in users view inquiry statuses and team updates from the dashboard.
-- Prepare space for saved destinations and submitted blog posts.
+- Let authenticated users save destinations from the Locations page, view them on the dashboard, and remove them later.
+- Keep saved destinations associated with the user account across sessions.
+- Let signed-in users view their inquiry status and team updates on the dashboard.
+- Show submitted blog posts.
 
 ### Inquiry Tracking
 
-- Track inquiries through `new`, `under_review`, and `resolved`; resolved inquiries may be reopened for review.
-- Require an admin resolution message, keep status history, and email the sender when the inquiry status changes.
-- Let guests read inquiry updates only through a valid, unexpired private tracking link.
+- Use the statuses `new`, `under_review`, and `resolved`; inquiries move from new to under review, then resolved. Resolved inquiries may be reopened under review.
+- Require an admin resolution message when resolving an inquiry, retain status history, and show team messages to the inquiry owner.
+- Let guests check status and updates using their private emailed tracking link; do not expose guest inquiry details without a valid, unexpired token.
+- Notify the inquiry sender by email when an admin changes the status.
 
 ### Admin
 
 - Show total bookings, pending bookings, confirmed bookings, users, and blog stats.
 - Allow admin to view and update booking records.
-- Let admins update inquiry status and provide a required resolution message.
-- Use `/api/v1/admin/dashboard`, `/api/v1/admin/bookings`, and `/api/v1/admin/users`.
+- Allow admin to read inquiries, move them through the supported status flow, and add a required resolution message when resolving.
+- Allow admin to view subscriber totals and send newsletters.
+- Use the `/api/v1/admin` endpoints listed below.
 - Restrict admin pages to users with the `admin` role.
 
 ### Authentication
@@ -242,6 +254,7 @@ The current project structure includes a React frontend under `src/pages` and an
 - `name`
 - `email`
 - `role`
+- `savedDestinations`
 - `createdAt`
 - `updatedAt`
 
@@ -310,20 +323,26 @@ The current project structure includes a React frontend under `src/pages` and an
 | GET              | `/api/v1/tours`                                                | List public tours.                                       |
 | GET              | `/api/v1/tours/:id`                                            | Get tour details.                                        |
 | GET              | `/api/v1/tours/categories`                                     | List tour categories.                                    |
+| GET              | `/api/v1/tours/destinations`                                   | List active tour destinations.                           |
 | POST             | `/api/v1/bookings`                                             | Create a booking (authenticated).                        |
 | GET              | `/api/v1/bookings`                                             | List the authenticated user's bookings.                  |
 | GET              | `/api/v1/bookings/:id`                                         | Get a booking detail (authenticated).                    |
 | POST             | `/api/v1/bookings/:id/pay`                                     | Submit payment for a booking.                            |
 | PATCH            | `/api/v1/bookings/:id/cancel`                                  | Cancel a booking.                                        |
 | PATCH            | `/api/v1/bookings/:id/confirm`                                 | Confirm a booking (admin only).                          |
+| GET, POST, DELETE | `/api/v1/auth/saved-destinations`                              | List, save, or remove a destination for the signed-in user. |
 | GET              | `/api/v1/blogs`                                                | List published blog posts.                               |
 | GET              | `/api/v1/blogs/categories`                                     | List public blog categories.                             |
 | GET              | `/api/v1/blogs/:slug`                                          | Get a published blog post and related posts by slug.     |
+| GET, POST         | `/api/v1/my-posts`                                             | List and create the signed-in user's blog posts.          |
+| GET, PUT, DELETE  | `/api/v1/my-posts/:id`                                         | Get, update, or delete the signed-in user's blog post.    |
+| PATCH            | `/api/v1/my-posts/:id/submit`                                  | Submit the signed-in user's blog post for review.        |
 | POST             | `/api/v1/contact`                                              | Submit a validated contact or support inquiry.           |
 | GET              | `/api/v1/contact/my-inquiries`                                 | List the signed-in user's inquiries and status history.  |
 | GET              | `/api/v1/contact/track/:token`                                 | Read a guest inquiry using its private, expiring token.   |
+| POST             | `/api/v1/newsletter`                                           | Subscribe an email address to the newsletter.             |
+| POST             | `/api/v1/newsletter/unsubscribe/:token`                        | Unsubscribe using the link token from a newsletter email. |
 | GET              | `/api/v1/admin/dashboard`                                      | Get admin dashboard metrics (admin only).                |
-| GET, PATCH       | `/api/v1/admin/inquiries`, `/api/v1/admin/inquiries/:id/status` | List inquiries and update status with a resolution message (admin only). |
 | GET, PATCH       | `/api/v1/admin/bookings`, `/api/v1/admin/bookings/:id/status`  | List bookings and update a booking status (admin only).  |
 | GET, PATCH       | `/api/v1/admin/users`, `/api/v1/admin/users/:id/role`          | List users and update a user's role (admin only).        |
 | GET, POST        | `/api/v1/admin/tours`                                          | List and create tours (admin only).                      |
@@ -332,6 +351,8 @@ The current project structure includes a React frontend under `src/pages` and an
 | GET, POST        | `/api/v1/admin/blogs`                                          | List and create blog posts (admin only).                 |
 | GET, PUT, DELETE | `/api/v1/admin/blogs/:id`                                      | Get, update, and delete a blog post (admin only).        |
 | PATCH            | `/api/v1/admin/blogs/:id/status`                               | Change a blog post's publication status (admin only).    |
+| GET, PATCH       | `/api/v1/admin/inquiries`, `/api/v1/admin/inquiries/:id/status` | List inquiries and update status with a resolution message (admin only). |
+| GET, POST         | `/api/v1/admin/newsletter`, `/api/v1/admin/newsletter/send`     | Get subscriber count and send a newsletter (admin only). |
 
 ## 10. Non-Functional Requirements
 

@@ -73,7 +73,7 @@ export default function Footer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || sending) return;
-    setSubscribed(true);
+    setSending(true);
     setError('');
     try {
       await axios.post('/api/v1/newsletter', { email: email.trim() });

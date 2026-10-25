@@ -11,7 +11,7 @@ import '@fontsource-variable/inter';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ServerStatusProvider } from './context/ServerStatusContext.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
-import { ToastProvider, toast } from './context/ToastContext.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
 
 logger.info('Frontend app initialized');
 

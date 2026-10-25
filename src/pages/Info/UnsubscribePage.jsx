@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { PageHero } from '../../components/InfoParts.jsx';
 import { useState } from 'react';
 import axios from 'axios';
@@ -27,7 +27,7 @@ export default function UnsubscribePage() {
       <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 md:px-8">
         {state === 'error' && (
           <p role="alert" className="mb-6 text-rose-300">
-            This link is not vaild or something went wrong. Email us and we will
+            This link is not valid or something went wrong. Email us and we will
             remove you by hand.
           </p>
         )}
