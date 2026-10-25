@@ -12,6 +12,8 @@ import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { HttpStatus, UserRolesEnum } from '../utils/constants.js';
+import { sendEmail, inquiryStatusMailgenContent } from '../utils/mail.js';
+import logger from '../config/logger.js';
 
 const TOUR_FIELDS = 'title destination location image';
 const USER_FIELDS = 'fullName username email role createdAt';
@@ -230,38 +232,100 @@ const getInquiries = asyncHandler(async (req, res) => {
   }
 
   const [inquiries, total] = await Promise.all([
-    Inquiry.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Inquiry.find(filter)
+      .select('-trackingTokenHash -trackingTokenExpiresAt')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
     Inquiry.countDocuments(filter),
   ]);
 
-  res.status(HttpStatus.OK).json(
-    new ApiResponse(
-      HttpStatus.OK,
-      { inquiries, total, page, pages: Math.ceil(total / limit) },
-      'Admin inquiries fetched'
-    )
-  );
+  res
+    .status(HttpStatus.OK)
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { inquiries, total, page, pages: Math.ceil(total / limit) },
+        'Admin inquiries fetched'
+      )
+    );
 });
 
 const updateInquiryStatus = asyncHandler(async (req, res) => {
   assertObjectId(req.params.id, 'Inquiry');
-  const { status } = req.body;
+  const { status, resolutionMessage = '' } = req.body;
 
   if (!INQUIRY_STATUS.includes(status)) {
     throw new ApiError(HttpStatus.BAD_REQUEST, 'Invalid inquiry status');
   }
 
-  const inquiry = await Inquiry.findByIdAndUpdate(
-    req.params.id,
-    { status },
-    { returnDocument: 'after', runValidators: true }
-  );
+  const inquiry = await Inquiry.findById(req.params.id);
 
   if (!inquiry) throw new ApiError(HttpStatus.NOT_FOUND, 'Inquiry not found');
+  const allowedTransitions = {
+    new: ['under_review'],
+    under_review: ['resolved'],
+    resolved: ['under_review'],
+  };
+  if (
+    status !== inquiry.status &&
+    !allowedTransitions[inquiry.status]?.includes(status)
+  ) {
+    throw new ApiError(
+      HttpStatus.BAD_REQUEST,
+      `Inquiry cannot move from ${inquiry.status} to ${status}`
+    );
+  }
+  if (status === 'resolved' && resolutionMessage.trim().length < 5) {
+    throw new ApiError(
+      HttpStatus.BAD_REQUEST,
+      'Add a resolution message of at least 5 characters'
+    );
+  }
+
+  const changed = inquiry.status !== status;
+  if (changed) {
+    inquiry.status = status;
+    inquiry.statusHistory.push({
+      status,
+      message: status === 'resolved' ? resolutionMessage.trim() : '',
+      createdAt: new Date(),
+    });
+    await inquiry.save();
+  }
+
+  let notificationSent = true;
+  if (changed) {
+    try {
+      await sendEmail({
+        email: inquiry.email,
+        subject: `Update on your Drimora inquiry: ${inquiry.subject}`,
+        mailgenContent: inquiryStatusMailgenContent(
+          inquiry.name,
+          inquiry.subject,
+          status,
+          status === 'resolved' ? resolutionMessage.trim() : ''
+        ),
+      });
+    } catch (error) {
+      notificationSent = false;
+      logger.error(
+        `Inquiry notification failed for ${inquiry._id}: ${error.message}`
+      );
+    }
+  }
 
   res
     .status(HttpStatus.OK)
-    .json(new ApiResponse(HttpStatus.OK, { inquiry }, 'Inquiry status updated'));
+    .json(
+      new ApiResponse(
+        HttpStatus.OK,
+        { inquiry, notificationSent },
+        notificationSent
+          ? 'Inquiry status updated'
+          : 'Inquiry status updated, but the email notification could not be sent'
+      )
+    );
 });
 
 const updateBookingStatus = asyncHandler(async (req, res) => {
@@ -442,9 +506,9 @@ const setTourActive = asyncHandler(async (req, res) => {
 const getAdminBlogPosts = asyncHandler(async (req, res) => {
   const { status, q } = req.query;
   const { page, limit, skip } = getPagination(req.query);
- const filter = { ...visibleToAdmin(req.user._id) };
+  const filter = { ...visibleToAdmin(req.user._id) };
 
- if (BLOG_STATUS.includes(String(status))) filter.status = String(status);
+  if (BLOG_STATUS.includes(String(status))) filter.status = String(status);
 
   if (q && String(q).trim()) {
     const rx = searchRegex(q);
@@ -518,7 +582,9 @@ const setBlogPostStatus = asyncHandler(async (req, res) => {
 const deleteBlogPost = asyncHandler(async (req, res) => {
   const post = await findManageablePost(req);
   await post.deleteOne();
-  res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, {}, 'Post deleted'));
+  res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, {}, 'Post deleted'));
 });
 
 /* ---------- Users ---------- */

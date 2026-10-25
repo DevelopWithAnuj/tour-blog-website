@@ -203,6 +203,7 @@ The current project structure includes a React frontend under `src/pages` and an
 
 - Guests may browse public tours, locations, blog posts, About, Help, Privacy, and Terms pages without an account.
 - Guests may submit general contact/support inquiries without signing in, subject to validation and abuse controls.
+- Email guests a private, one-year inquiry tracking link; if delivery fails, report that clearly rather than claiming the link was sent.
 - Require authentication for booking, viewing personal booking/account data, and submitting or managing travel content.
 - Preserve private user, booking, and unpublished content data from unauthenticated access.
 
@@ -210,12 +211,20 @@ The current project structure includes a React frontend under `src/pages` and an
 
 - Show upcoming bookings, past bookings, booking statuses, and user profile summary.
 - Allow the user to view booking details.
+- Let signed-in users view inquiry statuses and team updates from the dashboard.
 - Prepare space for saved destinations and submitted blog posts.
+
+### Inquiry Tracking
+
+- Track inquiries through `new`, `under_review`, and `resolved`; resolved inquiries may be reopened for review.
+- Require an admin resolution message, keep status history, and email the sender when the inquiry status changes.
+- Let guests read inquiry updates only through a valid, unexpired private tracking link.
 
 ### Admin
 
 - Show total bookings, pending bookings, confirmed bookings, users, and blog stats.
 - Allow admin to view and update booking records.
+- Let admins update inquiry status and provide a required resolution message.
 - Use `/api/v1/admin/dashboard`, `/api/v1/admin/bookings`, and `/api/v1/admin/users`.
 - Restrict admin pages to users with the `admin` role.
 
@@ -310,7 +319,11 @@ The current project structure includes a React frontend under `src/pages` and an
 | GET              | `/api/v1/blogs`                                                | List published blog posts.                               |
 | GET              | `/api/v1/blogs/categories`                                     | List public blog categories.                             |
 | GET              | `/api/v1/blogs/:slug`                                          | Get a published blog post and related posts by slug.     |
+| POST             | `/api/v1/contact`                                              | Submit a validated contact or support inquiry.           |
+| GET              | `/api/v1/contact/my-inquiries`                                 | List the signed-in user's inquiries and status history.  |
+| GET              | `/api/v1/contact/track/:token`                                 | Read a guest inquiry using its private, expiring token.   |
 | GET              | `/api/v1/admin/dashboard`                                      | Get admin dashboard metrics (admin only).                |
+| GET, PATCH       | `/api/v1/admin/inquiries`, `/api/v1/admin/inquiries/:id/status` | List inquiries and update status with a resolution message (admin only). |
 | GET, PATCH       | `/api/v1/admin/bookings`, `/api/v1/admin/bookings/:id/status`  | List bookings and update a booking status (admin only).  |
 | GET, PATCH       | `/api/v1/admin/users`, `/api/v1/admin/users/:id/role`          | List users and update a user's role (admin only).        |
 | GET, POST        | `/api/v1/admin/tours`                                          | List and create tours (admin only).                      |

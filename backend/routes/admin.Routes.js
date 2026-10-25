@@ -30,6 +30,7 @@ import {
   adminBlogStatusValidator,
   adminUserRoleValidator,
   adminNewsletterValidator,
+  adminInquiryStatusValidator,
 } from '../validators/index.js';
 
 const router = Router();
@@ -42,7 +43,12 @@ router.get('/bookings', getBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
 
 router.get('/inquiries', getInquiries);
-router.patch('/inquiries/:id/status', updateInquiryStatus);
+router.patch(
+  '/inquiries/:id/status',
+  adminInquiryStatusValidator(),
+  validate,
+  updateInquiryStatus
+);
 
 router.get('/users', getUsers);
 router.patch(

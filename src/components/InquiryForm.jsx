@@ -40,6 +40,7 @@ export default function InquiryForm({
     website: '', // honeypot
   });
   const [error, setError] = useState('');
+  const [trackingMessage, setTrackingMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -73,7 +74,7 @@ export default function InquiryForm({
 
     setSubmitting(true);
     try {
-      await axios.post('/api/v1/contact', {
+      const response = await axios.post('/api/v1/contact', {
         name: form.name.trim(),
         email: form.email.trim(),
         subject: form.subject.trim(),
@@ -82,6 +83,7 @@ export default function InquiryForm({
         bookingId: form.bookingId || undefined,
         website: form.website,
       });
+      setTrackingMessage(response.data.message || '');
       setSent(true);
     } catch (err) {
       setError(apiMessage(err));
@@ -116,6 +118,7 @@ export default function InquiryForm({
             Thanks, {form.name.split(' ')[0]}. We will reply to{' '}
             <span className="text-white">{form.email}</span>.
           </p>
+          {trackingMessage && <p className="mt-3">{trackingMessage}</p>}
         </StatusScreen>
       </div>
     );
@@ -210,6 +213,12 @@ export default function InquiryForm({
           className={inputClass}
         />
       </div>
+
+      <p className="text-sm text-white/60">
+        {user
+          ? 'You can follow your inquiry status and team updates from your user dashboard.'
+          : 'We will email you a private link to check your inquiry status and team updates.'}
+      </p>
 
       {/* Honeypot: hidden from people, tempting to bots */}
       <div

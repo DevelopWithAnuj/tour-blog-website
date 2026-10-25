@@ -45,6 +45,7 @@ import PrivacyPage from './pages/Info/PrivacyPage.jsx';
 import TermsPage from './pages/Info/TermsPage.jsx';
 import LocationsPage from './pages/Info/LocationsPage.jsx';
 import UnsubscribePage from './pages/Info/UnsubscribePage.jsx';
+import InquiryTrackerPage from './pages/Info/InquiryTrackerPage.jsx';
 
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import ServerBanner from './components/ServerBanner.jsx';
@@ -66,6 +67,10 @@ export default function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
+            <Route
+              path="/inquiry-tracker/:token"
+              element={<InquiryTrackerPage />}
+            />
             <Route path="/locations" element={<LocationsPage />} />
             <Route path="/tours" element={<TourListingPage />} />
             <Route path="/tours/:id" element={<TourDetailsPage />} />

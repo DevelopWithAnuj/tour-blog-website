@@ -287,6 +287,24 @@ const inquiryValidator = () => [
   body('website').optional().isString().isLength({ max: 200 }), // honeypot
 ];
 
+const adminInquiryStatusValidator = () => [
+  body('status')
+    .isIn(['new', 'under_review', 'resolved'])
+    .withMessage('Invalid inquiry status'),
+  body('resolutionMessage')
+    .optional({ values: 'falsy' })
+    .isString()
+    .trim()
+    .isLength({ max: 2000 })
+    .withMessage('Resolution message must be at most 2000 characters'),
+  body('resolutionMessage')
+    .if(body('status').equals('resolved'))
+    .isString()
+    .trim()
+    .isLength({ min: 5, max: 2000 })
+    .withMessage('Add a resolution message of at least 5 characters'),
+];
+
 const newsletterValidator = () => [
   body('email')
     .trim()
@@ -362,6 +380,7 @@ export {
   adminBlogStatusValidator,
   adminUserRoleValidator,
   inquiryValidator,
+  adminInquiryStatusValidator,
   newsletterValidator,
   adminNewsletterValidator,
   savedDestinationValidator,

@@ -63,6 +63,35 @@ const newsletterMailgenContent = (message, unsubscribeUrl) => ({
   },
 });
 
+const inquiryTrackingMailgenContent = (name, subject, trackingUrl) => ({
+  body: {
+    name,
+    intro: `We received your message, "${subject}". Use the private link below to check its status and read updates from our team.`,
+    action: {
+      instructions: 'Keep this private link to track your request:',
+      button: {
+        color: '#D97706',
+        text: 'Track your inquiry',
+        link: trackingUrl,
+      },
+    },
+    outro:
+      'This link is personal to your request. Please do not share it with anyone.',
+  },
+});
+
+const inquiryStatusMailgenContent = (name, subject, status, message) => ({
+  body: {
+    name,
+    intro: `There is an update on your inquiry, "${subject}". Its current status is ${status.replace('_', ' ')}.`,
+    ...(message
+      ? {
+          outro: `Our team's update: ${message}`,
+        }
+      : {}),
+  },
+});
+
 const emailVerificationMailgenContent = (username, verificationUrl) => ({
   body: {
     name: username,
@@ -131,6 +160,8 @@ export {
   bookingConfirmationMailgenContent,
   emailVerificationMailgenContent,
   forgotPasswordMailgenContent,
+  inquiryStatusMailgenContent,
+  inquiryTrackingMailgenContent,
   newsletterMailgenContent,
   sendEmail,
 };

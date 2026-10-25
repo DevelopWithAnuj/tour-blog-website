@@ -23,6 +23,12 @@ const STATUS_STYLES = {
   cancelled: 'bg-rose-50 text-rose-600',
 };
 
+const INQUIRY_STATUS_LABELS = {
+  new: 'New',
+  under_review: 'Under review',
+  resolved: 'Resolved',
+};
+
 const TABS = [
   { id: 'all', label: 'All' },
   { id: 'upcoming', label: 'Upcoming' },
@@ -313,6 +319,10 @@ export default function UserDashboardPage() {
   const [savedDestinationsError, setSavedDestinationsError] = useState('');
   const [savedDestinationsAttempt, setSavedDestinationsAttempt] = useState(0);
   const [removingDestination, setRemovingDestination] = useState('');
+  const [inquiries, setInquiries] = useState([]);
+  const [inquiriesLoading, setInquiriesLoading] = useState(true);
+  const [inquiriesError, setInquiriesError] = useState('');
+  const [inquiriesAttempt, setInquiriesAttempt] = useState(0);
   const { requestConfirmation, dialog } = useActionDialog();
 
   useEffect(() => {
@@ -361,6 +371,29 @@ export default function UserDashboardPage() {
 
     return () => controller.abort();
   }, [savedDestinationsAttempt]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setInquiriesLoading(true);
+    setInquiriesError('');
+
+    axios
+      .get('/api/v1/contact/my-inquiries', { signal: controller.signal })
+      .then((response) => setInquiries(response.data.data.inquiries || []))
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          setInquiriesError(
+            error.response?.data?.message ||
+              'We could not load your support inquiries.'
+          );
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setInquiriesLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [inquiriesAttempt]);
 
   const removeSavedDestination = async (destination) => {
     if (removingDestination) return;
@@ -600,7 +633,111 @@ export default function UserDashboardPage() {
         )}
       </section>
 
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-800">
+              Support
+            </p>
+            <h2 className="mt-1 font-display text-2xl text-slate-950">
+              My inquiries
+            </h2>
+          </div>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-800 hover:text-amber-950"
+          >
+            Contact us <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
 
+        {inquiriesError && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+            <p role="alert">{inquiriesError}</p>
+            <button
+              type="button"
+              onClick={() => setInquiriesAttempt((current) => current + 1)}
+              className="font-semibold underline underline-offset-2"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {inquiriesLoading ? (
+          <p className="mt-5 text-sm text-slate-500">Loading inquiries…</p>
+        ) : inquiries.length === 0 ? (
+          <div className="mt-5 rounded-lg border border-dashed border-slate-300 px-5 py-7 text-center">
+            <p className="text-sm text-slate-600">
+              Messages you send while signed in will appear here with their
+              latest status and team updates.
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-5 space-y-3">
+            {inquiries.map((inquiry) => (
+              <li
+                key={inquiry._id}
+                className="rounded-lg border border-slate-200 p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold text-slate-950">
+                      {inquiry.subject}
+                    </h3>
+                    <p className="mt-1 text-xs capitalize text-slate-500">
+                      {inquiry.type} · Submitted {formatDate(inquiry.createdAt)}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+                    {INQUIRY_STATUS_LABELS[inquiry.status] || inquiry.status}
+                  </span>
+                </div>
+                <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+                  {inquiry.message}
+                </p>
+                <div className="mt-4 border-t border-slate-100 pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Status history
+                  </p>
+                  {inquiry.statusHistory?.length ? (
+                    <ol className="mt-3 space-y-3">
+                      {[...inquiry.statusHistory]
+                        .reverse()
+                        .map((update, index) => (
+                          <li
+                            key={`${update.status}-${update.createdAt}-${index}`}
+                            className="border-l-2 border-amber-300 pl-3"
+                          >
+                            <p className="text-sm font-medium text-slate-800">
+                              {INQUIRY_STATUS_LABELS[update.status] ||
+                                update.status}
+                            </p>
+                            <time
+                              className="mt-0.5 block text-xs text-slate-500"
+                              dateTime={update.createdAt}
+                            >
+                              {formatDate(update.createdAt)}
+                            </time>
+                            {update.message && (
+                              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+                                {update.message}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                    </ol>
+                  ) : (
+                    <p className="mt-2 text-sm text-slate-600">
+                      No team updates yet.
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4">
