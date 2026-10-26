@@ -11,6 +11,7 @@ import {
 } from 'motion/react';
 import { ArrowLeft, Clock, MapPin } from 'lucide-react';
 import LoadError from '../../components/LoadError.jsx';
+import { optimizedImageUrl } from '../../utils/optimizedImageUrl.js';
 import {
   PostCard,
   categoryLabel,
@@ -143,7 +144,9 @@ export default function BlogPostPage() {
         ...new Set(
           [
             postCoverImage(post),
-            ...(Array.isArray(post.images) ? post.images : []),
+            ...(Array.isArray(post.images)
+              ? post.images.map(optimizedImageUrl)
+              : []),
           ]
             .map((image) => image?.trim())
             .filter(Boolean)

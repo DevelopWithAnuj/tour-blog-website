@@ -146,8 +146,8 @@ export const moreTours = [
     price: 135000,
     duration: '5 days / 4 nights',
     category: 'culture',
-    image: '/img/tours/Italy/rome.jpg',
-    images: ['/img/tours/Italy/rome.jpg'],
+    image: '/img/tours/Italy/rome.webp',
+    images: ['/img/tours/Italy/rome.webp'],
     itinerary: [
       {
         day: 1,
@@ -194,8 +194,8 @@ export const moreTours = [
     price: 125000,
     duration: '6 days / 5 nights',
     category: 'city',
-    image: '/img/tours/Turkey/turkey.jpg',
-    images: ['/img/tours/Turkey/turkey.jpg'],
+    image: '/img/tours/Turkey/turkey.webp',
+    images: ['/img/tours/Turkey/turkey.webp'],
     itinerary: [
       {
         day: 1,

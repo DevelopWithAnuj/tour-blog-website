@@ -9,6 +9,7 @@ import {
   useReducedMotion,
 } from 'motion/react';
 import requestLogger from '../utils/requestLogger.js';
+import { optimizedImageUrl } from '../utils/optimizedImageUrl.js';
 import Reveal from '../components/Reveal.jsx';
 import {
   ArrowRight,
@@ -71,7 +72,7 @@ function TourCard({ tour, index, featured }) {
       >
         {tour.image ? (
           <img
-            src={tour.image}
+            src={optimizedImageUrl(tour.image)}
             alt={tour.title}
             loading="lazy"
             className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
@@ -187,8 +188,9 @@ function HomePage() {
         className="relative -mt-22 flex min-h-[88vh] items-end overflow-hidden pt-22"
       >
         <motion.img
-          src="/img/login-hero.png"
+          src="/img/login-hero.webp"
           alt=""
+          fetchPriority="high"
           style={{ y: imageY }}
           className="absolute inset-0 h-full w-full object-cover"
         />

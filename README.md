@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/logo.png" alt="Drimora logo" width="180" />
+  <img src="./public/logo.webp" alt="Drimora logo" width="180" />
 </p>
 
 <h1 align="center">🌍 Drimora</h1>
@@ -96,7 +96,7 @@ travel-blog/
 │   └── .env.example
 ├── public/
 │   ├── img/
-│   ├── logo.png
+│   ├── logo.webp
 │   └── favicon files
 ├── src/
 │   ├── components/

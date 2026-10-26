@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.jsx';
 import LoadError from '../../components/LoadError.jsx';
+import { optimizedImageUrl } from '../../utils/optimizedImageUrl.js';
 
 const shimmer =
   'animate-shimmer bg-[linear-gradient(90deg,#0f172a_25%,#1e293b_50%,#0f172a_75%)] bg-size-[200%_100%]';
@@ -150,7 +151,7 @@ export default function TourDetailsPage() {
           <div className="relative overflow-hidden rounded-3xl bg-slate-900">
             <img
               key={gallery[activeImg]}
-              src={gallery[activeImg]}
+              src={optimizedImageUrl(gallery[activeImg])}
               alt={tour.title}
               className="h-80 w-full animate-fade-in object-cover sm:h-125"
             />
@@ -171,7 +172,7 @@ export default function TourDetailsPage() {
                   className="shrink-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
                 >
                   <img
-                    src={src}
+                    src={optimizedImageUrl(src)}
                     alt=""
                     className={`h-16 w-24 rounded-xl object-cover transition duration-300 ${
                       i === activeImg

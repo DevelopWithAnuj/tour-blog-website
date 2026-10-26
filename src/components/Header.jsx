@@ -95,7 +95,7 @@ export default function Header() {
         >
           Drimora
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt=""
             className="h-10 w-10 shrink-0 rounded-lg object-contain"
           />

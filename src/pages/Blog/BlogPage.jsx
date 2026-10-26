@@ -4,6 +4,7 @@ import axios from 'axios';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { ArrowRight, Search, X } from 'lucide-react';
 import mountainCover from '../../assets/mountain.avif';
+import { optimizedImageUrl } from '../../utils/optimizedImageUrl.js';
 
 export const categoryLabel = (name) =>
   String(name ?? '')
@@ -13,14 +14,20 @@ export const categoryLabel = (name) =>
 const destinationCovers = {
   norway: '/img/tours/Norway/images-6.jpg',
   japan: '/img/tours/Generic/mountain.avif',
-  turkey: '/img/tours/Turkey/turkey.jpg',
-  italy: '/img/tours/Italy/rome.jpg',
+  turkey: '/img/tours/Turkey/turkey.webp',
+  italy: '/img/tours/Italy/rome.webp',
   bali: '/img/tours/Bali/beach-side.avif',
 };
 
 export const postCoverImage = (post) => {
   const coverImage = post?.coverImage?.trim() || post?.images?.[0]?.trim();
-  if (coverImage && !coverImage.endsWith('/login-hero.png')) return coverImage;
+  if (
+    coverImage &&
+    !coverImage.endsWith('/login-hero.png') &&
+    !coverImage.endsWith('/login-hero.webp')
+  ) {
+    return optimizedImageUrl(coverImage);
+  }
 
   return (
     destinationCovers[post?.destination?.trim().toLowerCase()] || mountainCover

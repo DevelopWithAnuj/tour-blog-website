@@ -13,6 +13,7 @@ import {
   SearchX,
   X,
 } from 'lucide-react';
+import { optimizedImageUrl } from '../../utils/optimizedImageUrl.js';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest first' },
@@ -33,7 +34,7 @@ function TourCard({ tour, index }) {
       <div className="relative h-56 overflow-hidden bg-slate-800">
         {tour.image && (
           <img
-            src={tour.image}
+            src={optimizedImageUrl(tour.image)}
             alt={tour.title}
             loading="lazy"
             className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
