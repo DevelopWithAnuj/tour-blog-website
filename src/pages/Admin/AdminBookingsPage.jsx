@@ -238,7 +238,7 @@ export default function AdminBookingsPage() {
                 transition={{ duration: 0.15 }}
                 className="overflow-x-auto"
               >
-                <table className="w-full min-w-[65rem] text-left text-sm">
+                <table className="w-full min-w-260 text-left text-sm">
                   <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                     <tr>
                       <th className="px-5 py-3 font-semibold">Traveler</th>

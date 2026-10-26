@@ -26,7 +26,7 @@ const posts = [
     title: 'Eating Your Way Through Istanbul',
     category: 'food',
     destination: 'Turkey',
-    coverImage: '/img/tours/Turkey/turkey.jpg',
+    coverImage: '/img/tours/Turkey/turkey.webp',
     excerpt: 'From simit at sunrise to late-night kebabs, a street food tour.',
     content:
       'Begin with a simit and tea by the Bosphorus, then work through the Karaköy and Kadıköy markets.\n\nSave room for baklava, and always ask the vendor what is fresh that hour.',
@@ -35,7 +35,7 @@ const posts = [
     title: 'Why Rome Rewards Slow Travellers',
     category: 'culture',
     destination: 'Italy',
-    coverImage: '/img/tours/Italy/rome.jpg',
+    coverImage: '/img/tours/Italy/rome.webp',
     excerpt: 'Skip the checklist and let the city come to you.',
     content:
       'Rome is layered with centuries of history on every corner, and the best moments are rarely on the list.\n\nSit in a small piazza, wander Trastevere after dark, and visit the big sights at opening time.',
