@@ -11,7 +11,7 @@ export default function AuthLayout() {
         >
           Drimora
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt=""
             className="h-10 w-10 shrink-0 rounded-lg object-contain"
           />
@@ -28,7 +28,7 @@ export default function AuthLayout() {
         <PageTransition />
       </main>
 
-      <footer className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-x-5 gap-y-2 border-t border-white/10 px-5 py-3 text-xs text-white/45 sm:px-8">
+      <footer className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-x-5 gap-y-2 border-t border-white/10 px-5 py-3 text-xs text-white/60 sm:px-8">
         <span>© {new Date().getFullYear()} Drimora</span>
         <nav aria-label="Legal" className="flex gap-4">
           <Link to="/privacy" className="transition hover:text-white">

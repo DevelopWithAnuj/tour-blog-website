@@ -164,7 +164,7 @@ export default function AdminTourFormPage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const { toast: notify } = useToast();
+  const { toast } = useToast();
   const { categories, categoriesLoading, categoriesError } =
     useTourCategories();
 
@@ -198,7 +198,7 @@ export default function AdminTourFormPage() {
       const payload = toPayload(form);
       if (isEdit) await axios.put(`/api/v1/admin/tours/${id}`, payload);
       else await axios.post('/api/v1/admin/tours', payload);
-      notify(isEdit ? 'Tour updated.' : 'Tour created.', { type: 'success' });
+      toast(isEdit ? 'Tour updated.' : 'Tour created.', { type: 'success' });
       navigate('/admin-tours');
     } catch (err) {
       setError(apiMessage(err));

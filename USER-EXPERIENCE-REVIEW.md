@@ -22,10 +22,11 @@ current workspace, not a full production or accessibility audit.
    signed-in name and email. The saved dashboard and booking screenshots use
    generic or synthetic details; continue checking screenshots for personal
    information before publishing them.
-5. **Mobile screenshots need a layout review, not just a capture.** Verify
-   that long headings, destination search controls, navigation, and booking
-   forms remain readable and usable at narrow widths and do not clip
-   horizontally.
+5. **Mobile layout review completed at 375px.** The booking form controls and
+   trip summary fit the viewport without page-level horizontal overflow.
+   Admin booking and dashboard tables stay inside their cards and scroll
+   horizontally within the table area, keeping the rest of the page in view.
+   The review used synthetic account and booking data.
 
 ## Screenshot files
 
@@ -36,7 +37,7 @@ Screenshots are stored in [`public/screenshots/`](./public/screenshots/):
 - `booking-details-desktop.png` and `booking-payment-desktop.png`
 - `dashboard-desktop.png` and `dashboard-mobile.png`
 
-No confirmed application-code defect was established during this screenshot
-pass. The immediate fix was replacing the unavailable demo link with local
-setup guidance; the remaining items are recommendations to verify during
-deployment and normal end-to-end testing.
+No additional mobile layout defect was found during the 375px review. The
+immediate fix was replacing the unavailable demo link with local setup
+guidance; production and end-to-end behavior still require verification with a
+running backend and configured database.

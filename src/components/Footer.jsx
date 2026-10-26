@@ -103,7 +103,7 @@ export default function Footer() {
         >
           <motion.div variants={footerItemVariants}>
             <p className="font-display text-3xl text-amber-400">Drimora</p>
-            <p className="mt-4 max-w-xs text-white/55">
+            <p className="mt-4 max-w-xs text-white/60">
               Hand-built tours with the stays, guides and transfers already
               sorted.
             </p>
@@ -123,7 +123,7 @@ export default function Footer() {
                   <li key={to}>
                     <Link
                       to={to}
-                      className="flex items-center gap-2 text-white/55 transition hover:text-amber-300"
+                      className="flex items-center gap-2 text-white/60 transition hover:text-amber-300"
                     >
                       <Icon className="h-4 w-4" />
                       {label}
@@ -138,7 +138,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-white">
               Trip ideas in your inbox
             </h3>
-            <p className="mt-4 text-white/55">
+            <p className="mt-4 text-white/60">
               One short email a month. Unsubscribe any time with the link in
               every email.
             </p>
@@ -161,7 +161,7 @@ export default function Footer() {
                     placeholder="you@example.com"
                     aria-label="Email address"
                     required
-                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
+                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/60"
                   />
                   <motion.button
                     whileHover={{ scale: 1.03 }}
@@ -184,7 +184,7 @@ export default function Footer() {
           </motion.div>
         </motion.div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/40 md:flex-row md:items-center md:justify-between">
+        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
           <p>
             &copy; {new Date().getFullYear()} Drimora Travel. All rights
             reserved.

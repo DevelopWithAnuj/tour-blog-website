@@ -292,6 +292,12 @@ export default function AdminDashboardPage() {
                       </dd>
                     </div>
                     <div className="flex items-center justify-between gap-4">
+                      <dt className="text-sm text-slate-600">Pending review</dt>
+                      <dd className="font-semibold text-slate-900">
+                        {data?.stats?.pendingBlogs ?? 0}
+                      </dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
                       <dt className="text-sm text-slate-600">
                         Cancelled bookings
                       </dt>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { FaGithub } from 'react-icons/fa';
 
 export const inputClass =
   'mt-1.5 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20';
@@ -28,10 +27,18 @@ export function GoogleIcon(props) {
   );
 }
 
+function GitHubIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" {...props}>
+      <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.7.08-.69.08-.69 1.12.08 1.72 1.15 1.72 1.15 1 .1.76 1.74 2.92 1.24.1-.73.39-1.24.7-1.52-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.29-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.12-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.67.12 2.96.71.78 1.14 1.78 1.14 3 0 4.29-2.61 5.23-5.1 5.51.4.35.75 1.02.75 2.06v3.05c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z" />
+    </svg>
+  );
+}
+
 /** Form on the left, photo on the right. */
 export function AuthShell({
   children,
-  image = '/img/login-hero.png',
+  image = '/img/login-hero.webp',
   title = 'Your next journey starts here.',
   subtitle = 'Curated tours, real experiences, no guesswork.',
 }) {
@@ -45,6 +52,7 @@ export function AuthShell({
         <img
           src={image}
           alt=""
+          fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-950/85 via-slate-950/15 to-slate-950/30" />
@@ -213,7 +221,7 @@ export function SocialButtons({
         Google
       </button>
       <button type="button" onClick={onGitHub} className={base}>
-        <FaGithub className="h-4.5 w-4.5" />
+        <GitHubIcon className="h-4.5 w-4.5" />
         GitHub
       </button>
     </div>

@@ -108,6 +108,7 @@ const getDashboard = asyncHandler(async (req, res) => {
     totalBlogs,
     publishedBlogs,
     draftBlogs,
+    pendingBlogs,
     recentBookings,
   ] = await Promise.all([
     Booking.countDocuments(),
@@ -118,6 +119,7 @@ const getDashboard = asyncHandler(async (req, res) => {
     BlogPost.countDocuments(),
     BlogPost.countDocuments({ status: 'published' }),
     BlogPost.countDocuments({ status: 'draft' }),
+    BlogPost.countDocuments({ status: 'pending' }),
     Booking.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -138,6 +140,7 @@ const getDashboard = asyncHandler(async (req, res) => {
           totalBlogs,
           publishedBlogs,
           draftBlogs,
+          pendingBlogs,
         },
         recentBookings,
       },
