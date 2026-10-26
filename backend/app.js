@@ -1,5 +1,6 @@
 import express from 'express';
 import { existsSync } from 'node:fs';
+import compression from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
@@ -99,7 +100,17 @@ const __dirname = path.dirname(__filename);
 const frontendBuildPath = path.join(__dirname, '../dist');
 const frontendIndexPath = path.join(frontendBuildPath, 'index.html');
 
-app.use(express.static(frontendBuildPath));
+app.use(compression());
+app.use(
+  express.static(frontendBuildPath, {
+    setHeaders: (res, filePath) => {
+      const relativePath = path.relative(frontendBuildPath, filePath);
+      if (relativePath.startsWith(`assets${path.sep}`)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    },
+  })
+);
 
 // React routes fallback
 app.get('/{*splat}', (req, res, next) => {
