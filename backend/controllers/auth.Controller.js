@@ -1,13 +1,17 @@
 import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { ApiError } from '../utils/api-error.js';
-import {
-  ApiPath,
-  Config,
-  CookieOptions,
-  HttpStatus,
-} from '../utils/constants.js';
+import { CookieOptions, HttpStatus } from '../utils/constants.js';
 import { User } from '../models/User.models.js';
+import bcrypt from 'bcrypt';
+import { RefreshSession } from '../models/RefreshSession.models.js';
+import {
+  ROTATION_GRACE_MS,
+  clearAuthCookies,
+  createSession,
+  hashToken,
+  setAuthCookies,
+} from '../utils/session.js';
 
 import crypto from 'crypto';
 import {
@@ -17,46 +21,26 @@ import {
 } from '../utils/mail.js';
 import jwt from 'jsonwebtoken';
 
-const hashToken = (token) =>
-  crypto.createHash('sha256').update(token).digest('hex');
-
-const generateAccessAndRefreshTokens = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
-    user.refreshToken = hashToken(refreshToken);
-    await user.save({ validateBeforeSave: false });
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      'Something went wrong while generating access token'
-    );
-  }
-};
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCK_MS = 15 * 60 * 1000;
+// Startup par ek baar: unknown email par bhi bcrypt ka same time lage
+const DUMMY_HASH = bcrypt.hashSync('timing-equalizer', 12);
 
 const oauthCallback = asyncHandler(async (req, res) => {
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    req.user._id
+  const tokens = await createSession(req.user, req);
+  setAuthCookies(res, tokens);
+  res.redirect(
+    `${process.env.CLIENT_URL || 'http://localhost:5173'}/${req.user.role === 'admin' ? 'admin-dashboard' : 'dashboard'}`
   );
-
-  const accessTokenOptions = {
-    ...CookieOptions,
-    maxAge: 15 * 60 * 1000,
-  };
-
-  res
-    .cookie('accessToken', accessToken, accessTokenOptions)
-    .cookie('refreshToken', refreshToken, CookieOptions)
-    .redirect(
-      `${process.env.CLIENT_URL || 'http://localhost:5173'}/${req.user.role === 'admin' ? 'admin-dashboard' : 'dashboard'}`
-    );
 });
 
-const getClientUrl = () => process.env.CLIENT_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'
+const getClientUrl = () =>
+  process.env.CLIENT_URL ||
+  process.env.CORS_ORIGIN?.split(',')[0] ||
+  'http://localhost:5173';
 
-const verifyEmailUrl = (token) => `${getClientUrl()}/verify-email/${encodeURIComponent(token)}`
+const verifyEmailUrl = (token) =>
+  `${getClientUrl()}/verify-email/${encodeURIComponent(token)}`;
 
 const registerUser = asyncHandler(async (req, res) => {
   const email = String(req.body.email || '')
@@ -151,13 +135,44 @@ const loginUser = asyncHandler(async (req, res) => {
     .toLowerCase();
   const password = String(req.body.password || '');
 
-  if (!email) {
-    throw new ApiError(HttpStatus.BAD_REQUEST, 'Email is required!');
+  if (!email) throw new ApiError(HttpStatus.BAD_REQUEST, 'Email is required!');
+
+  const user = await User.findOne({ email }).select(
+    '+password +failedLoginAttempts +lockUntil'
+  );
+
+  const hash = user?.password || DUMMY_HASH;
+  const match = await bcrypt.compare(password, hash);
+  const passwordOk = Boolean(user?.password) && match;
+  const locked = Boolean(user?.lockUntil && user.lockUntil > new Date());
+
+  if (!user || locked || !passwordOk) {
+    if (user && !locked) {
+      const updated = await User.findOneAndUpdate(
+        { _id: user._id },
+        { $inc: { failedLoginAttempts: 1 } },
+        { returnDocument: 'after' }
+      ).select('+failedLoginAttempts');
+      if (updated && updated.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
+        await User.updateOne(
+          { _id: user._id },
+          {
+            $set: {
+              lockUntil: new Date(Date.now() + LOCK_MS),
+              failedLoginAttempts: 0,
+            },
+          }
+        );
+      }
+    }
+    throw new ApiError(HttpStatus.UNAUTHORIZED, 'Invalid email or password');
   }
 
-  const user = await User.findOne({ email }).select('+password');
-  if (!user) {
-    throw new ApiError(HttpStatus.UNAUTHORIZED, 'Invalid email or password');
+  if (user.failedLoginAttempts || user.lockUntil) {
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { failedLoginAttempts: 0 }, $unset: { lockUntil: '' } }
+    );
   }
 
   if (!user.isEmailVerified) {
@@ -170,26 +185,12 @@ const loginUser = asyncHandler(async (req, res) => {
     );
   }
 
-  const isPasswordCorrect = await user.isPasswordCorrect(password);
-  if (!isPasswordCorrect) {
-    throw new ApiError(HttpStatus.UNAUTHORIZED, 'Invalid email or password');
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
-
+  const tokens = await createSession(user, req);
+  setAuthCookies(res, tokens);
   const loggedInUser = await User.findById(user._id);
-
-  const accessTokenOptions = {
-    ...CookieOptions,
-    maxAge: 15 * 60 * 1000,
-  };
 
   return res
     .status(HttpStatus.OK)
-    .cookie('accessToken', accessToken, accessTokenOptions)
-    .cookie('refreshToken', refreshToken, CookieOptions)
     .json(
       new ApiResponse(
         HttpStatus.OK,
@@ -199,32 +200,34 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+const sessionIdFromCookies = (req) => {
+  const attempts = [
+    [
+      req.cookies?.refreshToken || req.body?.refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    ],
+    [req.cookies?.accessToken, process.env.ACCESS_TOKEN_SECRET],
+  ];
+  for (const [token, secret] of attempts) {
+    if (!token) continue;
+    try {
+      const d = jwt.verify(token, secret, { ignoreExpiration: true });
+      if (d?.sid && d?._id) return { sid: d.sid, userId: d._id };
+    } catch {
+      // next try
+    }
+  }
+  return null;
+};
+
 const logoutUser = asyncHandler(async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
-
-  if (req.user?._id) {
-    await User.findByIdAndUpdate(
-      req.user._id,
-      { $unset: { refreshToken: '' } },
-      { returnDocument: 'after' }
-    );
+  const found = sessionIdFromCookies(req);
+  if (found) {
+    await RefreshSession.deleteOne({ _id: found.sid, user: found.userId });
   }
-
-  if (refreshToken) {
-    const hashedRefreshToken = hashToken(refreshToken);
-    await User.findOneAndUpdate(
-      { refreshToken: hashedRefreshToken },
-      { $unset: { refreshToken: '' } },
-      { new: true }
-    );
-  }
-
-  const options = { ...CookieOptions };
-
+  clearAuthCookies(res);
   return res
     .status(HttpStatus.OK)
-    .clearCookie('accessToken', { ...options, maxAge: 0 })
-    .clearCookie('refreshToken', { ...options, maxAge: 0 })
     .json(new ApiResponse(HttpStatus.OK, {}, 'User logged out!'));
 });
 
@@ -271,12 +274,14 @@ const verifyEmail = asyncHandler(async (req, res) => {
   user.emailVerificationExpiry = undefined;
   user.isEmailVerified = true;
   await user.save({ validateBeforeSave: false });
-  return res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, {}, 'Email verified successfully'))
+  return res
+    .status(HttpStatus.OK)
+    .json(new ApiResponse(HttpStatus.OK, {}, 'Email verified successfully'));
 });
 
-const verifyEmailRedirect = asyncHandler(async(req, res) => {
-  res.redirect(verifyEmailUrl(req.params.verificationToken))
-})
+const verifyEmailRedirect = asyncHandler(async (req, res) => {
+  res.redirect(verifyEmailUrl(req.params.verificationToken));
+});
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
   const email = String(req.body.email || '')
@@ -324,55 +329,81 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookies?.refreshToken || req.body?.refreshToken;
-
-  if (!incomingRefreshToken) {
+  const incoming = req.cookies?.refreshToken || req.body?.refreshToken;
+  if (!incoming) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, 'Unauthorized access');
   }
 
+  const reject = (message) => {
+    clearAuthCookies(res);
+    throw new ApiError(HttpStatus.UNAUTHORIZED, message);
+  };
+
+  let decoded;
   try {
-    const decodedToken = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-    const user = await User.findById(decodedToken?._id).select('+refreshToken');
-    if (!user) {
-      throw new ApiError(HttpStatus.UNAUTHORIZED, 'Invalid refresh token');
-    }
-
-    if (hashToken(incomingRefreshToken) !== user.refreshToken) {
-      user.refreshToken = undefined;
-      await user.save({ validateBeforeSave: false });
-      throw new ApiError(HttpStatus.UNAUTHORIZED, 'Refresh token is expired');
-    }
-
-    const accessTokenOptions = {
-      ...CookieOptions,
-      maxAge: 15 * 60 * 1000,
-    };
-
-    const { accessToken, refreshToken: newRefreshToken } =
-      await generateAccessAndRefreshTokens(user._id);
-
-    return res
-      .status(HttpStatus.OK)
-      .cookie('accessToken', accessToken, accessTokenOptions)
-      .cookie('refreshToken', newRefreshToken, CookieOptions)
-      .json(new ApiResponse(HttpStatus.OK, {}, 'Access token refreshed'));
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      res.clearCookie('accessToken', CookieOptions);
-      res.clearCookie('refreshToken', CookieOptions);
-      throw new ApiError(HttpStatus.UNAUTHORIZED, 'Refresh token expired');
-    }
-
-    if (error instanceof jwt.JsonWebTokenError) {
-      throw new ApiError(HttpStatus.UNAUTHORIZED, 'Invalid refresh token');
-    }
-
-    throw error;
+    decoded = jwt.verify(incoming, process.env.REFRESH_TOKEN_SECRET);
+  } catch {
+    return reject('Invalid refresh token');
   }
+  if (!decoded.sid) return reject('Invalid refresh token'); // purane tokens
+
+  const session = await RefreshSession.findOne({
+    _id: decoded.sid,
+    user: decoded._id,
+  });
+  if (!session) return reject('Invalid refresh token');
+
+  const user = await User.findById(decoded._id);
+  if (!user) return reject('Invalid refresh token');
+
+  const incomingHash = hashToken(incoming);
+  const now = Date.now();
+  const ok = () =>
+    res
+      .status(HttpStatus.OK)
+      .json(new ApiResponse(HttpStatus.OK, {}, 'Access token refreshed'));
+
+  // 1) Normal rotation. Condition atomic hai, to do parallel requests mein sirf ek jeetegi
+  if (incomingHash === session.tokenHash) {
+    const refreshToken = user.generateRefreshToken(session._id);
+    const rotated = await RefreshSession.findOneAndUpdate(
+      { _id: session._id, tokenHash: incomingHash },
+      {
+        $set: {
+          prevHash: incomingHash,
+          prevValidUntil: new Date(now + ROTATION_GRACE_MS),
+          tokenHash: hashToken(refreshToken),
+          lastUsedAt: new Date(now),
+          expiresAt: new Date(now + CookieOptions.maxAge),
+        },
+      }
+    );
+    if (rotated) {
+      setAuthCookies(res, {
+        accessToken: user.generateAccessToken(session._id),
+        refreshToken,
+      });
+      return ok();
+    }
+  }
+
+  // 2) Grace: abhi rotate hua purana token. Sirf naya access token, refresh cookie nahi
+  const current =
+    incomingHash === session.tokenHash
+      ? await RefreshSession.findById(session._id) // race haar gaye, fresh state
+      : session;
+  if (
+    current &&
+    current.prevHash === incomingHash &&
+    current.prevValidUntil?.getTime() > now
+  ) {
+    setAuthCookies(res, { accessToken: user.generateAccessToken(session._id) });
+    return ok();
+  }
+
+  // 3) Grace ke baad reuse: sirf ye session revoke
+  await RefreshSession.deleteOne({ _id: session._id });
+  return reject('Refresh token reuse detected');
 });
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
@@ -383,7 +414,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
   if (user) {
     const { unHashedToken, hashedToken, tokenExpiry } =
-      user.generateTemporaryToken();
+      user.generateTemporaryToken(30 * 60 * 1000);
     user.forgotPasswordToken = hashedToken;
     user.forgotPasswordExpiry = tokenExpiry;
 
@@ -445,10 +476,10 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
 
   user.forgotPasswordToken = undefined;
   user.forgotPasswordExpiry = undefined;
-  user.refreshToken = undefined;
 
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
+  await RefreshSession.deleteMany({ user: user._id });
 
   return res
     .status(HttpStatus.OK)
@@ -483,9 +514,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   }
 
   user.password = newPassword;
-  user.refreshToken = undefined;
 
   await user.save({ validateBeforeSave: false });
+  await RefreshSession.deleteMany({ user: user._id, _id: { $ne: req.sid } });
+
   return res
     .status(HttpStatus.OK)
     .json(new ApiResponse(HttpStatus.OK, {}, 'Password changed successfully!'));

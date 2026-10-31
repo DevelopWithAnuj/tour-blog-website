@@ -1,2 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /admin-
+Disallow: /dashboard
+Disallow: /my-posts
+Disallow: /booking
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /unsubscribe
+Disallow: /inquiry-tracker

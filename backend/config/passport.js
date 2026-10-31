@@ -4,6 +4,8 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { User } from '../models/User.models.js';
 import { UserRolesEnum } from '../utils/constants.js';
+import { RefreshSession } from '../models/RefreshSession.models.js';
+
 import { cookieStateStore } from './oauthState.js';
 
 const safeUsername = (base) => {
@@ -12,7 +14,7 @@ const safeUsername = (base) => {
       .toLowerCase()
       .replace(/[^a-z0-9_]/g, '')
       .slice(0, 11) || 'user';
-  return `${clean}+${crypto.randomBytes(4).toString('hex')}`;
+  return `${clean}_${crypto.randomBytes(4).toString('hex')}`;
 };
 
 const linkProvider = async (user, providerField, providerId, provider) => {
@@ -27,7 +29,6 @@ const linkProvider = async (user, providerField, providerId, provider) => {
   if (wasUnverified) {
     update.$unset = {
       password: '',
-      refreshToken: '',
       forgotPasswordToken: '',
       forgotPasswordExpiry: '',
       emailVerificationToken: '',
@@ -35,6 +36,7 @@ const linkProvider = async (user, providerField, providerId, provider) => {
     };
   }
   await User.updateOne({ _id: user._id }, update);
+  await RefreshSession.deleteMany({ user: user._id });
   return User.findById(user._id);
 };
 

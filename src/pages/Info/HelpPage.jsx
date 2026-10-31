@@ -58,7 +58,7 @@ const FAQS = [
   {
     cat: 'Account',
     q: 'I forgot my password.',
-    a: 'Choose Forgot password on the sign-in page. We will email you a reset link that is valid for 24 hours.',
+    a: 'Choose Forgot password on the sign-in page. We will email you a reset link that is valid for 30 minutes.',
   },
   {
     cat: 'Account',

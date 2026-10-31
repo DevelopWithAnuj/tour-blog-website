@@ -12,6 +12,7 @@ import {
 import { ArrowLeft, Clock, MapPin } from 'lucide-react';
 import LoadError from '../../components/LoadError.jsx';
 import { optimizedImageUrl } from '../../utils/optimizedImageUrl.js';
+import { SeoMetadata } from '../../components/SeoMetadata.jsx';
 import {
   PostCard,
   categoryLabel,
@@ -153,10 +154,39 @@ export default function BlogPostPage() {
         ),
       ]
     : [];
+  const articleImage = gallery[0]
+    ? new URL(gallery[0], window.location.origin).href
+    : undefined;
+  const articleUrl = new URL(window.location.pathname, window.location.origin)
+    .href;
+  const authorName =
+    post?.author?.fullName || post?.author?.username || 'Drimora';
 
   return (
     <MotionConfig reducedMotion="user">
       <AnimatePresence mode="wait" initial={false}>
+        {!loading && post && (
+          <SeoMetadata
+            title={post.title}
+            description={post.excerpt?.slice(0, 300) || post.title}
+            image={articleImage}
+            type="article"
+            structuredData={{
+              '@context': 'https://schema.org',
+              '@type': 'Article',
+              headline: post.title,
+              description: post.excerpt || post.title,
+              image: gallery.map(
+                (image) => new URL(image, window.location.origin).href
+              ),
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt || post.publishedAt,
+              author: { '@type': 'Person', name: authorName },
+              publisher: { '@type': 'Organization', name: 'Drimora' },
+              mainEntityOfPage: articleUrl,
+            }}
+          />
+        )}
         {loading && (
           <motion.div
             key="loading"

@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { ApiError } from '../utils/api-error.js';
 import { HttpStatus } from '../utils/constants.js';
 import logger from '../config/logger.js';
+import { redactPath } from '../utils/redact-url.js';
+
 
 export function notFoundHandler(req, res, next) {
   next(
@@ -72,7 +74,7 @@ export function errorHandler(err, req, res, next) {
   logger.error('Request failed', {
     requestId,
     method: req.method,
-    path: req.path,
+    path: redactPath(req.path),
     statusCode: error.statusCode,
     errorName: err?.name || 'Error',
     errorMessage: err?.message || 'Unknown error',

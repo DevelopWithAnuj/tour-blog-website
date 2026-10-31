@@ -53,8 +53,8 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: function(){
-        return this.authProvider === 'local'
+      required: function () {
+        return this.authProvider === 'local';
       },
       select: false,
     },
@@ -62,8 +62,17 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    refreshToken: {
-      type: String,
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    lockUntil: {
+      type: Date,
+      select: false,
+    },
+    passwordChangedAt: {
+      type: Date,
       select: false,
     },
     forgotPasswordToken: {
@@ -92,21 +101,27 @@ const userSchema = new Schema(
       type: String,
       select: false,
     },
-    authProvider:{
+    authProvider: {
       type: String,
-      enum:['local', 'google', 'github'],
+      enum: ['local', 'google', 'github'],
       default: 'local',
     },
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        delete ret.passwordChangedAt;
+        return ret;
+      },
+    },
   }
 );
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
-
   this.password = await bcrypt.hash(this.password, 12);
+  if (!this.isNew) this.passwordChangedAt = new Date();
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -117,10 +132,11 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateAccessToken = function () {
+userSchema.methods.generateAccessToken = function (sid) {
   return jwt.sign(
     {
       _id: this._id,
+      sid: String(sid),
       email: this.email,
       username: this.username,
       role: this.role || 'user',
@@ -130,17 +146,21 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-userSchema.methods.generateRefreshToken = function () {
+userSchema.methods.generateRefreshToken = function (sid) {
   return jwt.sign(
     {
       _id: this._id,
+      sid: String(sid),
+      jti: crypto.randomBytes(8).toString('hex'),
     },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d' }
   );
 };
 
-userSchema.methods.generateTemporaryToken = function (expiryMs = 24 * 60 * 60 * 1000) {
+userSchema.methods.generateTemporaryToken = function (
+  expiryMs = 24 * 60 * 60 * 1000
+) {
   const unHashedToken = crypto.randomBytes(20).toString('hex');
 
   const hashedToken = crypto

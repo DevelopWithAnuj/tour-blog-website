@@ -4,10 +4,14 @@ import logger from '../config/logger.js';
 import { errorHandler } from '../middleware/errorMiddleware.js';
 import { ApiError } from '../utils/api-error.js';
 
-const runHandler = (error) => {
+const runHandler = (
+  error,
+  req = { method: 'GET', path: '/api/v1/example' }
+) => {
   const originalLogger = logger.error;
   let statusCode;
   let body;
+  let logged;
   const res = {
     status(status) {
       statusCode = status;
@@ -19,19 +23,16 @@ const runHandler = (error) => {
     },
   };
 
-  logger.error = () => {};
+  logger.error = (message, meta) => {
+    logged = meta;
+  };
   try {
-    errorHandler(
-      error,
-      { method: 'GET', path: '/api/v1/example' },
-      res,
-      () => {}
-    );
+    errorHandler(error, req, res, () => {});
   } finally {
     logger.error = originalLogger;
   }
 
-  return { statusCode, body };
+  return { statusCode, body, logged };
 };
 
 test('hides internal 500 messages from API clients', () => {
@@ -96,4 +97,22 @@ test('includes the original stack in development responses', () => {
       process.env.NODE_ENV = previousEnvironment;
     }
   }
+});
+
+test('redacts one-time tokens from the logged request path', () => {
+  const { logged } = runHandler(new ApiError(400, 'Token is invalid or expired'), {
+    method: 'POST',
+    path: '/api/v1/auth/reset-password/deadbeefcafebabe',
+  });
+
+  assert.equal(logged.path, '/api/v1/auth/reset-password/[redacted]');
+  assert.equal(JSON.stringify(logged).includes('deadbeefcafebabe'), false);
+});
+
+test('leaves ordinary request paths readable in logs', () => {
+  const { logged } = runHandler(new Error('boom'), {
+    method: 'GET',
+    path: '/api/v1/tours',
+  });
+  assert.equal(logged.path, '/api/v1/tours');
 });

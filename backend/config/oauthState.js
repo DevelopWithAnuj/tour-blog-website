@@ -18,22 +18,22 @@ const sameValue = (a, b) => {
 export const cookieStateStore = {
   store(req, meta, callback) {
     const state = crypto.randomBytes(24).toString('hex');
-    req.res.cookies(COOKIE_NAME, state, {
+    req.res.cookie(COOKIE_NAME, state, {
       ...cookieOptions,
       maxAge: 10 * 60 * 1000,
     });
     callback(null, state);
   },
 
-  verify(req, provideState, callback) {
+  verify(req, providedState, callback) {
     const expected = req.cookies?.[COOKIE_NAME];
     req.res.clearCookie(COOKIE_NAME, cookieOptions);
 
-    if (!expected || !provideState || !sameValue(expected, provideState)) {
+    if (!expected || !providedState || !sameValue(expected, providedState)) {
       return callback(null, false, {
         message: 'Invalid or missing OAuth state',
       });
     }
-    return callback(null, true, provideState);
+    return callback(null, true, providedState);
   },
 };

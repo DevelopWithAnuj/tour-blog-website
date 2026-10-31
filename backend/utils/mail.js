@@ -124,7 +124,7 @@ const forgotPasswordMailgenContent = (username, passwordResetUrl) => ({
       },
     },
     outro:
-      'This link will expire soon. If you did not request a password reset, you can ignore this email.',
+      'This link expires in 30 minutes. If you did not request a password reset, you can ignore this email.',
   },
 });
 
