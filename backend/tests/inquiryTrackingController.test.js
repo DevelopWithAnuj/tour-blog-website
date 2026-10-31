@@ -42,6 +42,7 @@ const inquiryRequest = (extra = {}) => ({
 test('creates guest inquiries with a hashed token and emails the private link', async (t) => {
   let savedInquiry;
   let sentMail;
+  t.mock.method(Inquiry, 'countDocuments', async () => 0);
   t.mock.method(Inquiry, 'create', async (values) => {
     savedInquiry = { ...values, _id: new mongoose.Types.ObjectId() };
     return savedInquiry;
@@ -75,10 +76,44 @@ test('reports guest inquiry receipt without claiming a failed tracking email was
       throw new Error('mail server unavailable');
     },
   }));
+  t.mock.method(Inquiry, 'countDocuments', async () => 0);
 
   const { statusCode, body } = await invoke(createInquiry, inquiryRequest());
 
   assert.equal(statusCode, 201);
+  assert.equal(body.data.trackingByEmail, false);
+  assert.match(body.message, /could not email your private tracking link/i);
+});
+
+test('does not email a tracking link once the address hit its daily cap', async (t) => {
+  let created;
+  let mailed = false;
+  let countFilter;
+  t.mock.method(Inquiry, 'countDocuments', async (filter) => {
+    countFilter = filter;
+    return 3;
+  });
+  t.mock.method(Inquiry, 'create', async (values) => {
+    created = values;
+    return { ...values, _id: new mongoose.Types.ObjectId() };
+  });
+  t.mock.method(nodemailer, 'createTransport', () => ({
+    sendMail: async () => {
+      mailed = true;
+      return {};
+    },
+  }));
+
+  const { statusCode, body } = await invoke(
+    createInquiry,
+    inquiryRequest({ email: 'Traveler@Example.com' })
+  );
+
+  assert.equal(statusCode, 201);
+  assert.equal(mailed, false);
+  assert.equal(created.trackingTokenHash, undefined);
+  assert.equal(countFilter.email, 'traveler@example.com');
+  assert.deepEqual(countFilter.user, { $exists: false });
   assert.equal(body.data.trackingByEmail, false);
   assert.match(body.message, /could not email your private tracking link/i);
 });

@@ -35,6 +35,6 @@ const inquirySchema = new Schema(
   { timestamps: true }
 );
 
-inquirySchema.index({ createdAt: -1 });
+inquirySchema.index({ email: 1, createdAt: -1 });
 
 export const Inquiry = mongoose.model('Inquiry', inquirySchema);
