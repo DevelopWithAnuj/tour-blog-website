@@ -7,10 +7,12 @@ import AuthLayout from './layouts/AuthLayout.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import { RouteSeoMetadata } from './components/SeoMetadata.jsx';
 
 const HomePage = lazy(() => import('./pages/Home.jsx'));
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage.jsx'));
 const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage.jsx'));
+const VerifyEmailPage = lazy(() => import('./pages/Auth/VerifyEmailPage.jsx'));
 const ForgotPasswordPage = lazy(
   () => import('./pages/Auth/ForgotPasswordPage.jsx')
 );
@@ -83,6 +85,7 @@ export default function App() {
       <MotionConfig reducedMotion="user">
         <ServerBanner />
         <ScrollToTop />
+        <RouteSeoMetadata />
         <Suspense
           fallback={
             <div className="p-8 text-center text-white/60">Loading…</div>
@@ -113,6 +116,10 @@ export default function App() {
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route
+                path="/verify-email/:token"
+                element={<VerifyEmailPage />}
+              />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route
                 path="/reset-password/:resetToken"

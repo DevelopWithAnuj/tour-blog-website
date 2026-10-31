@@ -11,6 +11,7 @@ import {
   forgotPasswordRequest,
   resetForgotPassword,
   changeCurrentPassword,
+  verifyEmailRedirect,
 } from '../controllers/auth.Controller.js';
 import {
   userRegisterValidator,
@@ -88,7 +89,10 @@ router
 router
   .route('/login')
   .post(loginLimiter, userLoginValidator(), validate, loginUser);
-router.route('/verify-email/:verificationToken').get(verifyEmail);
+router
+  .route('/verify-email/:verificationToken')
+  .get(verifyEmailRedirect)
+  .post(verifyEmail);
 router.route('/refresh-token').post(refreshAccessToken);
 router
   .route('/forgot-password')

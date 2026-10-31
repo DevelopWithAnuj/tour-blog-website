@@ -54,6 +54,10 @@ const oauthCallback = asyncHandler(async (req, res) => {
     );
 });
 
+const getClientUrl = () => process.env.CLIENT_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'
+
+const verifyEmailUrl = (token) => `${getClientUrl()}/verify-email/${encodeURIComponent(token)}`
+
 const registerUser = asyncHandler(async (req, res) => {
   const email = String(req.body.email || '')
     .trim()
@@ -110,7 +114,7 @@ const registerUser = asyncHandler(async (req, res) => {
       subject: 'Verify your email',
       mailgenContent: emailVerificationMailgenContent(
         user.username,
-        `${Config.SERVER_URL}${ApiPath.BASE}${ApiPath.AUTH}${ApiPath.VERIFY_EMAIL}/${unHashedToken}`
+        verifyEmailUrl(unHashedToken)
       ),
     });
   } catch (mailError) {
@@ -267,13 +271,12 @@ const verifyEmail = asyncHandler(async (req, res) => {
   user.emailVerificationExpiry = undefined;
   user.isEmailVerified = true;
   await user.save({ validateBeforeSave: false });
-  const redirectTarget =
-    process.env.CLIENT_URL ||
-    process.env.CORS_ORIGIN?.split(',')[0] ||
-    'http://localhost:5173';
-
-  return res.redirect(`${redirectTarget}/login?verified=1`);
+  return res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, {}, 'Email verified successfully'))
 });
+
+const verifyEmailRedirect = asyncHandler(async(req, res) => {
+  res.redirect(verifyEmailUrl(req.params.verificationToken))
+})
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
   const email = String(req.body.email || '')
@@ -301,7 +304,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
         subject: 'Verify your email',
         mailgenContent: emailVerificationMailgenContent(
           user.username,
-          `${Config.SERVER_URL}${ApiPath.BASE}${ApiPath.AUTH}${ApiPath.VERIFY_EMAIL}/${unHashedToken}`
+          verifyEmailUrl(unHashedToken)
         ),
       });
     } catch (mailError) {
@@ -495,6 +498,7 @@ export {
   logoutUser,
   getCurrentUser,
   verifyEmail,
+  verifyEmailRedirect,
   resendEmailVerification,
   refreshAccessToken,
   forgotPasswordRequest,
