@@ -27,6 +27,10 @@ const authLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) =>
+    ['/current-user', '/refresh-token', '/saved-destinations'].some((p) =>
+      req.path.startsWith(p)
+    ),
   message: {
     success: false,
     statusCode: 429,

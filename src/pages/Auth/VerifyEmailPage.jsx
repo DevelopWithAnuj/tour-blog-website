@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
       subtitle="Confirm your email to activate your account."
     >
       <form onSubmit={handleSubmit}>
-        <StatusScreen icon={MailCheck} title="Confirrm your email">
+        <StatusScreen icon={MailCheck} title="Confirm your email">
           <p>Press the button below to verify your email address.</p>
         </StatusScreen>
 

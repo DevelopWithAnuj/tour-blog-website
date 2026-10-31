@@ -5,6 +5,8 @@ import { CookieOptions } from './constants.js';
 export const MAX_SESSIONS = 10;
 export const ROTATION_GRACE_MS = 10 * 1000;
 const ACCESS_COOKIE_MAX_AGE = 15 * 60 * 1000;
+const REFRESH_COOKIE_PATH = '/api/v1/auth';
+
 
 export const hashToken = (token) =>
   crypto.createHash('sha256').update(token).digest('hex');
@@ -14,12 +16,18 @@ export const setAuthCookies = (res, { accessToken, refreshToken }) => {
     ...CookieOptions,
     maxAge: ACCESS_COOKIE_MAX_AGE,
   });
-  if (refreshToken) res.cookie('refreshToken', refreshToken, CookieOptions);
+  if (refreshToken) {
+    res.cookie('refreshToken', refreshToken, {
+      ...CookieOptions,
+      path: REFRESH_COOKIE_PATH,
+    });
+  }
 };
 
 export const clearAuthCookies = (res) => {
   const { maxAge, ...opts } = CookieOptions;
   res.clearCookie('accessToken', opts);
+  res.clearCookie('refreshToken', { ...opts, path: REFRESH_COOKIE_PATH });
   res.clearCookie('refreshToken', opts);
 };
 
